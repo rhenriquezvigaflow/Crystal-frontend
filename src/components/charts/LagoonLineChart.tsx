@@ -1,13 +1,57 @@
-import { LineChart } from "@mui/x-charts";
+// LagoonLineChart.tsx
+import Chart from "react-apexcharts";
 import { Box, CircularProgress } from "@mui/material";
-import ChartTooltip from "./ChartTooltip";
+import { useMemo } from "react";
 
 interface Props {
   data: any;
   loading: boolean;
+  visibleStart: Date;
+  visibleEnd: Date;
+  onRangeChange: (start: Date, end: Date) => void;
 }
 
-export default function LagoonLineChart({ data, loading }: Props) {
+/* =========================
+   Helpers
+========================= */
+const isAnalogTag = (tagKey?: string) => {
+  if (!tagKey) return false;
+  const k = String(tagKey).toUpperCase();
+  return !(
+    k.includes("_ST_") ||
+    k.includes("_STATUS") ||
+    k.includes("_BOOL") ||
+    k.includes("RETRO")
+  );
+};
+
+function daysBetween(a: Date, b: Date) {
+  return Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24);
+}
+
+function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
+  if (days <= 14) return "hourly";
+  if (days <= 180) return "daily";
+  return "weekly";
+}
+
+/**
+ * ✅ Para DAILY: anclamos al MEDIODÍA (12:00) para evitar saltos de DST (+/-1h)
+ * No usamos UTC porque tu sistema está usando horario local en UI.
+ */
+function normalizeDayToNoon(ts: string | Date) {
+  const d = new Date(ts);
+  d.setHours(12, 0, 0, 0);
+  return d.getTime();
+}
+
+export default function LagoonLineChart({
+  data,
+  loading,
+  visibleStart,
+  visibleEnd,
+  onRangeChange,
+}: Props) {
   if (loading) {
     return (
       <Box className="flex items-center justify-center h-full">
@@ -24,88 +68,172 @@ export default function LagoonLineChart({ data, loading }: Props) {
     );
   }
 
-  /* ===== Timeline común ===== */
-  const timeline: Date[] = Array.from(
-    new Set(
-      data.series.flatMap((s: any) =>
-        s.points.map((p: any) => new Date(p.timestamp).getTime()),
-      ),
-    ),
-  )
-    .sort((a, b) => a - b)
-    .map((t) => new Date(t));
+  /* =========================
+     View inferida
+  ========================= */
+  const view = useMemo(() => {
+    const days = daysBetween(visibleStart, visibleEnd);
+    return getViewByDays(days);
+  }, [visibleStart, visibleEnd]);
 
-  /* ===== Series ===== */
-  const series = data.series.map((s: any) => {
-    const map = new Map(
-      s.points.map((p: any) => [new Date(p.timestamp).getTime(), p.value]),
-    );
+  /* =========================
+     Timeline diario único (anclado a 12:00)
+  ========================= */
+  const dailyTimeline = useMemo(() => {
+    if (view !== "daily") return null;
 
-    return {
-      id: s.tag_key,
-      label: s.name,
-      data: timeline.map((t) => map.get(t.getTime()) ?? null),
-      curve: "linear",
-      showMark: false, // ❌ sin pelotas
-      emphasis: {
-        focus: "series", // ✅ resalta línea al hover
-      },
-    };
-  });
+    const start = new Date(visibleStart);
+    start.setHours(12, 0, 0, 0);
 
-  return (
-    <LineChart
-      height={370}
-      margin={{ top: 28, left: 8, right: 8, bottom: 48 }}
-      grid={{ horizontal: true, vertical: false }}
-      xAxis={[
-        {
-          data: timeline,
-          scaleType: "time",
-          valueFormatter: (v: Date) => {
-            const h = v.getHours();
-            const m = v.getMinutes();
+    const end = new Date(visibleEnd);
+    end.setHours(12, 0, 0, 0);
 
-            // Medianoche → mostrar fecha + hora
-            if (h === 0 && m === 0) {
-              return `${v.toLocaleDateString("es-CL", {
-                day: "2-digit",
-                month: "2-digit",
-              })}\n00:00`;
+    const days: number[] = [];
+    const cur = new Date(start);
+
+    while (cur <= end) {
+      days.push(cur.getTime());
+      cur.setDate(cur.getDate() + 1);
+    }
+
+    return days;
+  }, [visibleStart, visibleEnd, view]);
+
+  /* =========================
+     Series → Apex (daily con nulls + noon anchor)
+  ========================= */
+  const series = useMemo(() => {
+    return data.series
+      .filter((s: any) => isAnalogTag(s.tag))
+      .map((s: any) => {
+        if (view === "daily" && dailyTimeline) {
+          const map = new Map<number, number>();
+
+          (s.points ?? []).forEach((p: any) => {
+            map.set(normalizeDayToNoon(p.timestamp), p.value);
+          });
+
+          const points: [number, number | null][] = dailyTimeline.map((t) => [
+            t,
+            map.has(t) ? map.get(t)! : null,
+          ]);
+
+          return { name: s.tag, data: points };
+        }
+
+        // hourly/weekly: directo
+        const points: [number, number | null][] = (s.points ?? [])
+          .map((p: any) => [
+            new Date(p.timestamp).getTime(),
+            typeof p.value === "number" ? p.value : null,
+          ])
+          .sort((a, b) => a[0] - b[0]);
+
+        return { name: s.tag, data: points };
+      });
+  }, [data, view, dailyTimeline]);
+
+  /* =========================
+     Options
+  ========================= */
+  const options: ApexCharts.ApexOptions = useMemo(
+    () => ({
+      chart: {
+        type: "line",
+        height: 380,
+        animations: { enabled: false },
+        toolbar: {
+          show: true,
+          tools: {
+            download: false,
+            selection: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: false,
+            reset: true,
+          },
+        },
+        zoom: {
+          enabled: true,
+          type: "x",
+          autoScaleYaxis: true,
+        },
+        pan: { enabled: false },
+        events: {
+          zoomed: (_ctx, { xaxis }) => {
+            if (xaxis?.min != null && xaxis?.max != null) {
+              onRangeChange(new Date(xaxis.min), new Date(xaxis.max));
             }
+          },
+        },
+      },
 
-            return v.toLocaleTimeString("es-CL", {
-              hour: "2-digit",
-              minute: "2-digit",
+      stroke: { width: 2, curve: "straight" },
+      grid: { strokeDashArray: 3 },
+      markers: { size: 0 },
+
+      xaxis: {
+        type: "datetime",
+        min: visibleStart.getTime(),
+        max: visibleEnd.getTime(),
+
+        labels: {
+          formatter: (value: number) => {
+            return new Date(value).toLocaleDateString(undefined, {
+              day: "2-digit",
+              month: "short",
             });
           },
         },
-      ]}
-      series={series}
-      tooltip={{
-        trigger: "axis",
-        slotProps: {
-          tooltip: {
-            component: ChartTooltip,
+      },
+
+      yaxis: {
+        labels: {
+          formatter: (v: number) => v.toFixed(2),
+        },
+      },
+
+      tooltip: {
+        shared: true,
+        intersect: false,
+
+        x: {
+          formatter: (value: number) => {
+            return new Date(value).toLocaleString(undefined, {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            });
           },
         },
-      }}
+
+        y: {
+          formatter: (v?: number) =>
+            typeof v === "number" ? v.toFixed(3) : "--",
+        },
+      },
+
+      legend: { show: true, position: "top" },
+    }),
+    [visibleStart, visibleEnd, onRangeChange, view],
+  );
+
+  return (
+    <Box
       sx={{
-        /* Ejes */
-        "& .MuiChartsAxis-tickLabel": {
-          fontSize: 12,
-        },
-
-        /* Leyenda */
-        "& .MuiChartsLegend-root": {
-          fontSize: 12,
-        },
-
-        /* Líneas más limpias */
-        "& .MuiLineElement-root": {
-          strokeWidth: 2,
-        },
+        height: "100%",
+        width: "100%",
+        overflow: "hidden",
+        overscrollBehavior: "contain",
+        touchAction: "none",
       }}
-    />
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <Chart options={options} series={series} type="line" height={380} />
+    </Box>
   );
 }

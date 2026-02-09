@@ -1,19 +1,15 @@
+import CostaDelLagoSvg from "../svg/costa-del-lago";
+
+const VIEWBOX = "150 140 1100 1050";
+
 export default function LagoonSVG() {
   return (
-    <div className="w-full h-full flex items-center justify-center overflow-hidden">
-      <div className="scale-115">
-        <img
-          src="img_lagoons/lagoons_1.webp"
-          alt="Laguna"
-          className="
-            max-h-130
-            w-auto
-            object-contain
-            select-none
-            pointer-events-none
-          "
-        />
-      </div>
+    <div className="w-full h-full">
+      <CostaDelLagoSvg
+        viewBox={VIEWBOX}
+        className="w-full h-full max-w-none"
+        preserveAspectRatio="xMidYMin meet"
+      />
     </div>
   );
 }

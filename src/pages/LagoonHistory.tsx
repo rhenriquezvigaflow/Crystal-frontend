@@ -11,7 +11,7 @@ const LagoonHistory = ({ lagoonId }: Props) => {
 
   const { data, loading, error } = useHistoryHourly({
     lagoonId,
-    startDate: `${today}T00:00:00Z`, // 🔥 ISO correcto
+    startDate: `${today}T00:00:00Z`, 
     endDate: `${today}T23:59:59Z`,
   });
 

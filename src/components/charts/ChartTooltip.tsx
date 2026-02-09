@@ -1,12 +1,19 @@
 import { Box, Typography } from "@mui/material";
 
 interface Props {
-  axisValue?: Date;
+  axisValue?: number | string | Date;
   series?: any[];
 }
 
 export default function ChartTooltip({ axisValue, series }: Props) {
   if (!axisValue || !series?.length) return null;
+
+  const date =
+    axisValue instanceof Date
+      ? axisValue
+      : new Date(axisValue);
+
+  if (isNaN(date.getTime())) return null;
 
   return (
     <Box
@@ -19,7 +26,7 @@ export default function ChartTooltip({ axisValue, series }: Props) {
         boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
       }}
     >
-      {/* Fecha + hora */}
+      {/* FECHA + HORA */}
       <Typography
         sx={{
           fontSize: "10px",
@@ -29,12 +36,13 @@ export default function ChartTooltip({ axisValue, series }: Props) {
           whiteSpace: "nowrap",
         }}
       >
-        {axisValue.toLocaleString("es-CL", {
+        {date.toLocaleString("es-CL", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
         })}
       </Typography>
 
@@ -58,13 +66,9 @@ export default function ChartTooltip({ axisValue, series }: Props) {
               flexShrink: 0,
             }}
           />
-
           <span>{s.label}:</span>
-
           <strong>
-            {typeof s.value === "number"
-              ? s.value.toFixed(2)
-              : "--"}
+            {typeof s.value === "number" ? s.value.toFixed(2) : "--"}
           </strong>
         </Box>
       ))}

@@ -3,14 +3,77 @@ import { Box, Typography } from "@mui/material";
 import type { HistoryResponse } from "./types";
 import { getColorByIndex } from "./chartConfig";
 
+/* ======================================================
+   Props
+====================================================== */
 interface Props {
   data: HistoryResponse;
+  visibleStart: Date;
+  visibleEnd: Date;
 }
 
-const HistoryChart = ({ data }: Props) => {
+/* ======================================================
+   Helpers
+====================================================== */
+function getViewByDays(days: number) {
+  if (days <= 14) return "hourly";
+  if (days <= 180) return "daily";
+  return "weekly";
+}
+
+function getWeekNumber(date: Date) {
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+/* ======================================================
+   Component
+====================================================== */
+const HistoryChart = ({ data, visibleStart, visibleEnd }: Props) => {
   if (!data?.series?.length) return null;
 
-  // ✅ 1. Timeline GLOBAL (todas las series)
+  /* ---------------------------
+     Vista automática
+  ---------------------------- */
+  const daysVisible =
+    (visibleEnd.getTime() - visibleStart.getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  const view = getViewByDays(daysVisible);
+
+  const titleMap: Record<string, string> = {
+    hourly: "Histórico horario",
+    daily: "Histórico diario",
+    weekly: "Histórico semanal",
+  };
+
+  const formatXAxis = (v: Date) => {
+    switch (view) {
+      case "hourly":
+        return v.toLocaleTimeString("es-CL", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      case "daily":
+        return v.toLocaleDateString("es-CL", {
+          day: "2-digit",
+          month: "short",
+        });
+      case "weekly":
+        return `Sem ${getWeekNumber(v)}`;
+      default:
+        return v.toISOString();
+    }
+  };
+
+  /* ---------------------------
+     Timeline global
+  ---------------------------- */
   const timeline = Array.from(
     new Set(
       data.series.flatMap((s) =>
@@ -21,7 +84,9 @@ const HistoryChart = ({ data }: Props) => {
     .sort((a, b) => a - b)
     .map((t) => new Date(t));
 
-  // ✅ 2. Series alineadas EXACTAMENTE a la timeline
+  /* ---------------------------
+     Series alineadas
+  ---------------------------- */
   const series = data.series.map((serie, index) => {
     const map = new Map(
       serie.points.map((p) => [
@@ -39,10 +104,13 @@ const HistoryChart = ({ data }: Props) => {
     };
   });
 
+  /* ---------------------------
+     Render
+  ---------------------------- */
   return (
     <Box>
       <Typography variant="h6" mb={1}>
-        Histórico horario
+        {titleMap[view]}
       </Typography>
 
       <LineChart
@@ -51,8 +119,9 @@ const HistoryChart = ({ data }: Props) => {
           {
             data: timeline,
             scaleType: "time",
-            valueFormatter: (v) =>
-              v.toLocaleTimeString("es-CL", { hour: "2-digit" }),
+            valueFormatter: formatXAxis,
+            min: visibleStart,
+            max: visibleEnd,
           },
         ]}
         series={series}

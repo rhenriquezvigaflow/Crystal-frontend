@@ -9,11 +9,10 @@ export function useScadaRealtime(lagoonId: string) {
   const [ts, setTs] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!lagoonId) return;
+    if (!lagoonId || lagoonId === "undefined") return;
 
-    const ws = new WebSocket(
-      `${API_WS}/ws/scada?lagoon_id=${lagoonId}`
-    );
+    const ws = new WebSocket(`${API_WS}/ws/scada?lagoon_id=${lagoonId}`);
+
     wsRef.current = ws;
 
     ws.onmessage = (ev) => {
@@ -27,8 +26,8 @@ export function useScadaRealtime(lagoonId: string) {
       }
     };
 
-    ws.onerror = () => {
-      console.warn("WS disconnected");
+    ws.onerror = (err) => {
+      console.warn("WS disconnected", err);
     };
 
     return () => {

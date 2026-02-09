@@ -1,46 +1,48 @@
-// hooks/useHistoryHourly.ts
-import { useEffect, useState, type SetStateAction } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
+import { fetchHistory } from "../api/scadaHistory";
 import type { HistoryResponse } from "../components/charts/HistoryChart/types";
 
 interface Props {
   lagoonId: string;
-  tags: string[];        
   startDate: string;
   endDate: string;
+  view: "hourly" | "daily" | "weekly";
 }
 
-export const useHistoryHourly = ({
+export function useHistory({
   lagoonId,
-  tags,
   startDate,
   endDate,
-}: Props) => {
+  view,
+}: Props) {
   const [data, setData] = useState<HistoryResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!lagoonId || tags.length === 0) return;
+    if (!lagoonId || !startDate || !endDate) return;
 
     setLoading(true);
     setError(null);
 
-    fetchHistoryHourly({
+    fetchHistory({
       lagoon_id: lagoonId,
-      tags,                    
       start_date: startDate,
       end_date: endDate,
+      view,
+      tags: []
     })
-      .then((res: SetStateAction<HistoryResponse | null>) => {
-        console.log("HISTORY RESPONSE", res);
+      .then((res) => {
+        console.log("HISTORY OK", res);
         setData(res);
       })
-      .catch((e: any) => {
-        console.error(e);
+      .catch((err) => {
+        console.error("HISTORY ERROR", err);
         setError("Error cargando histórico");
       })
       .finally(() => setLoading(false));
-  }, [lagoonId, tags, startDate, endDate]);
+  }, [lagoonId, startDate, endDate, view]);
 
   return { data, loading, error };
-};
+}
