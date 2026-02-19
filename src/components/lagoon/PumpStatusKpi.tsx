@@ -1,6 +1,6 @@
 interface PumpInfo {
   label: string;
-  active: boolean | null;
+  state: number | null;   
   updated_at: string | null;
 }
 
@@ -11,6 +11,7 @@ interface Props {
 /* =======================
    Helpers
 ======================= */
+
 function formatPumpTime(iso?: string | null) {
   if (!iso) return "—";
 
@@ -28,6 +29,46 @@ function formatPumpTime(iso?: string | null) {
     .replace(",", " -");
 }
 
+function getStateConfig(state: number | null) {
+  switch (state) {
+    case 0:
+      return {
+        label: "DETENIDA",
+        dot: "bg-red-500",
+        text: "text-red-600",
+        bg: "bg-red-50/60",
+      };
+    case 1:
+      return {
+        label: "FUNCIONANDO",
+        dot: "bg-emerald-500",
+        text: "text-emerald-600",
+        bg: "bg-emerald-50/60",
+      };
+    case 2:
+      return {
+        label: "MOVIÉNDOSE",
+        dot: "bg-blue-500",
+        text: "text-blue-600",
+        bg: "bg-blue-50/60",
+      };
+    case 3:
+      return {
+        label: "FALLA",
+        dot: "bg-yellow-500",
+        text: "text-yellow-600",
+        bg: "bg-yellow-50/60",
+      };
+    default:
+      return {
+        label: "DETENIDA",
+        dot: "bg-red-500",
+        text: "text-red-600",
+        bg: "bg-red-50/60",
+      };
+  }
+}
+
 /* =======================
    Component
 ======================= */
@@ -42,7 +83,7 @@ export default function PumpStatusKpi({ pumps }: Props) {
         </div>
       </div>
 
-      {/* HORIZONTAL STATUS BAR */}
+      {/* GRID */}
       <div
         className="
           grid
@@ -55,25 +96,17 @@ export default function PumpStatusKpi({ pumps }: Props) {
         "
       >
         {Object.entries(pumps).map(([id, pump]) => {
-          const isActive = pump.active === true;
+          const config = getStateConfig(pump.state);
 
           return (
             <div
               key={id}
-              className={`px-4 py-3 flex flex-col gap-1
-                ${isActive ? "bg-emerald-50/50" : ""}
-              `}
+              className={`px-4 py-3 flex flex-col gap-1 transition-colors ${config.bg}`}
             >
               {/* TOP ROW */}
               <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`w-3 h-3 rounded-full shrink-0
-                    ${
-                      isActive
-                        ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
-                        : "bg-slate-300"
-                    }
-                  `}
+                  className={`w-3 h-3 rounded-full shrink-0 ${config.dot}`}
                 />
 
                 <span className="text-sm font-medium text-slate-800 truncate">
@@ -84,11 +117,9 @@ export default function PumpStatusKpi({ pumps }: Props) {
               {/* BOTTOM ROW */}
               <div className="flex items-center justify-between text-xs">
                 <span
-                  className={`font-semibold tracking-wide
-                    ${isActive ? "text-emerald-600" : "text-slate-400"}
-                  `}
+                  className={`font-semibold tracking-wide ${config.text}`}
                 >
-                  {isActive ? "ACTIVA" : "INACTIVA"}
+                  {config.label}
                 </span>
 
                 <span className="text-slate-500">

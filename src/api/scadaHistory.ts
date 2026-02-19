@@ -8,7 +8,7 @@ export interface HistoryParams {
   lagoon_id: string;
   start_date: string;
   end_date: string;
-  tags: string[];              // ✅ OBLIGATORIO
+  tags: string[];              
   view?: HistoryView;
 }
 
@@ -36,7 +36,7 @@ export const fetchHistory = async (
   const { data } = await api.get<HistoryResponse>(endpoint, {
     params: {
       ...rest,
-      tags, // ✅ Axios serializa tags[]=a&tags[]=b correctamente
+      tags, 
     },
     paramsSerializer: {
       indexes: false, // 🔑 genera ?tags=a&tags=b (FastAPI-friendly)

@@ -1,43 +1,98 @@
+import { Box } from "@mui/material";
 
 interface Props {
   startISO: string;
   endISO: string;
-  onChange: (nextStartISO: string, nextEndISO: string) => void;
+  onChange: (start: string, end: string) => void;
 }
 
-function toLocalInputValue(iso: string) {
-  // "YYYY-MM-DDTHH:mm"
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
-  )}:${pad(d.getMinutes())}`;
+function toDateOnly(iso: string) {
+  if (!iso) return "";
+  return iso.slice(0, 10); // YYYY-MM-DD
 }
 
-function fromLocalInputToISO(localValue: string) {
-  // localValue = "YYYY-MM-DDTHH:mm" (hora local del navegador)
-  // Lo convertimos a ISO con timezone (Z)
-  return new Date(localValue).toISOString();
+function toISODate(dateStr: string) {
+  // Generamos ISO limpio en UTC a las 00:00
+  return new Date(`${dateStr}T00:00:00`).toISOString();
 }
 
-export default function DateRangePicker({ startISO, endISO, onChange }: Props) {
+export default function DateRangePicker({
+  startISO,
+  endISO,
+  onChange,
+}: Props) {
+  const handleStartChange = (value: string) => {
+    if (!value) return;
+    onChange(toISODate(value), endISO);
+  };
+
+  const handleEndChange = (value: string) => {
+    if (!value) return;
+    onChange(startISO, toISODate(value));
+  };
+
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <label className="text-sm text-slate-600">Desde</label>
-      <input
-        type="datetime-local"
-        value={toLocalInputValue(startISO)}
-        onChange={(e) => onChange(fromLocalInputToISO(e.target.value), endISO)}
-        className="border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white"
-      />
+    <Box
+      sx={{
+        display: "flex",
+        gap: 2,
+        alignItems: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      {/* DESDE */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#475569",
+          }}
+        >
+          Desde
+        </span>
 
-      <label className="text-sm text-slate-600">Hasta</label>
-      <input
-        type="datetime-local"
-        value={toLocalInputValue(endISO)}
-        onChange={(e) => onChange(startISO, fromLocalInputToISO(e.target.value))}
-        className="border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white"
-      />
-    </div>
+        <input
+          type="date"
+          value={toDateOnly(startISO)}
+          onChange={(e) => handleStartChange(e.target.value)}
+          style={{
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontSize: 14,
+            padding: "6px 10px",
+            borderRadius: 8,
+            border: "1px solid #CBD5E1",
+            outline: "none",
+          }}
+        />
+      </Box>
+
+      {/* HASTA */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#475569",
+          }}
+        >
+          Hasta
+        </span>
+
+        <input
+          type="date"
+          value={toDateOnly(endISO)}
+          onChange={(e) => handleEndChange(e.target.value)}
+          style={{
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontSize: 14,
+            padding: "6px 10px",
+            borderRadius: 8,
+            border: "1px solid #CBD5E1",
+            outline: "none",
+          }}
+        />
+      </Box>
+    </Box>
   );
 }

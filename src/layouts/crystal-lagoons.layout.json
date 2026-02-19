@@ -1,5 +1,5 @@
 {
-  "plant": "Costa del lago - Paraguay",
+  "plant": "LAYOUT1 - SCADA",
   "version": "1.0",
   "description": "Layout SCADA Crystal Lagoons - datos crudos PLC",
 
@@ -11,7 +11,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT117_R_SCADA",
-      "position": { "top": "50.2%", "left": "28%" }
+      "position": { "top": "42%", "left": "27.5%" }
     },
     {
       "id": "pt148",
@@ -20,7 +20,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT148_R_SCADA",
-      "position": { "top": "23%", "left": "43%" }
+      "position": { "top": "12%", "left": "41.7%" }
     },
     {
       "id": "pt141",
@@ -29,7 +29,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT141_R_SCADA",
-      "position": { "top": "57.4%", "left": "58.6%" }
+      "position": { "top": "50.2%", "left": "58.6%" }
     },
     {
       "id": "pt145",
@@ -38,7 +38,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT145_R_SCADA",
-      "position": { "top": "50.5%", "left": "76%" }
+      "position": { "top": "42.5%", "left": "77.5%" }
     },
     {
       "id": "pt143",
@@ -47,17 +47,26 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT143_R_SCADA",
-      "position": { "top": "57.4%", "left": "68%" }
+      "position": { "top": "50.2%", "left": "68.5%" }
     },
 
     {
-      "id": "nivel_agua",
-      "type": "level",
-      "label": "Nivel Agua (RAW)",
-      "unit": "%",
-      "iconType": "water-level",
-      "backendTag": "PT141_R_SCADA",
-      "position": { "top": "18%", "left": "60%" }
+      "id": "WM01_TOT_DELTA_SCADA",
+      "type": "kpi",
+      "label": "WM01_TOT_DELTA_SCADA",
+      "unit": "bar",
+      "iconType": "volume",
+      "backendTag": "WM01_TOT_DELTA_SCADA",
+      "position": { "top": "76.5%", "left": "42.5%" }
+    },
+      {
+      "id": "DIF_PRES_SCADA",
+      "type": "kpi",
+      "label": "DIF_PRES_SCADA",
+      "unit": "bar",
+      "iconType": "volume",
+      "backendTag": "DIF_PRES_SCADA",
+      "position": { "top": "48.5%", "left": "46.5%" }
     },
 
     {
@@ -66,23 +75,23 @@
       "title": "Estado Bombas",
       "pumps": [
         {
-          "id": "P002",
-          "label": "Bomba Laguna",
-          "backendTag": "P002_ST_SCADA"
+          "id": "P002_STS_SCADA",
+          "label": "Bomba Retrolavado",
+          "backendTag": "P002_STS_SCADA"
         },
         {
-          "id": "P006",
+          "id": "P006_STS_SCADA",
           "label": "Bomba Filtración",
-          "backendTag": "P006_ST_SCADA"
+          "backendTag": "P006_STS_SCADA"
         },
         {
-          "id": "P007",
-          "label": "Bomba Retorno",
-          "backendTag": "P007_ST_SCADA"
+          "id": "P007_STS_SCADA",
+          "label": "Bomba Retorno Clarificado",
+          "backendTag": "P007_STS_SCADA"
         },
         {
-          "id": "RETRO",
-          "label": "Retrolavado",
+          "id": "RETRO_SCADA",
+          "label": "Retrolavado Filtros",
           "backendTag": "RETRO_SCADA"
         }
       ]

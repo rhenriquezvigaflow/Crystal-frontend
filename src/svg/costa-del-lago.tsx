@@ -1,66 +1,372 @@
-import * as React from "react"
-import { SVGProps } from "react"
-const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
+import * as React from "react";
+const SVGComponent = (props) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    xmlSpace="preserve"
     id="Capa_1"
-    x={0}
-    y={0}
-    style={{
-      enableBackground: "new 0 0 1429.5 2137.7",
-    }}
-    viewBox="0 0 1429.5 2137.7"
+    x="0px"
+    y="0px"
+    viewBox="0 0 1429.5 960"
+    xmlSpace="preserve"
+    sodipodi:docname="planilla_1.svg"
+    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+    width={1429.5}
+    height={960}
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
     {...props}
   >
     <defs id="defs489">
-      <path id="rect47" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect39" d="M601.669 165.484h257.364v39.518H601.669z" />
-      <path id="rect38" d="M523.126 339.859h100.278v22.229H523.126z" />
-      <path id="rect36" d="M241.015 625.941h113.172v22.355H241.015z" />
-      <path id="rect35" d="M141.815 523.946h60.778v21.656h-60.778z" />
-      <path id="rect34" d="M28.642 656.679h76.845v20.958H28.642z" />
-      <path id="rect31" d="M653.885 527.439h107.584v39.121H653.885z" />
-      <path id="rect20" d="M669.952 522.549h69.161v27.944h-69.161z" />
-      <path id="rect18" d="M655.282 521.85h96.406v27.944h-96.406z" />
-      <path id="rect17" d="M836.917 520.453h101.296v32.135H836.917z" />
-      <path id="rect47-6" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-67" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-1" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-67-2" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-67-1" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-6-9" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <path id="rect47-5" d="M322.323 656.748h49.645V681.2h-49.645z" />
-      <linearGradient id="swatch25">
+      <linearGradient id="swatch22" inkscape:swatch="solid">
         <stop
-          id="stop25"
-          offset={0}
           style={{
-            stopColor: "#020907",
+            stopColor: "#ffffff",
             stopOpacity: 1,
           }}
+          offset={0}
+          id="stop22"
         />
       </linearGradient>
+      <linearGradient id="linearGradient7" inkscape:swatch="gradient">
+        <stop
+          style={{
+            stopColor: "#000000",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop7"
+        />
+        <stop
+          style={{
+            stopColor: "#070606",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop8"
+        />
+      </linearGradient>
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47"
+      />
+      <rect
+        x={601.66895}
+        y={165.48366}
+        width={257.36414}
+        height={39.518486}
+        id="rect39"
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38"
+      />
+      <rect
+        x={241.01518}
+        y={625.94092}
+        width={113.17235}
+        height={22.355032}
+        id="rect36"
+      />
+      <rect
+        x={141.81474}
+        y={523.94604}
+        width={60.777744}
+        height={21.656437}
+        id="rect35"
+      />
+      <rect
+        x={28.642385}
+        y={656.67908}
+        width={76.845421}
+        height={20.957844}
+        id="rect34"
+      />
+      <rect
+        x={653.8847}
+        y={527.43903}
+        width={107.58359}
+        height={39.121307}
+        id="rect31"
+      />
+      <linearGradient id="swatch25" inkscape:swatch="solid">
+        <stop
+          style={{
+            stopColor: "#050606",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop25"
+        />
+      </linearGradient>
+      <rect
+        x={669.95239}
+        y={522.54889}
+        width={69.160881}
+        height={27.94379}
+        id="rect20"
+      />
+      <rect
+        x={655.28186}
+        y={521.85028}
+        width={96.406075}
+        height={27.94379}
+        id="rect18"
+      />
+      <rect
+        x={836.9165}
+        y={520.45306}
+        width={101.29624}
+        height={32.135361}
+        id="rect17"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-6"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-1"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67-2"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67-1"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-6-9"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-5"
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={202.02144}
+        height={41.000431}
+        id="rect38-8"
+      />
+      <filter
+        id="softShadow"
+        x={-0.0046875}
+        y={-0.0046875}
+        width={1.009375}
+        height={1.009375}
+      >
+        <feDropShadow
+          dx={0}
+          dy={6}
+          stdDeviation={8}
+          floodColor="#000000"
+          floodOpacity={0.25}
+        />
+      </filter>
+      <linearGradient
+        id="panelFill"
+        x1={240}
+        y1={140}
+        x2={560}
+        y2={460}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.06} id="stop1" />
+        <stop
+          offset="100%"
+          stopColor="#FFFFFF"
+          stopOpacity={0.015}
+          id="stop2"
+        />
+      </linearGradient>
+      <linearGradient
+        id="borderGrey"
+        x1={238.5}
+        y1={138.5}
+        x2={238.5}
+        y2={461.5}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="#D0D0D0" stopOpacity={0.95} id="stop3" />
+        <stop offset="100%" stopColor="#8E8E8E" stopOpacity={0.95} id="stop4" />
+      </linearGradient>
+      <pattern
+        id="microGrid"
+        width={16}
+        height={16}
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          d="M16 0H0V16"
+          fill="none"
+          stroke="#FFFFFF"
+          strokeOpacity={0.04}
+          strokeWidth={1}
+          id="path4"
+        />
+      </pattern>
+      <filter
+        id="softShadow-8"
+        x={-0.0046875}
+        y={-0.0046875}
+        width={1.009375}
+        height={1.009375}
+      >
+        <feDropShadow
+          dx={0}
+          dy={6}
+          stdDeviation={8}
+          floodColor="#000000"
+          floodOpacity={0.25}
+        />
+      </filter>
+      <linearGradient
+        id="panelFill-6"
+        x1={240}
+        y1={140}
+        x2={560}
+        y2={460}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.06} id="stop1-0" />
+        <stop
+          offset="100%"
+          stopColor="#FFFFFF"
+          stopOpacity={0.015}
+          id="stop2-2"
+        />
+      </linearGradient>
+      <linearGradient
+        id="borderGrey-4"
+        x1={238.5}
+        y1={138.5}
+        x2={238.5}
+        y2={461.5}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="#D0D0D0" stopOpacity={0.95} id="stop3-8" />
+        <stop
+          offset="100%"
+          stopColor="#8E8E8E"
+          stopOpacity={0.95}
+          id="stop4-6"
+        />
+      </linearGradient>
+      <pattern
+        id="microGrid-5"
+        width={16}
+        height={16}
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          d="M16 0H0V16"
+          fill="none"
+          stroke="#FFFFFF"
+          strokeOpacity={0.04}
+          strokeWidth={1}
+          id="path4-0"
+        />
+      </pattern>
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38-1"
+      />
     </defs>
-    <style id="style1" type="text/css">
+    <sodipodi:namedview
+      id="namedview489"
+      pagecolor="#ffffff"
+      bordercolor="#000000"
+      borderopacity={0.25}
+      inkscape:showpageshadow={2}
+      inkscape:pageopacity={0}
+      inkscape:pagecheckerboard={0}
+      inkscape:deskcolor="#d1d1d1"
+      showguides="true"
+      inkscape:zoom={1.4314451}
+      inkscape:cx={869.05187}
+      inkscape:cy={482.37967}
+      inkscape:window-width={1920}
+      inkscape:window-height={1129}
+      inkscape:window-x={-8}
+      inkscape:window-y={-8}
+      inkscape:window-maximized={1}
+      inkscape:current-layer="Capa_1"
+      showgrid="false"
+    >
+      <inkscape:grid
+        id="grid33"
+        units="px"
+        originx={0}
+        originy={0}
+        spacingx={1}
+        spacingy={1}
+        empcolor="#0099e5"
+        empopacity={0.30196078}
+        color="#0099e5"
+        opacity={0.14902}
+        empspacing={5}
+        enabled="true"
+        visible="false"
+      />
+    </sodipodi:namedview>
+    <style type="text/css" id="style1">
       {
-        ".st2{fill:#fff}.st16{opacity:7.000000e-02;fill:#323e48;enable-background:new}.st17{fill:#2f3e49}.st19{opacity:.15;fill:#0e76e7;enable-background:new}.st23,.st25{fill:none;stroke:#2f3e49;stroke-width:4;stroke-miterlimit:10}.st25{stroke:#35ace8}.st26{fill:#0e76e7}"
+        ".st0{fill:none;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st1{fill:none;stroke:#00AEED;stroke-width:4;stroke-miterlimit:10;}\n\t.st2{fill:#FFFFFF;}\n\t.st3{fill:#E33F09;}\n\t.st4{fill:#00CD98;}\n\t.st5{fill:#3574E0;}\n\t.st6{fill:#FBC43B;}\n\t.st7{fill:#FF6200;}\n\t.st8{fill:#666666;}\n\t.st9{font-family:'ArialMT';}\n\t.st10{font-size:14px;}\n\t.st11{fill:#606060;}\n\t.st12{font-family:'Arial-BoldMT';}\n\t.st13{font-size:17px;}\n\t.st14{fill:#00E098;}\n\t.st15{opacity:0.5;fill:none;stroke:#B3B3B3;stroke-width:0.5;stroke-miterlimit:10;enable-background:new    ;}\n\t.st16{opacity:7.000000e-02;fill:#323E48;enable-background:new    ;}\n\t.st17{fill:#2F3E49;}\n\t.st18{fill:#00AEED;}\n\t.st19{opacity:0.15;fill:#0E76E7;enable-background:new    ;}\n\t.st20{font-size:11px;}\n\t.st21{opacity:0.6;fill:none;stroke:#CBCBCB;stroke-width:2;stroke-miterlimit:10;enable-background:new    ;}\n\t.st22{fill:#CBCBCB;}\n\t.st23{fill:none;stroke:#2F3E49;stroke-width:4;stroke-miterlimit:10;}\n\t.st24{fill:#00A39B;}\n\t.st25{fill:none;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st26{fill:#0E76E7;}\n\t.st27{fill:#323E48;}\n\t.st28{fill:none;stroke:#323E48;stroke-width:4;stroke-miterlimit:10;}\n\t.st29{fill:none;stroke:#FFFFFF;stroke-width:2;stroke-miterlimit:10;}\n\t.st30{fill:#7C7C7C;}\n\t.st31{font-size:9px;}\n\t.st32{fill:none;stroke:#2F3E49;stroke-width:3;stroke-miterlimit:10;}\n\t.st33{font-size:16px;}\n\t.st34{font-size:13px;}\n\t.st35{fill:#C6C6C6;}\n\t.st36{font-size:10px;}\n\t.st37{fill:#FFFFFF;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st38{enable-background:new    ;}\n\t.st39{fill:#FFFFFF;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st40{fill:#00AEED;stroke:#FFFFFF;stroke-width:4;stroke-miterlimit:10;}"
       }
     </style>
-    <path
-      id="rect37"
-      d="M125.322 753.425h124.8v58.182h-124.8z"
+    <rect
+      x={119.39394}
+      y={491.61545}
       className="st26"
+      width={124.8}
+      height={58.181511}
+      id="rect37"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
       }}
     />
     <path
+      className="st23"
+      d="m 244.09394,475.72028 v 71.50444 c 0,1.09315 -0.6,1.99338 -1.2,1.99338 h -122 c -0.7,0 -1.2,-0.90023 -1.2,-1.99338 v -71.50444"
       id="path38"
-      d="M250.022 737.53v71.505c0 1.093-.6 1.993-1.2 1.993h-122c-.7 0-1.2-.9-1.2-1.993V737.53"
-      className="st23"
       style={{
         fill: "none",
         stroke: "#2f3e49",
@@ -69,9 +375,9 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       }}
     />
     <path
+      className="st23"
+      d="m 187.8338,723.14144 v 71.50438 c 0,1.0932 -0.6,1.9934 -1.2,1.9934 H 64.633792 c -0.7,0 -1.2,-0.9002 -1.2,-1.9934 v -71.50438"
       id="path38-9"
-      d="M193.762 984.951v71.505c0 1.093-.6 1.993-1.2 1.993h-122c-.7 0-1.2-.9-1.2-1.993V984.95"
-      className="st23"
       style={{
         fill: "none",
         stroke: "#2f3e49",
@@ -79,66 +385,32 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit: 10,
       }}
     />
-    <path
-      id="line136-8"
-      d="M252.228 755.049h135.944"
+    <line
       className="st25"
+      x1={246.30009}
+      y1={493.23947}
+      x2={382.24445}
+      y2={493.23947}
+      id="line136-8"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00002,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <g id="tank-cl-fl012" transform="translate(4.607 496.804)">
-      <rect
-        id="rect1"
-        width={80}
-        height={110}
-        x={20}
-        y={30}
-        fill="#f4f6f8"
-        stroke="#8a94a6"
-        strokeWidth={2}
-        rx={10}
-        ry={10}
-      />
-      <rect
-        id="rect2"
-        width={50}
-        height={15}
-        x={35}
-        y={15}
-        fill="#e1e5ea"
-        stroke="#8a94a6"
-        strokeWidth={2}
-        rx={6}
-        ry={6}
-      />
-      <rect
-        id="rect3"
-        width={60}
-        height={10}
-        x={30}
-        y={140}
-        fill="#d1d6dc"
-        stroke="#8a94a6"
-        strokeWidth={2}
-        rx={4}
-        ry={4}
-      />
-    </g>
     <g
       id="g24"
+      transform="matrix(1.3372687,0,0,1.3392637,-259.91398,-224.04389)"
       style={{
         strokeWidth: 0.747236,
       }}
-      transform="matrix(1.33727 0 0 1.33926 -253.986 37.766)"
     >
       <path
-        id="path23"
-        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3 0-1.5-.2-2.9-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7z"
         className="st17"
+        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        id="path23"
         style={{
           fill: "#2f3e49",
           strokeWidth: 0.747236,
@@ -147,10 +419,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="g27"
+      transform="matrix(1.2663699,0,0,1.3007382,-239.12125,-209.42342)"
       style={{
         strokeWidth: 0.779157,
       }}
-      transform="matrix(1.26637 0 0 1.30074 -233.193 52.387)"
+      inkscape:transform-center-x={8.3831373}
     >
       <g
         id="g26"
@@ -159,17 +432,17 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       >
         <image
-          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          id="image24"
-          width={40}
-          height={40}
           style={{
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
             enableBackground: "new",
           }}
-          transform="matrix(.875 0 0 .875 293.273 379.5)"
+          width={40}
+          height={40}
+          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
+          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          id="image24"
         />
         <g
           id="g25"
@@ -178,24 +451,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           }}
         >
           <circle
-            id="circle24"
-            cx={311.1}
-            cy={397.3}
-            r={10.9}
             className="st2"
+            cx={311.10001}
+            cy={397.29999}
+            r={10.9}
+            id="circle24"
             style={{
-              fill: "#fff",
+              fill: "#ffffff",
               strokeWidth: 0.779157,
             }}
           />
         </g>
       </g>
       <circle
-        id="circle26"
-        cx={311.1}
-        cy={397.1}
-        r={8}
         className="st19"
+        cx={311.10001}
+        cy={397.10001}
+        r={8}
+        id="circle26"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -204,100 +477,64 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       />
     </g>
-    <g
-      id="pt-card"
-      style={{
-        strokeWidth: 0.907866,
-      }}
-      transform="matrix(1.22594 0 0 .98966 210.458 618.729)"
-    >
-      <rect
-        id="rect1-2"
-        width={138}
-        height={68}
-        x={1}
-        y={1}
-        fill="#fff"
-        stroke="#8a94a6"
-        strokeWidth={1.816}
-        rx={4.894}
-        ry={6.063}
-      />
-      <path id="line1" stroke="#8a94a6" strokeWidth={1.362} d="M6 34h128" />
-    </g>
-    <path
+    <line
+      className="st1"
+      x1={98.654915}
+      y1={305.77505}
+      x2={135.65491}
+      y2={305.77505}
       id="line37"
-      d="M104.583 567.585h37"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <path
-      id="path160"
-      d="M249.53 559.23h9.4c4.1 0 7.4 3.3 7.4 7.4v50.6"
+    <line
       className="st25"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
+      x1={188.57495}
+      y1={296.51169}
+      x2={215.091}
+      y2={296.51169}
       id="line136"
-      d="M195.867 559.363h53.943"
-      className="st25"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 5.83905,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="path1"
-      d="M229.143 687.405v46.609"
+      d="m 1266.4801,152.80015 v 49.54726"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3,
+        strokeWidth: 2,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
-    />
-    <path
       id="path1-36"
-      d="M1289.574 414.425v26.108"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
-    <path
-      id="path1-1"
-      d="m232.126 734.383-2.923 4.985-3.074-5.072z"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-      }}
-    />
-    <path
-      id="rect37-8"
-      d="M1288.466 628.87h124.8v58.182h-124.8z"
+    <rect
+      x={1282.5386}
+      y={367.06046}
       className="st26"
+      width={124.8}
+      height={58.181511}
+      id="rect37-8"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
       }}
     />
     <path
-      id="path38-2"
-      d="M1413.166 612.975v71.505c0 1.093-.6 1.993-1.2 1.993h-122c-.7 0-1.2-.9-1.2-1.993v-71.505"
       className="st23"
+      d="m 1407.2385,351.16534 v 71.50444 c 0,1.09315 -0.6,1.99338 -1.2,1.99338 h -122 c -0.7,0 -1.2,-0.90023 -1.2,-1.99338 v -71.50444"
+      id="path38-2"
       style={{
         fill: "none",
         stroke: "#2f3e49",
@@ -306,59 +543,71 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       }}
     />
     <path
-      id="path160-4"
-      d="M387.276 755.002h9.4c4.1 0 7.4 2.759 7.4 6.186v42.302"
       className="st25"
+      d="m 381.34843,493.19199 h 9.4 c 4.1,0 7.4,2.75882 7.4,6.18643 0,81.18067 0,73.08344 0,42.30184"
+      id="path160-4"
+      sodipodi:nodetypes="cssc"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        strokeLinecap: "square",
       }}
     />
     <path
-      id="path1-3"
-      d="M185.039 813.135v88.695"
+      d="m 179.11117,551.32514 v 88.69441"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3"
     />
-    <path
+    <line
+      className="st25"
+      x1={176.13536}
+      y1={638.26398}
+      x2={313.12756}
+      y2={638.26398}
       id="line136-8-7-9"
-      d="M183.111 900.074h135.944"
-      className="st25"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00002,
+        strokeWidth: 6.02308,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <path
-      id="line136-8-7-9-5"
-      d="M122.172 1133.425h135.944"
+    <line
       className="st25"
+      x1={116.24432}
+      y1={871.61456}
+      x2={252.18864}
+      y2={871.61456}
+      id="line136-8-7-9-5"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00002,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <g
       id="g24-6"
+      transform="matrix(1.3372687,0,0,1.3392637,-81.03287,105.70734)"
       style={{
         strokeWidth: 0.747236,
       }}
-      transform="matrix(1.33727 0 0 1.33926 -75.105 367.517)"
     >
       <path
-        id="path23-5"
-        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3 0-1.5-.2-2.9-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7z"
         className="st17"
+        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        id="path23-5"
         style={{
           fill: "#2f3e49",
           strokeWidth: 0.747236,
@@ -367,15 +616,15 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="g24-6-8"
+      transform="matrix(-1.2297462,0,0,1.3392637,1659.8941,45.311682)"
       style={{
         strokeWidth: 0.779219,
       }}
-      transform="matrix(-1.22975 0 0 1.33926 1665.822 307.122)"
     >
       <path
-        id="path23-5-6"
-        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3 0-1.5-.2-2.9-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7z"
         className="st17"
+        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        id="path23-5-6"
         style={{
           fill: "#2f3e49",
           strokeWidth: 0.779219,
@@ -384,10 +633,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="g27-2"
+      transform="matrix(1.2663699,0,0,1.3007382,-58.767503,120.19842)"
       style={{
         strokeWidth: 0.779157,
       }}
-      transform="matrix(1.26637 0 0 1.30074 -52.84 382.008)"
+      inkscape:transform-center-x={8.3831373}
     >
       <g
         id="g26-8"
@@ -396,17 +646,17 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       >
         <image
-          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          id="image24-6"
-          width={40}
-          height={40}
           style={{
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
             enableBackground: "new",
           }}
-          transform="matrix(.875 0 0 .875 293.273 379.5)"
+          width={40}
+          height={40}
+          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
+          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          id="image24-6"
         />
         <g
           id="g25-0"
@@ -415,24 +665,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           }}
         >
           <circle
-            id="circle24-2"
-            cx={311.1}
-            cy={397.3}
-            r={10.9}
             className="st2"
+            cx={311.10001}
+            cy={397.29999}
+            r={10.9}
+            id="circle24-2"
             style={{
-              fill: "#fff",
+              fill: "#ffffff",
               strokeWidth: 0.779157,
             }}
           />
         </g>
       </g>
       <circle
-        id="circle26-4"
-        cx={311.1}
-        cy={397.1}
-        r={8}
         className="st19"
+        cx={311.10001}
+        cy={397.10001}
+        r={8}
+        id="circle26-4"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -443,10 +693,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="g27-2-7"
+      transform="matrix(1.2663699,0,0,1.3007382,883.31627,60.476972)"
       style={{
         strokeWidth: 0.779157,
       }}
-      transform="matrix(1.26637 0 0 1.30074 889.244 322.287)"
+      inkscape:transform-center-x={8.3831373}
     >
       <g
         id="g26-8-2"
@@ -455,17 +706,17 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       >
         <image
-          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          id="image24-6-2"
-          width={40}
-          height={40}
           style={{
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
             enableBackground: "new",
           }}
-          transform="matrix(.875 0 0 .875 293.273 379.5)"
+          width={40}
+          height={40}
+          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
+          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          id="image24-6-2"
         />
         <g
           id="g25-0-9"
@@ -474,24 +725,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           }}
         >
           <circle
-            id="circle24-2-4"
-            cx={311.1}
-            cy={397.3}
-            r={10.9}
             className="st2"
+            cx={311.10001}
+            cy={397.29999}
+            r={10.9}
+            id="circle24-2-4"
             style={{
-              fill: "#fff",
+              fill: "#ffffff",
               strokeWidth: 0.779157,
             }}
           />
         </g>
       </g>
       <circle
-        id="circle26-4-1"
-        cx={311.1}
-        cy={397.1}
-        r={8}
         className="st19"
+        cx={311.10001}
+        cy={397.10001}
+        r={8}
+        id="circle26-4-1"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -500,362 +751,212 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       />
     </g>
-    <path
-      id="line136-8-7-6"
-      d="M375.693 886.161h62.26"
+    <line
       className="st25"
+      x1={369.76544}
+      y1={624.35144}
+      x2={434.73242}
+      y2={624.35144}
+      id="line136-8-7-6"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00003,
+        strokeWidth: 6.12905,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="path1-3-0"
-      d="M436.735 447.746c.049 26.668.836 394.727.874 440.463"
+      d="m 430.80764,185.93586 c 0.0484,26.66828 0.83523,394.72707 0.87324,440.46293"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="path1-38"
-      d="m382.056 652.205 52.83-.209"
+      d="m 398.86658,390.39699 30.07674,-0.21244"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 2.99999,
+        strokeWidth: 2.28046,
         strokeMiterlimit: 10,
       }}
+      id="path1-38"
+      sodipodi:nodetypes="cc"
     />
-    <path
+    <line
+      className="st25"
+      x1={427.84378}
+      y1={186.95219}
+      x2={488.42392}
+      y2={186.95219}
       id="line136-3"
-      d="M434.732 448.02h53.944"
-      className="st25"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 6.35838,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <g
-      id="g8"
-      fill="#e53935"
-      style={{
-        strokeWidth: 2.39962,
-      }}
-      transform="matrix(.41318 0 0 .42031 530.735 370.181)"
-    >
-      <rect
-        id="rect1-8"
-        width={32.438}
-        height={24.137}
-        x={-79.036}
-        y={131.019}
-        rx={5.898}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect2-8"
-        width={4.423}
-        height={14.482}
-        x={-74.129}
-        y={135.846}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect3-2"
-        width={4.423}
-        height={14.482}
-        x={-64.55}
-        y={135.915}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect4"
-        width={4.423}
-        height={14.482}
-        x={-55.376}
-        y={135.964}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect5"
-        width={11.796}
-        height={14.482}
-        x={-67.943}
-        y={153.265}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect6"
-        width={47.183}
-        height={37.01}
-        x={-85.196}
-        y={165.856}
-        rx={7.372}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect7"
-        width={13.27}
-        height={17.701}
-        x={-97.22}
-        y={175.343}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect8"
-        width={13.27}
-        height={17.701}
-        x={-39.335}
-        y={175.983}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-    </g>
-    <path
+    <line
+      className="st25"
+      x1={508.6218}
+      y1={187.48615}
+      x2={962.72095}
+      y2={187.48615}
       id="line136-3-1"
-      d="M521.012 449.296h443.445"
-      className="st25"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 6.07164,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="path1-3-0-5-0-9"
-      d="M795.241 448.608c.049 2.047.836 32.053.874 35.565"
+      d="m 789.31373,186.79793 c 0.0484,2.04758 0.83523,32.05356 0.87324,35.56515"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-9"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="line136-3-2-1-9-6"
-      d="M794.053 482.493v4h29.885v-4z"
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 1,
+        strokeWidth: 6.17594,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
+      d="m 787.0884,220.68299 v 4 h 31.66304 v -4 z"
+      id="line136-3-2-1-9-6"
+      sodipodi:nodetypes="ccccc"
     />
     <path
+      className="st32"
+      d="m 568.21147,124.36754 v 59.88151"
       id="path67-5"
-      d="M572.393 400.15v45.909"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3,
+        strokeWidth: 3.42622,
         strokeMiterlimit: 10,
       }}
+      sodipodi:nodetypes="cc"
     />
-    <g
-      id="pt-card-8"
-      style={{
-        strokeWidth: 0.907866,
-      }}
-      transform="matrix(1.22594 0 0 .98966 488.081 331.306)"
-    >
-      <rect
-        id="rect1-2-4"
-        width={138}
-        height={68}
-        x={1}
-        y={1}
-        fill="#fff"
-        stroke="#8a94a6"
-        strokeWidth={1.816}
-        rx={4.894}
-        ry={6.063}
-      />
-      <path id="line1-0" stroke="#8a94a6" strokeWidth={1.362} d="M6 34h128" />
-    </g>
     <path
+      d="m 535.14865,187.82781 c 0.0484,16.50643 0.83525,244.31775 0.87326,272.62614"
+      style={{
+        fill: "none",
+        stroke: "#00aeed",
+        strokeWidth: 6,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
       id="path1-3-0-5"
-      d="M541.447 449.02c.048 16.53.835 244.65.873 272.997"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
-    <path
-      id="line136-3-2"
-      d="M511.134 719.295h33.69"
+    <line
       className="st25"
+      x1={500.96268}
+      y1={457.48459}
+      x2={538.77252}
+      y2={457.48459}
+      id="line136-3-2"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 6.35625,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <g
-      id="g8-9"
-      fill="#e53935"
-      style={{
-        strokeWidth: 2.39962,
-      }}
-      transform="matrix(.41318 0 0 .42031 520.752 642.686)"
-    >
-      <rect
-        id="rect1-8-7"
-        width={32.438}
-        height={24.137}
-        x={-79.036}
-        y={131.019}
-        rx={5.898}
-        style={{
-          strokeWidth: 2.39962,
-        }}
+    <g id="Group_32-5-3" transform="translate(-99.094383,-137.60991)">
+      <path
+        id="Vector_65-4-1"
+        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
+        fill="#323e48"
       />
-      <rect
-        id="rect2-8-3"
-        width={4.423}
-        height={14.482}
-        x={-74.129}
-        y={135.846}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
+      <g id="Group_33-3-9">
+        <path
+          id="Vector_66-1-8"
+          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
+          fill="#323e48"
+        />
+        <path
+          id="Vector_67-2-6"
+          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
+          fill="#323e48"
+        />
+      </g>
+      <path
+        id="Vector_68-3-5"
+        d="m 589.2,585 v 10"
+        stroke="#323e48"
+        strokeWidth={4}
+        strokeMiterlimit={10}
       />
-      <rect
-        id="rect3-2-7"
-        width={4.423}
-        height={14.482}
-        x={-64.55}
-        y={135.915}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
+      <path
+        id="Vector_69-3-0"
+        d="m 580.2,577 h 18"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
       />
-      <rect
-        id="rect4-2"
-        width={4.423}
-        height={14.482}
-        x={-55.376}
-        y={135.964}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect5-6"
-        width={11.796}
-        height={14.482}
-        x={-67.943}
-        y={153.265}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect6-0"
-        width={47.183}
-        height={37.01}
-        x={-85.196}
-        y={165.856}
-        rx={7.372}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect7-1"
-        width={13.27}
-        height={17.701}
-        x={-97.22}
-        y={175.343}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect8-6"
-        width={13.27}
-        height={17.701}
-        x={-39.335}
-        y={175.983}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
+      <path
+        id="Vector_70-4-2"
+        d="m 589.2,578 v 8"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
       />
     </g>
-    <path
-      id="line136-3-2-7"
-      d="M461.227 720.041h19.118"
+    <line
       className="st25"
+      x1={453.15628}
+      y1={457.66382}
+      x2={479.61423}
+      y2={457.66382}
+      id="line136-3-2-7"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 7.05847,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="path1-3-4"
-      d="M462.104 718.004v404.11"
+      d="M 456.17584,456.19409 V 860.30402"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-4"
     />
     <path
-      id="path16"
-      d="M728.232 538.89c0-24.361-23.787-44.292-67.297-44.292s-67.552 19.93-67.552 44.291V657.325c0 12.756 15.153 23.386 34.115 24.891v12.934h14.813v-12.668h35.13v12.668h14.815v-12.933c19.977-.71 35.976-11.605 35.976-24.892V542.787Z"
       className="st16"
+      d="m 721.78063,278.47635 c 0,-24.36034 -23.78696,-44.29153 -67.29762,-44.29153 -43.51066,0 -67.55157,19.93119 -67.55157,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11439,24.89184 v 12.93311 h 14.81394 v -12.66737 h 35.1302 v 12.66737 h 14.81394 V 421.8037 c 19.97766,-0.70867 35.97672,-11.60438 35.97672,-24.89184 V 282.37399 Z"
+      id="path16"
       style={{
         opacity: 0.07,
         fill: "#323e48",
@@ -863,89 +964,289 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         enableBackground: "new",
       }}
     />
+    <g id="g5" transform="matrix(0.2057162,0,0,0.16043691,618.1244,350.4822)">
+      <path
+        className="st0"
+        d="M 61.2,44.4 C 50.7,53.8 53,65.6 61.7,70.7 71,76 81.2,71.9 88.1,62.7 99.6,47.3 94.2,14.7 63,3.5 70.8,9.7 76.1,30.9 61.2,44.4"
+        id="path1"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M 43.7,61 C 40.1,47.4 28.5,44.1 20,49.5 c -8.9,5.9 -9.9,16.8 -4.8,27.1 8.5,17.2 40,27.2 64.1,4.5 C 70.3,85.4 49,80.5 43.7,61"
+        id="path2-8"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M 39.9,37.4 C 53.5,40.9 62.1,32.4 61.4,22.3 60.6,11.7 51.6,5.5 40.1,4.9 20.8,4 -4.2,23.5 2.5,59.3 3.3,49.4 20.4,32.6 39.9,37.4"
+        id="path3"
+        style={{
+          fill: "#004b84",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 306,87.7 h -6.2 l -9,35.5 h -0.2 L 282,87.7 h -8.5 l -8.7,35.5 h -0.2 l -9,-35.5 h -6.1 l 10.7,39.6 h 8.8 l 8.5,-35.5 h 0.2 l 8.5,35.5 h 8.7 z m -89.6,19.8 c 0,-13.8 0.8,-15.5 11.4,-15.5 10.6,0 11.4,1.7 11.4,15.5 0,13.7 -0.8,15.4 -11.4,15.4 -10.7,0 -11.4,-1.6 -11.4,-15.4 m -6.2,0 c 0,16.7 2.9,20.2 17.6,20.2 14.7,0 17.6,-3.5 17.6,-20.2 0,-16.8 -2.9,-20.3 -17.6,-20.3 -14.7,0 -17.6,3.6 -17.6,20.3 M 201.1,82 h -6 v 45.3 h 6 z m -23,15.4 v -6.1 c 0,-4.2 3.2,-4.6 6.2,-4.7 1.2,0 3.1,0 4.3,0.1 v -5 c -1.2,-0.1 -2.5,-0.1 -3.7,-0.1 -9.7,0 -12.8,2.4 -12.8,10.1 v 5.6 h -6 v 4.8 h 6 v 25.1 h 6 v -25.1 h 10.5 v -4.8 h -10.5 z"
+        id="path4-6"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polyline
+        className="st3"
+        points="248,75.4 268.3,7.3 285.7,7.3 306,75.2 294.5,75.2 290.2,62.6 273.1,62.6 271.5,52.5 287.5,52.5    277,16.6 260,75.2 247.7,75.2  "
+        id="polyline4"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 228.1,8 c -3.2,-0.3 -7,-0.2 -10.7,-0.2 -18.9,0 -26.9,4 -26.9,26.6 V 50 c 0,23 7.3,26.8 26.9,26.8 21.8,0 26.3,-4.2 26.3,-24.3 V 40.2 h -27.1 v 9.9 H 232 v 2.4 c 0,12.9 -3.4,13.1 -14.6,13.1 -13,0 -15,-1.4 -15.2,-15.7 V 34.4 c 0.2,-13.1 1.5,-15.5 15.2,-15.5 3.3,0 6,-0.1 8.2,0.2"
+        id="path5-1"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <rect
+        x={167.8}
+        y={8.1999998}
+        className="st3"
+        width={11.7}
+        height={67.900002}
+        id="rect5"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polygon
+        className="st3"
+        points="131.2,65.2 131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 159.7,8.2 147.5,8.2 "
+        id="polygon5"
+        style={{
+          fill: "#394049",
+        }}
+      />
+    </g>
+    <g
+      id="g5-9"
+      transform="matrix(0.2183299,0,0,0.16580333,815.69673,349.41101)"
+      style={{
+        display: "inline",
+      }}
+    >
+      <path
+        className="st0"
+        d="M 61.2,44.4 C 50.7,53.8 53,65.6 61.7,70.7 71,76 81.2,71.9 88.1,62.7 99.6,47.3 94.2,14.7 63,3.5 70.8,9.7 76.1,30.9 61.2,44.4"
+        id="path1-4"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M 43.7,61 C 40.1,47.4 28.5,44.1 20,49.5 c -8.9,5.9 -9.9,16.8 -4.8,27.1 8.5,17.2 40,27.2 64.1,4.5 C 70.3,85.4 49,80.5 43.7,61"
+        id="path2-8-8"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M 39.9,37.4 C 53.5,40.9 62.1,32.4 61.4,22.3 60.6,11.7 51.6,5.5 40.1,4.9 20.8,4 -4.2,23.5 2.5,59.3 3.3,49.4 20.4,32.6 39.9,37.4"
+        id="path3-82"
+        style={{
+          fill: "#004b84",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 306,87.7 h -6.2 l -9,35.5 h -0.2 L 282,87.7 h -8.5 l -8.7,35.5 h -0.2 l -9,-35.5 h -6.1 l 10.7,39.6 h 8.8 l 8.5,-35.5 h 0.2 l 8.5,35.5 h 8.7 z m -89.6,19.8 c 0,-13.8 0.8,-15.5 11.4,-15.5 10.6,0 11.4,1.7 11.4,15.5 0,13.7 -0.8,15.4 -11.4,15.4 -10.7,0 -11.4,-1.6 -11.4,-15.4 m -6.2,0 c 0,16.7 2.9,20.2 17.6,20.2 14.7,0 17.6,-3.5 17.6,-20.2 0,-16.8 -2.9,-20.3 -17.6,-20.3 -14.7,0 -17.6,3.6 -17.6,20.3 M 201.1,82 h -6 v 45.3 h 6 z m -23,15.4 v -6.1 c 0,-4.2 3.2,-4.6 6.2,-4.7 1.2,0 3.1,0 4.3,0.1 v -5 c -1.2,-0.1 -2.5,-0.1 -3.7,-0.1 -9.7,0 -12.8,2.4 -12.8,10.1 v 5.6 h -6 v 4.8 h 6 v 25.1 h 6 v -25.1 h 10.5 v -4.8 h -10.5 z"
+        id="path4-6-4"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polyline
+        className="st3"
+        points="248,75.4 268.3,7.3 285.7,7.3 306,75.2 294.5,75.2 290.2,62.6 273.1,62.6 271.5,52.5 287.5,52.5    277,16.6 260,75.2 247.7,75.2  "
+        id="polyline4-5"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 228.1,8 c -3.2,-0.3 -7,-0.2 -10.7,-0.2 -18.9,0 -26.9,4 -26.9,26.6 V 50 c 0,23 7.3,26.8 26.9,26.8 21.8,0 26.3,-4.2 26.3,-24.3 V 40.2 h -27.1 v 9.9 H 232 v 2.4 c 0,12.9 -3.4,13.1 -14.6,13.1 -13,0 -15,-1.4 -15.2,-15.7 V 34.4 c 0.2,-13.1 1.5,-15.5 15.2,-15.5 3.3,0 6,-0.1 8.2,0.2"
+        id="path5-1-5"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <rect
+        x={167.8}
+        y={8.1999998}
+        className="st3"
+        width={11.7}
+        height={67.900002}
+        id="rect5-1"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polygon
+        className="st3"
+        points="159.7,8.2 147.5,8.2 131.2,65.2 131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 "
+        id="polygon5-7"
+        style={{
+          fill: "#394049",
+        }}
+      />
+    </g>
     <path
-      id="path1-3-0-5-0"
-      d="M595.893 449.037c.048 2.048.835 32.054.873 35.565"
+      d="m 589.96498,187.2271 c 0.0484,2.04758 0.83523,32.05356 0.87324,35.56515"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="line136-3-2-1"
-      d="M594.606 481.904v4h33.69v-4z"
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
         opacity: 1,
-        vectorEffect: "none",
         fill: "#35ace8",
+        strokeWidth: 6.1687,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
         stopOpacity: 1,
       }}
+      d="m 587.80463,219.39518 v 4 h 35.61058 v -4 z"
+      id="line136-3-2-1"
+      sodipodi:nodetypes="ccccc"
     />
     <path
-      id="path1-3-0-5-0-6"
-      d="M660.892 430.994c.049 2.82.835 41.73.873 46.565"
+      d="m 654.96443,169.18426 c 0.0484,2.81934 0.83523,41.73012 0.87324,46.56526"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6"
+      sodipodi:nodetypes="cc"
     />
-    <g id="g6" transform="translate(529.893 296.794)">
+    <g id="g6" transform="translate(523.96498,34.984404)">
       <rect
-        id="rect1-7"
-        width={58.174}
-        height={21.577}
-        x={99.899}
-        y={176.744}
-        fill="#0b0b0b"
+        x={99.899048}
+        y={176.74448}
+        width={58.174385}
+        height={21.577288}
         rx={10}
+        fill="#0b0b0b"
+        id="rect1-7"
       />
       <rect
-        id="rect2-7"
-        width={47.935}
-        height={17.766}
-        x={104.713}
-        y={178.432}
+        x={104.71307}
+        y={178.43175}
+        width={47.935066}
+        height={17.766146}
+        rx={4.2535133}
         fill="#26e000"
-        rx={4.254}
+        id="rect2-7"
       />
     </g>
-    <path
-      id="line136-3-2-1-3"
-      d="M658.929 432.668h480.728"
+    <line
       className="st25"
+      x1={652.0144}
+      y1={170.5083}
+      x2={1139.2308}
+      y2={170.5083}
+      id="line136-3-2-1-3"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 6.04036,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
-    <g id="layer1">
+    <style id="style1-8">
+      {
+        ".bg { fill:#e9eaec; }\n    .panel { fill:#ffffff; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .pipe { fill:none; stroke:#7b8794; stroke-width:8; }\n    .flow { fill:#2f80ff; }\n    .equip { fill:#e7b84b; stroke:#9c7a1e; stroke-width:2; rx:10; }\n    .tank { fill:#f5f7fa; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .lagoon { fill:#2fd0e6; stroke:#0aa; stroke-width:2; rx:18; }\n    .label { font-family: Arial, Helvetica, sans-serif; fill:#1f2937; font-size:16px; }\n    .small { font-size:14px; }\n    .title { font-size:28px; font-weight:bold; }\n    .status-green { fill:#22c55e; }\n    .status-red { fill:#ef4444; }\n    .status-yellow { fill:#f59e0b; }"
+      }
+    </style>
+    <g id="g9" transform="translate(-29,89)" />
+    <g inkscape:groupmode="layer" id="layer1" inkscape:label="Layer 1">
       <text
         xmlSpace="preserve"
-        id="text32"
-        x={659.488}
-        y={556.321}
+        id="text31"
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: 400,
+          fontWeight: "normal",
           fontStretch: "normal",
           fontSize: "18.5076px",
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "&quot",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          fontVariantLigatures: "normal",
+          fontVariantCaps: "normal",
+          fontVariantNumeric: "normal",
+          fontVariantEastAsian: "normal",
+          textAlign: "center",
+          writingMode: "lr-tb",
+          direction: "ltr",
+          whiteSpace: "pre",
+          shapeInside: "url(#rect31)",
+          display: "inline",
+          fill: "#000000",
+          fillOpacity: 0.378378,
+          stroke: "#606060",
+          strokeWidth: 3.1,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeDasharray: "none",
+          paintOrder: "fill markers stroke",
+        }}
+      />
+      <text
+        xmlSpace="preserve"
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 22,
+          fontFamily: "Arial-BoldMT",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -964,19 +1265,36 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
+        x={653.56024}
+        y={294.10449}
+        id="text32"
       >
-        <tspan id="tspan32" x={659.488} y={556.321}>
+        <tspan
+          sodipodi:role="line"
+          id="tspan32"
+          x={653.56024}
+          y={294.10449}
+          style={{
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 22,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+        >
           {"FIS - 001"}
         </tspan>
       </text>
       <rect
-        id="rect2-7-6"
-        width={94.616}
-        height={23.2}
-        x={614.019}
-        y={574.608}
+        x={608.09113}
+        y={312}
+        width={94.61628}
+        height={23.199938}
+        rx={8.3957663}
         fill="#26e000"
-        rx={8.396}
+        id="rect2-7-6"
         style={{
           fill: "#e0aa00",
           fillOpacity: 1,
@@ -985,17 +1303,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       />
       <text
         xmlSpace="preserve"
-        id="text33"
-        x={662.015}
-        y={591.126}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: 400,
+          fontWeight: "normal",
           fontStretch: "normal",
-          fontSize: 13,
+          fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "&quot",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -1004,7 +1319,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000",
+          fill: "#000000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -1014,13 +1329,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
+        x={656.08685}
+        y={329.31583}
+        id="text33"
       >
         <tspan
+          sodipodi:role="line"
           id="tspan33"
-          x={662.015}
-          y={591.126}
+          x={656.08685}
+          y={329.31583}
           style={{
-            fontSize: 13,
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 16,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
           }}
         >
           {"FILTRATION"}
@@ -1029,89 +1354,159 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="pt-card-0"
+      transform="matrix(0.71418741,0,0,0.5524794,606.12653,444.56812)"
       style={{
         strokeWidth: 1.59198,
       }}
-      transform="matrix(.71419 0 0 .55248 612.054 706.378)"
     >
       <rect
-        id="rect1-2-6"
-        width={138}
-        height={68}
         x={1}
         y={1}
-        fill="#fff"
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
         stroke="#8a94a6"
-        strokeWidth={3.184}
-        rx={4.894}
-        ry={6.063}
+        strokeWidth={3.18395}
+        id="rect1-2-6"
       />
     </g>
     <g
       id="pt-card-0-0"
+      transform="matrix(0.71418741,0,0,0.5524794,541.30918,714.13393)"
       style={{
         strokeWidth: 1.59198,
       }}
-      transform="matrix(.71419 0 0 .55248 547.237 975.944)"
     >
       <rect
-        id="rect1-2-6-3"
-        width={138}
-        height={68}
         x={1}
         y={1}
-        fill="#fff"
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
         stroke="#8a94a6"
-        strokeWidth={3.184}
-        rx={4.894}
-        ry={6.063}
+        strokeWidth={3.18395}
+        id="rect1-2-6-3"
       />
     </g>
     <path
-      id="line136-3-2-1-9"
-      d="M688.164 482.053v4H767.3v-4z"
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 1,
+        strokeWidth: 6,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
+      d="m 682.23604,219.02091 v 4 h 79.13571 v -4 z"
+      id="line136-3-2-1-9"
+      sodipodi:nodetypes="ccccc"
     />
     <path
-      id="path1-3-0-5-0-6-4"
-      d="M765.478 482.282c.048 19.297.835 285.634.873 318.73"
+      d="m 759.5502,220.47166 c 0.0484,19.27671 0.83525,285.32176 0.87326,318.38111"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4,
+        strokeWidth: 5.99677,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-4"
+      sodipodi:nodetypes="cc"
     />
-    <path
-      id="path16-4"
-      d="M921.477 538.557c0-24.36-23.787-44.292-67.298-44.292-43.51 0-67.551 19.931-67.551 44.292v118.435c0 12.756 15.152 23.386 34.114 24.892v12.933h14.814V682.15h35.13v12.667H885.5v-12.933c19.978-.709 35.977-11.604 35.977-24.892V542.454Z"
-      className="st16"
-      style={{
-        opacity: 0.07,
-        fill: "#323e48",
-        strokeWidth: 0.999997,
-        enableBackground: "new",
-      }}
-    />
+    <g
+      id="g5-4"
+      transform="matrix(0.233237,0,0,0.16580333,981.67602,351.41101)"
+    >
+      <path
+        className="st0"
+        d="M 61.2,44.4 C 50.7,53.8 53,65.6 61.7,70.7 71,76 81.2,71.9 88.1,62.7 99.6,47.3 94.2,14.7 63,3.5 70.8,9.7 76.1,30.9 61.2,44.4"
+        id="path1-6"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M 43.7,61 C 40.1,47.4 28.5,44.1 20,49.5 c -8.9,5.9 -9.9,16.8 -4.8,27.1 8.5,17.2 40,27.2 64.1,4.5 C 70.3,85.4 49,80.5 43.7,61"
+        id="path2-8-1"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M 39.9,37.4 C 53.5,40.9 62.1,32.4 61.4,22.3 60.6,11.7 51.6,5.5 40.1,4.9 20.8,4 -4.2,23.5 2.5,59.3 3.3,49.4 20.4,32.6 39.9,37.4"
+        id="path3-8"
+        style={{
+          fill: "#004b84",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 306,87.7 h -6.2 l -9,35.5 h -0.2 L 282,87.7 h -8.5 l -8.7,35.5 h -0.2 l -9,-35.5 h -6.1 l 10.7,39.6 h 8.8 l 8.5,-35.5 h 0.2 l 8.5,35.5 h 8.7 z m -89.6,19.8 c 0,-13.8 0.8,-15.5 11.4,-15.5 10.6,0 11.4,1.7 11.4,15.5 0,13.7 -0.8,15.4 -11.4,15.4 -10.7,0 -11.4,-1.6 -11.4,-15.4 m -6.2,0 c 0,16.7 2.9,20.2 17.6,20.2 14.7,0 17.6,-3.5 17.6,-20.2 0,-16.8 -2.9,-20.3 -17.6,-20.3 -14.7,0 -17.6,3.6 -17.6,20.3 M 201.1,82 h -6 v 45.3 h 6 z m -23,15.4 v -6.1 c 0,-4.2 3.2,-4.6 6.2,-4.7 1.2,0 3.1,0 4.3,0.1 v -5 c -1.2,-0.1 -2.5,-0.1 -3.7,-0.1 -9.7,0 -12.8,2.4 -12.8,10.1 v 5.6 h -6 v 4.8 h 6 v 25.1 h 6 v -25.1 h 10.5 v -4.8 h -10.5 z"
+        id="path4-6-21"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polyline
+        className="st3"
+        points="248,75.4 268.3,7.3 285.7,7.3 306,75.2 294.5,75.2 290.2,62.6 273.1,62.6 271.5,52.5 287.5,52.5    277,16.6 260,75.2 247.7,75.2  "
+        id="polyline4-1"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <path
+        className="st3"
+        d="m 228.1,8 c -3.2,-0.3 -7,-0.2 -10.7,-0.2 -18.9,0 -26.9,4 -26.9,26.6 V 50 c 0,23 7.3,26.8 26.9,26.8 21.8,0 26.3,-4.2 26.3,-24.3 V 40.2 h -27.1 v 9.9 H 232 v 2.4 c 0,12.9 -3.4,13.1 -14.6,13.1 -13,0 -15,-1.4 -15.2,-15.7 V 34.4 c 0.2,-13.1 1.5,-15.5 15.2,-15.5 3.3,0 6,-0.1 8.2,0.2"
+        id="path5-1-9"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <rect
+        x={167.8}
+        y={8.1999998}
+        className="st3"
+        width={11.7}
+        height={67.900002}
+        id="rect5-7"
+        style={{
+          fill: "#394049",
+        }}
+      />
+      <polygon
+        className="st3"
+        points="114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 159.7,8.2 147.5,8.2 131.2,65.2 131,65.2 "
+        id="polygon5-6"
+        style={{
+          fill: "#394049",
+        }}
+      />
+    </g>
     <rect
-      id="rect2-7-6-3"
-      width={94.616}
-      height={23.2}
-      x={807.467}
-      y={577.11}
+      x={801.53967}
+      y={312}
+      width={94.61628}
+      height={23.199938}
+      rx={8.3957663}
       fill="#26e000"
-      rx={8.396}
+      id="rect2-7-6-3"
       style={{
         fill: "#e0aa00",
         fillOpacity: 1,
@@ -1120,17 +1515,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     />
     <text
       xmlSpace="preserve"
-      id="text33-9"
-      x={853.48}
-      y={593.443}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1139,7 +1531,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1149,13 +1541,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={847.55261}
+      y={329.25781}
+      id="text33-9"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan33-6"
-        x={853.48}
-        y={593.443}
+        x={847.55261}
+        y={329.25781}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"FILTRATION"}
@@ -1163,17 +1565,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text32-8"
-      x={853.351}
-      y={555.124}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: "18.5076px",
+        fontSize: 22,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1192,51 +1591,111 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={847.42346}
+      y={294.10449}
+      id="text32-8"
     >
-      <tspan id="tspan32-3" x={853.351} y={555.124}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan32-3"
+        x={847.42346}
+        y={294.10449}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 22,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"FIS - 002"}
       </tspan>
     </text>
-    <g id="g6-9" transform="translate(725.042 296.436)">
+    <g id="g6-9" transform="translate(719.11408,34.625564)">
       <rect
-        id="rect1-7-8"
-        width={58.174}
-        height={21.577}
-        x={99.899}
-        y={176.744}
-        fill="#0b0b0b"
+        x={99.899048}
+        y={176.74448}
+        width={58.174385}
+        height={21.577288}
         rx={10}
+        fill="#0b0b0b"
+        id="rect1-7-8"
       />
       <rect
-        id="rect2-7-8"
-        width={47.935}
-        height={17.766}
-        x={104.713}
-        y={178.432}
+        x={104.71307}
+        y={178.43175}
+        width={47.935066}
+        height={17.766146}
+        rx={4.2535133}
         fill="#26e000"
-        rx={4.254}
+        id="rect2-7-8"
       />
     </g>
     <g
       id="pt-card-87"
+      transform="matrix(0.92260641,0,0,0.68220176,788.4684,447.18952)"
       style={{
         strokeWidth: 1.26048,
       }}
-      transform="matrix(.9226 0 0 .6822 794.396 709)"
     >
       <rect
-        id="rect1-2-7"
-        width={138}
-        height={68}
         x={1}
         y={1}
-        fill="#fff"
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
         stroke="#8a94a6"
-        strokeWidth={2.521}
-        rx={4.894}
-        ry={6.063}
+        strokeWidth={2.52096}
+        id="rect1-2-7"
+        style={{
+          display: "inline",
+        }}
       />
-      <path id="line1-8" stroke="#8a94a6" strokeWidth={1.891} d="M6 34h128" />
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
+        stroke="#8a94a6"
+        strokeWidth={1.89072}
+        id="line1-8"
+      />
+    </g>
+    <g
+      id="pt-card-87-9"
+      transform="matrix(0.92260641,0,0,0.68220176,269.79513,367.97801)"
+      style={{
+        strokeWidth: 1.26048,
+      }}
+    >
+      <rect
+        x={1}
+        y={1}
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
+        stroke="#8a94a6"
+        strokeWidth={2.52096}
+        id="rect1-2-7-48"
+        style={{
+          display: "inline",
+        }}
+      />
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
+        stroke="#8a94a6"
+        strokeWidth={1.89072}
+        id="line1-8-8"
+      />
     </g>
     <text
       xmlSpace="preserve"
@@ -1244,11 +1703,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
         fontSize: 10,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1259,7 +1718,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect47-1)",
         display: "inline",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#008ae5",
         strokeWidth: 0,
@@ -1269,25 +1728,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "stroke markers fill",
       }}
-      transform="matrix(1 0 0 1.31874 716.204 -131.09)"
+      transform="matrix(1,0,0,1.3187376,710.27633,-392.90025)"
     >
-      <tspan id="tspan6" x={338.893} y={665.871}>
+      <tspan x={338.89258} y={665.87135} id="tspan10">
         {"bar"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37-7"
-      x={852.14}
-      y={726.191}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1296,7 +1752,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1306,24 +1762,38 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={850.16406}
+      y={464.38144}
+      id="text37-7"
     >
-      <tspan id="tspan37-5" x={852.14} y={726.191}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-5"
+        x={850.16406}
+        y={464.38144}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"PT-141"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37-7-4"
-      x={1002.528}
-      y={721.483}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
         fontSize: 13,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1332,7 +1802,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1342,60 +1812,80 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={996.60028}
+      y={459.67343}
+      id="text37-7-4"
     >
-      <tspan id="tspan37-5-3" x={1002.528} y={721.483}>
+      <tspan sodipodi:role="line" id="tspan37-5-3" x={996.60028} y={459.67343}>
         {"PT-141"}
       </tspan>
     </text>
     <path
-      id="path1-38-1"
-      d="m768.54 743.816 24.446-.21"
+      d="m 762.61139,482.00609 24.44695,-0.2093"
       style={{
         fill: "none",
         stroke: "#2f3e49",
         strokeWidth: 2.99999,
         strokeMiterlimit: 10,
       }}
+      id="path1-38-1"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="path1-38-1-9"
-      d="m934.444 744.198 24.747-.11"
+      d="m 928.51582,482.38766 24.74763,-0.1091"
       style={{
         fill: "none",
         stroke: "#2f3e49",
         strokeWidth: 3.00001,
         strokeMiterlimit: 10,
       }}
+      id="path1-38-1-9"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="path1-3-0-5-0-6-3"
-      d="M852.715 433.293c.054 2.397.928 35.48.97 39.59"
+      d="m 846.78694,171.483 c 0.0538,2.39702 0.92846,35.47914 0.97072,39.59"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-3"
+      sodipodi:nodetypes="cc"
     />
     <path
-      id="path16-4-4"
-      d="M1090.2 542.99c0-24.36-23.787-44.292-67.298-44.292-43.51 0-67.551 19.931-67.551 44.292v118.435c0 12.756 15.152 23.386 34.114 24.892v12.933h14.814v-12.667h35.13v12.667h14.814v-12.933c19.978-.709 35.977-11.604 35.977-24.892V546.887Z"
       className="st16"
+      d="m 1085.2601,279.2037 c 0,-24.36034 -23.787,-44.29153 -67.2976,-44.29153 -43.51074,0 -67.55159,19.93119 -67.55159,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11435,24.89184 v 12.93311 h 14.81393 v -12.66737 h 35.13021 v 12.66737 h 14.814 v -12.93311 c 19.9776,-0.70867 35.9767,-11.60438 35.9767,-24.89184 V 283.10134 Z"
+      id="path16-4-4"
       style={{
         opacity: 0.07,
         fill: "#323e48",
         strokeWidth: 0.999997,
         enableBackground: "new",
       }}
+      sodipodi:nodetypes="ssscsccccccccscs"
+    />
+    <path
+      className="st16"
+      d="m 919.33531,278.66964 c 0,-24.36034 -23.78696,-44.29153 -67.29762,-44.29153 -43.51066,0 -67.55157,19.93119 -67.55157,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11439,24.89184 v 12.93311 h 14.81394 v -12.66737 h 35.1302 v 12.66737 h 14.81394 v -12.93311 c 19.97766,-0.70867 35.97672,-11.60438 35.97672,-24.89184 V 282.56728 Z"
+      id="path16-4"
+      style={{
+        opacity: 0.07,
+        fill: "#323e48",
+        strokeWidth: 0.999997,
+        enableBackground: "new",
+      }}
+      sodipodi:nodetypes="ssscsccccccccscs"
     />
     <rect
-      id="rect2-7-6-3-9"
-      width={94.616}
-      height={23.2}
-      x={977.672}
-      y={576.603}
+      x={971.74438}
+      y={312}
+      width={94.61628}
+      height={23.199938}
+      rx={8.3957663}
       fill="#26e000"
-      rx={8.396}
+      id="rect2-7-6-3-9"
       style={{
         fill: "#e0aa00",
         fillOpacity: 1,
@@ -1404,17 +1894,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     />
     <text
       xmlSpace="preserve"
-      id="text33-9-9"
-      x={1026.649}
-      y={592.442}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1423,7 +1910,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1433,13 +1920,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1020.7213}
+      y={329.25781}
+      id="text33-9-9"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan33-6-2"
-        x={1026.649}
-        y={592.442}
+        x={1020.7213}
+        y={329.25781}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"FILTRATION"}
@@ -1447,17 +1944,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text32-8-5"
-      x={1024.868}
-      y={559.867}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: "18.5076px",
+        fontSize: 22,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1476,65 +1970,87 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1018.9406}
+      y={294.10449}
+      id="text32-8-5"
     >
-      <tspan id="tspan32-3-5" x={1024.868} y={559.867}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan32-3-5"
+        x={1018.9406}
+        y={294.10449}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 22,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"FIS - 003"}
       </tspan>
     </text>
-    <g id="g6-9-3" transform="translate(901.668 298.893)">
+    <g id="g6-9-3" transform="translate(895.74057,37.082574)">
       <rect
-        id="rect1-7-8-3"
-        width={58.174}
-        height={21.577}
-        x={99.899}
-        y={176.744}
-        fill="#0b0b0b"
+        x={99.899048}
+        y={176.74448}
+        width={58.174385}
+        height={21.577288}
         rx={10}
+        fill="#0b0b0b"
+        id="rect1-7-8-3"
       />
       <rect
-        id="rect2-7-8-3"
-        width={47.935}
-        height={17.766}
-        x={104.713}
-        y={178.432}
+        x={104.71307}
+        y={178.43175}
+        width={47.935066}
+        height={17.766146}
+        rx={4.2535133}
         fill="#26e000"
-        rx={4.254}
+        id="rect2-7-8-3"
       />
     </g>
     <g
       id="pt-card-87-7"
+      transform="matrix(0.92260641,0,0,0.68220176,954.95073,447.88036)"
       style={{
         strokeWidth: 1.26048,
       }}
-      transform="matrix(.9226 0 0 .6822 960.879 709.69)"
     >
       <rect
-        id="rect1-2-7-4"
-        width={138}
-        height={68}
         x={1}
         y={1}
-        fill="#fff"
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
         stroke="#8a94a6"
-        strokeWidth={2.521}
-        rx={4.894}
-        ry={6.063}
+        strokeWidth={2.52096}
+        id="rect1-2-7-4"
       />
-      <path id="line1-8-3" stroke="#8a94a6" strokeWidth={1.891} d="M6 34h128" />
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
+        stroke="#8a94a6"
+        strokeWidth={1.89072}
+        id="line1-8-3"
+      />
     </g>
     <text
       xmlSpace="preserve"
-      id="text37-7-1"
-      x={1023.438}
-      y={726.785}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1543,7 +2059,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1553,14 +2069,29 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1017.5102}
+      y={464.97482}
+      id="text37-7-1"
     >
-      <tspan id="tspan37-5-1" x={1023.438} y={726.785}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-5-1"
+        x={1017.5102}
+        y={464.97482}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"PT-143"}
       </tspan>
     </text>
     <path
-      id="line136-3-2-1-9-8"
-      d="M882.932 482.301v4h50.732v-4z"
       style={{
         baselineShift: "baseline",
         display: "inline",
@@ -1571,217 +2102,135 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
+      d="m 877.00455,220.49143 v 4 h 50.73181 v -4 z"
+      id="line136-3-2-1-9-8"
+      sodipodi:nodetypes="ccccc"
     />
     <path
-      id="path1-3-0-5-0-6-4-6"
-      d="M931.764 482.232c.048 19.297.835 285.634.873 318.73"
+      d="m 925.83583,220.42187 c 0.048,19.20794 0.83528,284.30403 0.87328,317.24547"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4,
+        strokeWidth: 5.98627,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-4-6"
+      sodipodi:nodetypes="cc"
     />
-    <path
-      id="line136-3-2-19"
-      d="M765.25 799.22h409.918"
+    <line
       className="st25"
+      x1={759.75922}
+      y1={535.75049}
+      x2={1175.2655}
+      y2={535.75049}
+      id="line136-3-2-19"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00001,
+        strokeWidth: 6.04076,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="line136-3-2-1-9-6-2"
-      d="M963.416 484.084v4h35.998v-4z"
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 1,
+        strokeWidth: 11,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
+      d="m 956.59334,221.65628 v 4.49398 h 38.25133 v -4.49398 z"
+      id="line136-3-2-1-9-6-2"
+      sodipodi:nodetypes="ccccc"
     />
     <path
-      id="path1-3-0-5-0-6-4-8"
-      d="M965.558 447.311c0 2.465-.072 36.483-.075 40.71"
+      d="m 959.63037,185.50125 c 0,2.46482 -0.072,36.48264 -0.075,40.70977"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-4-8"
+      sodipodi:nodetypes="cc"
     />
-    <g
-      id="g8-8"
-      fill="#e53935"
-      style={{
-        strokeWidth: 2.39962,
-      }}
-      transform="matrix(.41318 0 0 .42031 1179.226 355.006)"
-    >
-      <rect
-        id="rect1-8-9"
-        width={32.438}
-        height={24.137}
-        x={-76.943}
-        y={131.019}
-        rx={5.898}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect2-8-0"
-        width={4.423}
-        height={14.482}
-        x={-72.037}
-        y={135.846}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect3-2-78"
-        width={4.423}
-        height={14.482}
-        x={-62.457}
-        y={135.915}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect4-1"
-        width={4.423}
-        height={14.482}
-        x={-53.284}
-        y={135.964}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect5-5"
-        width={11.796}
-        height={14.482}
-        x={-65.851}
-        y={153.265}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect6-8"
-        width={47.183}
-        height={37.01}
-        x={-83.104}
-        y={165.856}
-        rx={7.372}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect7-6"
-        width={13.27}
-        height={17.701}
-        x={-95.127}
-        y={175.343}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect8-1"
-        width={13.27}
-        height={17.701}
-        x={-37.243}
-        y={175.983}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-    </g>
-    <path
-      id="line136-3-2-1-3-4"
-      d="M1169.986 432.178h74.551"
+    <line
       className="st25"
+      x1={1159.1678}
+      y1={170.36838}
+      x2={1238.6094}
+      y2={170.36838}
+      id="line136-3-2-1-3-4"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 3.99999,
+        strokeWidth: 6.19366,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <path
-      id="path1-3-0-5-0-6-4-8-5"
-      d="M1242.406 430.905c0 11.688-.072 173.002-.075 193.048"
+      d="m 1235.5298,167.50446 c 0,11.6883 -0.072,173.00253 -0.075,193.04779"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-4-8-5"
+      sodipodi:nodetypes="cc"
     />
     <g
       id="pt-card-87-7-6"
+      transform="matrix(0.83691596,0,0,0.68220176,1108.9012,373.64545)"
       style={{
         strokeWidth: 1.32344,
       }}
-      transform="matrix(.83692 0 0 .6822 1114.829 635.455)"
     >
       <rect
-        id="rect1-2-7-4-2"
+        x={2.4755995}
+        y={1}
         width={138}
         height={68}
-        x={2.476}
-        y={1}
-        fill="#fff"
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
         stroke="#8a94a6"
-        strokeWidth={2.647}
-        rx={4.894}
-        ry={6.063}
+        strokeWidth={2.64687}
+        id="rect1-2-7-4-2"
       />
-      <path
-        id="line1-8-3-6"
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
         stroke="#8a94a6"
-        strokeWidth={1.985}
-        d="M6 34h128"
+        strokeWidth={1.98516}
+        id="line1-8-3-6"
       />
     </g>
     <text
       xmlSpace="preserve"
-      id="text37-7-1-2"
-      x={1172.534}
-      y={652.998}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -1790,7 +2239,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -1800,673 +2249,288 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1166.6061}
+      y={391.18777}
+      id="text37-7-1-2"
     >
-      <tspan id="tspan37-5-1-5" x={1172.534} y={652.998}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-5-1-5"
+        x={1166.6061}
+        y={391.18777}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"PT-145"}
       </tspan>
     </text>
     <path
+      style={{
+        baselineShift: "baseline",
+        display: "inline",
+        overflow: "visible",
+        fill: "#35ace8",
+        strokeWidth: 11.0479,
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        enableBackground: "accumulate",
+        stopColor: "#000000",
+      }}
+      d="m 1054.9685,221.29711 v 5.22254 h 45.3822 v -5.22254 z"
       id="line136-3-2-1-9-8-3"
-      d="M1060.198 484.33v4h44.989v-4z"
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000",
-      }}
+      sodipodi:nodetypes="ccccc"
     />
     <path
+      d="m 1097.2569,222.61773 c 0.048,19.09588 0.8352,282.64537 0.8732,315.39463"
+      style={{
+        fill: "none",
+        stroke: "#00aeed",
+        strokeWidth: 5.98851,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
       id="path1-3-0-5-0-6-4-6-2"
-      d="M1103.185 484.427c.048 19.171.835 283.753.873 316.63"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
     <path
+      style={{
+        baselineShift: "baseline",
+        display: "inline",
+        overflow: "visible",
+        fill: "#35ace8",
+        strokeWidth: 6.22501,
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        enableBackground: "accumulate",
+        stopColor: "#000000",
+      }}
+      d="m 1232.4159,356.33506 v 4.30564 h 44.9892 v -4.30564 z"
       id="line136-3-2-1-9-8-3-6"
-      d="M1240.178 620.11v4h44.989v-4z"
+      sodipodi:nodetypes="ccccc"
+    />
+    <path
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 0.999998,
+        strokeWidth: 10.0698,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
-    />
-    <path
+      d="m 1194.5858,532.3927 v 5.92114 h 38.9639 v -5.92114 z"
       id="line136-3-2-1-9-8-3-6-3"
-      d="M1205.142 797.259v4h33.724v-4z"
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999999,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000",
-      }}
+      sodipodi:nodetypes="ccccc"
     />
     <path
+      d="m 1100.384,481.79911 46.1496,-0.1091"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+      }}
       id="path1-38-1-9-6"
-      d="m1106.312 743.61 46.15-.11"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1145.4621,422.80487 v 60.43967"
       style={{
         fill: "none",
         stroke: "#2f3e49",
         strokeWidth: 3,
         strokeMiterlimit: 10,
       }}
-    />
-    <path
       id="path1-9"
-      d="M1151.39 684.615v60.44"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
-    <g
-      id="g8-8-2"
-      fill="#e53935"
-      style={{
-        strokeWidth: 2.39962,
-      }}
-      transform="matrix(.41318 0 0 .42031 1214.75 721.892)"
-    >
-      <rect
-        id="rect1-8-9-0"
-        width={32.438}
-        height={24.137}
-        x={-76.943}
-        y={131.019}
-        rx={5.898}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect2-8-0-0"
-        width={4.423}
-        height={14.482}
-        x={-72.037}
-        y={135.846}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect3-2-78-3"
-        width={4.423}
-        height={14.482}
-        x={-62.457}
-        y={135.915}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect4-1-9"
-        width={4.423}
-        height={14.482}
-        x={-53.284}
-        y={135.964}
-        fill="#c62828"
-        rx={1.474}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect5-5-1"
-        width={11.796}
-        height={14.482}
-        x={-65.851}
-        y={153.265}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect6-8-8"
-        width={47.183}
-        height={37.01}
-        x={-83.104}
-        y={165.856}
-        rx={7.372}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect7-6-1"
-        width={13.27}
-        height={17.701}
-        x={-95.127}
-        y={175.343}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-      <rect
-        id="rect8-1-9"
-        width={13.27}
-        height={17.701}
-        x={-37.243}
-        y={175.983}
-        rx={4.423}
-        style={{
-          strokeWidth: 2.39962,
-        }}
-      />
-    </g>
     <path
-      id="path1-3-0-5-0-6-4-8-52"
-      d="M1237.47 797.124c0 10.645-.054 157.562-.057 175.818"
+      d="m 1230.6465,534.94378 c 0,10.64513 -0.054,157.56201 -0.057,175.81823"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-0-5-0-6-4-8-52"
+      sodipodi:nodetypes="cc"
     />
     <path
+      style={{
+        baselineShift: "baseline",
+        display: "inline",
+        overflow: "visible",
+        fill: "#35ace8",
+        strokeWidth: 7.35365,
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        enableBackground: "accumulate",
+        stopColor: "#000000",
+      }}
+      d="m 395.06303,560.47455 v 6.00846 h 850.92847 v -6.00846 z"
       id="line136-3-2-1-9-8-3-6-3-6"
-      d="M401.762 824.856v4h850.929v-4z"
+      sodipodi:nodetypes="ccccc"
+    />
+    <path
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 0.999999,
+        strokeWidth: 6.6838,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
-    />
-    <path
+      d="m 1362.8762,428.24723 h -4.8645 v 148.27646 h 4.8645 z"
       id="line136-3-2-1-9-8-3-6-3-6-8"
-      d="M1366.643 688.884h-4v145.313h4z"
+      sodipodi:nodetypes="ccccc"
+    />
+    <path
       style={{
         baselineShift: "baseline",
         display: "inline",
         overflow: "visible",
-        vectorEffect: "none",
         fill: "#35ace8",
-        strokeWidth: 1,
+        strokeWidth: 7.30002,
         strokeLinejoin: "round",
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
         enableBackground: "accumulate",
-        stopColor: "#000",
+        stopColor: "#000000",
       }}
-    />
-    <path
+      d="m 1296.6955,570.67074 v 5.92113 h 65.5746 v -5.92113 z"
       id="line136-3-2-1-9-8-3-6-3-6-5"
-      d="M1300.78 830.254v4h65.575v-4z"
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000",
-      }}
+      sodipodi:nodetypes="ccccc"
     />
-    <g
-      id="tank-cl-fl012-4"
-      style={{
-        strokeWidth: 1.9694,
-      }}
-      transform="matrix(.54924 0 0 .46943 1264.021 453.604)"
-    >
-      <rect
-        id="rect1-9"
-        width={80}
-        height={110}
-        x={20}
-        y={30}
-        fill="#f4f6f8"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={10}
-        ry={10}
-      />
-      <rect
-        id="rect2-1"
-        width={50}
-        height={15}
-        x={35}
-        y={15}
-        fill="#e1e5ea"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={6}
-        ry={6}
-      />
-      <rect
-        id="rect3-25"
-        width={60}
-        height={10}
-        x={30}
-        y={140}
-        fill="#d1d6dc"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={4}
-        ry={4}
-      />
-    </g>
-    <g
-      id="tank-cl-fl012-4-6"
-      style={{
-        strokeWidth: 1.9694,
-      }}
-      transform="matrix(.54924 0 0 .46943 1346.145 454.238)"
-    >
-      <rect
-        id="rect1-9-7"
-        width={80}
-        height={110}
-        x={20}
-        y={30}
-        fill="#f4f6f8"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={10}
-        ry={10}
-      />
-      <rect
-        id="rect2-1-9"
-        width={50}
-        height={15}
-        x={35}
-        y={15}
-        fill="#e1e5ea"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={6}
-        ry={6}
-      />
-      <rect
-        id="rect3-25-9"
-        width={60}
-        height={10}
-        x={30}
-        y={140}
-        fill="#d1d6dc"
-        stroke="#8a94a6"
-        strokeWidth={3.939}
-        rx={4}
-        ry={4}
-      />
-    </g>
-    <g
-      id="g9-4"
-      fill="#e53935"
-      style={{
-        strokeWidth: 3.93228,
-      }}
-      transform="matrix(.2436 0 0 .26549 1278.098 438.647)"
-    >
-      <rect
-        id="rect1-7-4"
-        width={62.84}
-        height={45.012}
-        x={67.16}
-        y={22.988}
-        rx={8}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect2-69"
-        width={6}
-        height={34}
-        x={78}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect3-3"
-        width={6}
-        height={34}
-        x={88}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect4-5"
-        width={6}
-        height={34}
-        x={98}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect5-7"
-        width={6}
-        height={34}
-        x={108}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect6-66"
-        width={12}
-        height={18}
-        x={58}
-        y={36}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <circle
-        id="circle6-5"
-        cx={44}
-        cy={45}
-        r={22}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect7-8"
-        width={10}
-        height={14}
-        x={18}
-        y={38}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect8-2"
-        width={12}
-        height={20}
-        x={40}
-        y={10}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect9"
-        width={96}
-        height={8}
-        x={30.669}
-        y={65.554}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-    </g>
-    <g
-      id="g9-4-6"
-      fill="#e53935"
-      style={{
-        strokeWidth: 3.93228,
-      }}
-      transform="matrix(.2436 0 0 .26549 1359.99 438.99)"
-    >
-      <rect
-        id="rect1-7-4-1"
-        width={62.84}
-        height={45.012}
-        x={67.16}
-        y={22.988}
-        rx={8}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect2-69-6"
-        width={6}
-        height={34}
-        x={78}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect3-3-3"
-        width={6}
-        height={34}
-        x={88}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect4-5-3"
-        width={6}
-        height={34}
-        x={98}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect5-7-5"
-        width={6}
-        height={34}
-        x={108}
-        y={28}
-        fill="#c62828"
-        rx={2}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect6-66-5"
-        width={12}
-        height={18}
-        x={58}
-        y={36}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <circle
-        id="circle6-5-3"
-        cx={44}
-        cy={45}
-        r={22}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect7-8-2"
-        width={10}
-        height={14}
-        x={18}
-        y={38}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect8-2-8"
-        width={12}
-        height={20}
-        x={40}
-        y={10}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-      <rect
-        id="rect9-2"
-        width={96}
-        height={8}
-        x={30.669}
-        y={65.554}
-        rx={4}
-        style={{
-          strokeWidth: 3.93228,
-        }}
-      />
-    </g>
     <path
+      d="m 1267.484,153.60108 h -41.4832"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 1.96946,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
       id="path1-36-8"
-      d="M1291.072 415.843h-59.452"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1226.9011,160.90551 v -8.31109"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3,
+        strokeWidth: 2,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
-    />
-    <path
       id="path1-36-8-2"
-      d="M1233.107 422.654v-8.311"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.00001,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
     <path
+      d="m 1229.9478,160.88138 -2.9223,4.98479 -3.0747,-5.07211 z"
       id="path1-1-4"
-      d="m1235.814 423.031-2.922 4.985-3.075-5.072z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="m 1349.3856,145.4062 v 57.34651"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
       id="path1-36-2"
-      d="M1370.627 405.487v35.365"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="M 1350.425,144.66159 H 1195.0067"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3,
+        strokeWidth: 1.90544,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
-    />
-    <path
       id="path1-36-8-1"
-      d="M1371.607 407.182H1200.38"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="M 1196.0043,160.81295 V 143.91894"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3,
+        strokeWidth: 2,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
-    />
-    <path
       id="path1-36-8-2-0"
-      d="M1201.932 422.623v-16.894"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.00001,
-        strokeMiterlimit: 10,
-      }}
+      sodipodi:nodetypes="cc"
     />
     <path
+      d="m 1198.9457,160.7954 -2.9223,4.98479 -3.0747,-5.07211 z"
       id="path1-1-4-6"
-      d="m1204.873 423.1-2.922 4.984-3.075-5.072z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
-    <path
-      id="rect37-9"
-      d="M71 999h120.354v58.182H71z"
+    <rect
+      x={65.072227}
+      y={737.19}
       className="st26"
+      width={120.35417}
+      height={58.181511}
+      id="rect37-9"
       style={{
         fill: "#0e76e7",
         strokeWidth: 0.999998,
       }}
     />
     <path
-      id="path1-3-44"
-      d="M123.777 1060.265v75.11"
+      d="m 117.84933,799.44328 v 75.1099"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-44"
     />
     <g
       id="g24-6-6"
+      transform="matrix(1.3372687,0,0,1.3392637,-144.35202,339.45076)"
       style={{
         strokeWidth: 0.747236,
       }}
-      transform="matrix(1.33727 0 0 1.33926 -138.424 601.26)"
     >
       <path
-        id="path23-5-3"
-        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3 0-1.5-.2-2.9-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7z"
         className="st17"
+        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        id="path23-5-3"
         style={{
           fill: "#2f3e49",
           strokeWidth: 0.747236,
@@ -2475,10 +2539,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <g
       id="g27-2-4"
+      transform="matrix(1.2663699,0,0,1.3007382,-122.08665,353.94184)"
       style={{
         strokeWidth: 0.779157,
       }}
-      transform="matrix(1.26637 0 0 1.30074 -116.159 615.752)"
+      inkscape:transform-center-x={8.3831373}
     >
       <g
         id="g26-8-28"
@@ -2487,17 +2552,17 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       >
         <image
-          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          id="image24-6-8"
-          width={40}
-          height={40}
           style={{
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
             enableBackground: "new",
           }}
-          transform="matrix(.875 0 0 .875 293.273 379.5)"
+          width={40}
+          height={40}
+          xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
+          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          id="image24-6-8"
         />
         <g
           id="g25-0-7"
@@ -2506,24 +2571,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           }}
         >
           <circle
-            id="circle24-2-5"
-            cx={311.1}
-            cy={397.3}
-            r={10.9}
             className="st2"
+            cx={311.10001}
+            cy={397.29999}
+            r={10.9}
+            id="circle24-2-5"
             style={{
-              fill: "#fff",
+              fill: "#ffffff",
               strokeWidth: 0.779157,
             }}
           />
         </g>
       </g>
       <circle
-        id="circle26-4-8"
-        cx={311.1}
-        cy={397.1}
-        r={8}
         className="st19"
+        cx={311.10001}
+        cy={397.10001}
+        r={8}
+        id="circle26-4-8"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -2532,145 +2597,198 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         }}
       />
     </g>
-    <path
-      id="line136-8-7-9-5-2"
-      d="M309.868 1120.349h153.583"
+    <line
       className="st25"
+      x1={303.93976}
+      y1={858.53925}
+      x2={459.14749}
+      y2={858.53925}
+      id="line136-8-7-9-5-2"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00002,
+        strokeWidth: 6.03163,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <g
       id="g33"
+      transform="matrix(0.58104181,0,0,0.73947207,639.85876,590.63136)"
       style={{
         strokeWidth: 1.52558,
       }}
-      transform="matrix(.58104 0 0 .73947 645.787 852.441)"
     >
       <path
-        id="path1-2"
+        d="M 60,120 C 110,40 270,20 410,50 590,30 720,100 750,170 780,260 650,340 460,340 280,360 110,300 80,240 40,190 40,150 60,120 Z"
         fill="#e8d8a8"
-        d="M60 120c50-80 210-100 350-70 180-20 310 50 340 120 30 90-100 170-290 170-180 20-350-40-380-100-40-50-40-90-20-120Z"
+        id="path1-2"
         style={{
           strokeWidth: 1.52558,
         }}
       />
       <path
-        id="path2"
+        d="M 90,130 C 130,70 260,60 400,80 550,60 660,110 680,160 700,220 610,280 460,280 310,300 150,260 120,220 90,190 90,160 90,130 Z"
         fill="#1ecbe1"
-        d="M90 130c40-60 170-70 310-50 150-20 260 30 280 80 20 60-70 120-220 120-150 20-310-20-340-60-30-30-30-60-30-90Z"
+        id="path2"
         style={{
           strokeWidth: 1.52558,
+          fill: "#00ffff",
+          fillOpacity: 1,
         }}
       />
       <text
-        id="text2"
-        x={410}
-        y={205}
-        fill="#0f172a"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fontSize={20}
-        opacity={0.5}
+        xmlSpace="preserve"
         style={{
-          strokeWidth: 1.52558,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: "37.6891px",
+          fontFamily: "Arial-BoldMT",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          fontVariantLigatures: "normal",
+          fontVariantCaps: "normal",
+          fontVariantNumeric: "normal",
+          fontVariantEastAsian: "normal",
+          textAlign: "center",
+          writingMode: "lr-tb",
+          direction: "ltr",
+          textAnchor: "middle",
+          fill: "#000000",
+          fillOpacity: 1,
+          stroke: "#030303",
+          strokeWidth: 0,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+          paintOrder: "fill markers stroke",
         }}
-        textAnchor="middle"
+        x={368.65796}
+        y={180.02078}
+        id="text37-7-1-9"
+        transform="scale(1.0385014,0.96292602)"
       >
-        {"     LAGUNA  "}
+        <tspan
+          sodipodi:role="line"
+          id="tspan37-5-1-4"
+          x={368.65796}
+          y={180.02078}
+          style={{
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontFamily: "'Cascadia Code'",
+            InkscapeFontSpecification: "'Cascadia Code'",
+            fill: "#000000",
+            fillOpacity: 0.375828,
+            strokeWidth: 0,
+          }}
+        >
+          {"LAGUNA"}
+        </tspan>
       </text>
     </g>
     <path
-      id="path1-3-4-7"
-      d="M513.565 957.278v183.596"
+      d="m 507.63758,693.39959 c 0.2223,49.69728 0,124.46574 0,185.66433"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 4.00001,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
+      id="path1-3-4-7"
+      sodipodi:nodetypes="cc"
     />
-    <path
-      id="line136-8-7-6-8"
-      d="M511.59 958.156h62.26"
+    <line
       className="st25"
+      x1={505.66208}
+      y1={696.3465}
+      x2={567.92194}
+      y2={696.3465}
+      id="line136-8-7-6-8"
       style={{
         fill: "none",
         stroke: "#35ace8",
-        strokeWidth: 4.00003,
+        strokeWidth: 6,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
     />
     <g
       id="g34"
+      transform="matrix(0.39487317,0,0,0.37602389,557.29429,669.09589)"
       style={{
         strokeWidth: 2.59516,
       }}
-      transform="matrix(.39487 0 0 .37602 563.222 930.906)"
     >
       <rect
-        id="rect1-73"
-        width={100}
-        height={50}
         x={30}
         y={45}
-        fill="#1e40af"
+        width={100}
+        height={50}
         rx={6}
+        fill="#1e40af"
+        id="rect1-73"
         style={{
           strokeWidth: 2.59516,
         }}
       />
       <rect
-        id="rect2-0"
-        width={120}
-        height={16}
         x={20}
         y={90}
-        fill="#1e3a8a"
+        width={120}
+        height={16}
         rx={4}
+        fill="#1e3a8a"
+        id="rect2-0"
         style={{
           strokeWidth: 2.59516,
         }}
       />
       <rect
-        id="rect3-38"
-        width={70}
-        height={22}
         x={45}
         y={30}
-        fill="#2563eb"
+        width={70}
+        height={22}
         rx={5}
+        fill="#2563eb"
+        id="rect3-38"
         style={{
           strokeWidth: 2.59516,
         }}
       />
       <rect
-        id="rect4-25"
-        width={50}
-        height={10}
         x={55}
         y={22}
-        fill="#60a5fa"
+        width={50}
+        height={10}
         rx={4}
+        fill="#60a5fa"
+        id="rect4-25"
         style={{
           strokeWidth: 2.59516,
         }}
       />
       <path
-        id="path4-2"
+        d="m 60,22 c 0,-12 40,-12 40,0"
         fill="none"
         stroke="#6b7280"
+        strokeWidth={10.3806}
         strokeLinecap="round"
-        strokeWidth={10.381}
-        d="M60 22c0-12 40-12 40 0"
+        id="path4-2"
       />
     </g>
-    <path
-      id="line136-8-7-6-8-3"
-      d="M615.605 958.542h55.962"
+    <line
       className="st25"
+      x1={609.67761}
+      y1={696.73212}
+      x2={665.63922}
+      y2={696.73212}
+      id="line136-8-7-6-8-3"
       style={{
         fill: "none",
         stroke: "#35ace8",
@@ -2678,10 +2796,13 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit: 10,
       }}
     />
-    <path
-      id="line136-8-7-6-8-3-2"
-      d="M1080.062 971.33h159.004"
+    <line
       className="st25"
+      x1={1074.1339}
+      y1={709.51953}
+      x2={1233.1382}
+      y2={709.51953}
+      id="line136-8-7-6-8-3-2"
       style={{
         fill: "none",
         stroke: "#35ace8",
@@ -2695,11 +2816,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2710,7 +2831,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect34)",
         display: "inline",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2720,9 +2841,18 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      transform="translate(-7.7765668,-290.97844)"
     >
-      <tspan id="tspan7" x={35.794} y={668.54}>
-        {"CL-FLO12"}
+      <tspan x={36.717773} y={671.27697} id="tspan12">
+        <tspan
+          style={{
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+          id="tspan11"
+        >
+          {"CL-FLO12"}
+        </tspan>
       </tspan>
     </text>
     <text
@@ -2731,11 +2861,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2746,7 +2876,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect35)",
         display: "inline",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2756,10 +2886,18 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      transform="translate(-4.89 .699)"
+      transform="translate(-10.817936,-261.11138)"
     >
-      <tspan id="tspan8" x={152.935} y={535.806}>
-        {"P-017"}
+      <tspan x={153.69531} y={538.5426} id="tspan14">
+        <tspan
+          style={{
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+          id="tspan13"
+        >
+          {"P-017"}
+        </tspan>
       </tspan>
     </text>
     <text
@@ -2768,11 +2906,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2783,7 +2921,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect36)",
         display: "inline",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2793,24 +2931,30 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      transform="translate(35.072657,-254.64726)"
     >
-      <tspan id="tspan9" x={274.804} y={637.802}>
-        {"PT-117"}
+      <tspan x={275.61719} y={640.53869} id="tspan16">
+        <tspan
+          style={{
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+          id="tspan15"
+        >
+          {"PT-117"}
+        </tspan>
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37"
-      x={505.466}
-      y={420.748}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2819,7 +2963,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2829,60 +2973,38 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={499.45108}
+      y={152.73839}
+      id="text37"
     >
-      <tspan id="tspan37" x={505.466} y={420.748}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37"
+        x={499.45108}
+        y={152.73839}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"VE-288"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text38"
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 14,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect38)",
-        display: "inline",
-        fill: "#000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-    >
-      <tspan id="tspan10" x={550.467} y={351.72}>
-        {"PT-148"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text40"
-      x={1312.048}
-      y={434.963}
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: 400,
-        fontStretch: "normal",
-        fontSize: 13,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2891,7 +3013,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2901,13 +3023,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1306.6444}
+      y={161.62581}
+      id="text40"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan40"
-        x={1312.048}
-        y={434.963}
+        x={1306.6444}
+        y={161.62581}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
           strokeWidth: 0,
           strokeDasharray: "none",
         }}
@@ -2917,17 +3049,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text40-5"
-      x={1393.303}
-      y={434.42}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 14,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2936,7 +3065,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2946,13 +3075,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1389.3513}
+      y={161.12453}
+      id="text40-5"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan40-1"
-        x={1393.303}
-        y={434.42}
+        x={1389.3513}
+        y={161.12453}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
           strokeWidth: 0,
           strokeDasharray: "none",
         }}
@@ -2962,17 +3101,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text40-5-2"
-      x={1297.019}
-      y={539.341}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2981,7 +3117,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2991,13 +3127,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1282.688}
+      y={280.763}
+      id="text40-5-2"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan40-1-2"
-        x={1297.019}
-        y={539.341}
+        x={1282.688}
+        y={280.763}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
           strokeWidth: 0,
           strokeDasharray: "none",
         }}
@@ -3007,17 +3153,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text40-5-2-4"
-      x={1380.861}
-      y={539.316}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3026,7 +3169,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3036,13 +3179,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1351.839}
+      y={285.22171}
+      id="text40-5-2-4"
+      transform="scale(1.0132067,0.98696544)"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan40-1-2-0"
-        x={1380.861}
-        y={539.316}
+        x={1351.839}
+        y={285.22171}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
           strokeWidth: 0,
           strokeDasharray: "none",
         }}
@@ -3052,17 +3206,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text41"
-      x={1314.978}
-      y={702.565}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 11,
+        fontSize: 14,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3071,7 +3222,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3081,23 +3232,40 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1309.0499}
+      y={440.75467}
+      id="text41"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan41"
-        x={1314.978}
-        y={702.565}
+        x={1309.0499}
+        y={440.75467}
         style={{
-          fontSize: 11,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"TK "}
       </tspan>
       <tspan
+        sodipodi:role="line"
+        x={1309.0499}
+        y={458.77728}
         id="tspan42"
-        x={1314.978}
-        y={716.315}
         style={{
-          fontSize: 11,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"DECANTADOR"}
@@ -3105,17 +3273,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text43"
-      x={1279.127}
-      y={813.514}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3124,7 +3289,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3134,13 +3299,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1273.1992}
+      y={551.70355}
+      id="text43"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan43"
-        x={1279.127}
-        y={813.514}
+        x={1273.1992}
+        y={551.70355}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"P-007"}
@@ -3148,17 +3323,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text43-0"
-      x={281.971}
-      y={1105.786}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3167,7 +3339,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3177,13 +3349,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={276.04288}
+      y={843.97577}
+      id="text43-0"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan43-0"
-        x={281.971}
-        y={1105.786}
+        x={276.04288}
+        y={843.97577}
         style={{
-          fontSize: 13,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"P-002"}
@@ -3191,17 +3373,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </text>
     <text
       xmlSpace="preserve"
-      id="text44"
-      x={513.493}
-      y={1149.123}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 9,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3210,7 +3389,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3220,42 +3399,56 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={510.28247}
+      y={893.48828}
+      id="text44"
     >
       <tspan
+        sodipodi:role="line"
         id="tspan44"
-        x={513.493}
-        y={1149.123}
+        x={510.28247}
+        y={893.48828}
         style={{
-          fontSize: 9,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"AGUA DE"}
       </tspan>
       <tspan
+        sodipodi:role="line"
+        x={510.28247}
+        y={914.08557}
         id="tspan45"
-        x={513.493}
-        y={1160.373}
         style={{
-          fontSize: 9,
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
         }}
       >
         {"LLENADO"}
       </tspan>
     </text>
-    <g id="Capa_1-5" transform="translate(-934.266 60.019)">
+    <g id="Capa_1-5" transform="translate(-940.19391,-201.79128)">
       <text
         xmlSpace="preserve"
-        id="text43-3"
-        x={1279.127}
-        y={813.514}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: 400,
+          fontWeight: "normal",
           fontStretch: "normal",
-          fontSize: 13,
+          fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "&quot",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -3264,7 +3457,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000",
+          fill: "#000000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -3274,13 +3467,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
+        x={1279.127}
+        y={813.51355}
+        id="text43-3"
       >
         <tspan
+          sodipodi:role="line"
           id="tspan43-1"
           x={1279.127}
-          y={813.514}
+          y={813.51355}
           style={{
-            fontSize: 13,
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 16,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
           }}
         >
           {"P-006"}
@@ -3288,17 +3491,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       </text>
       <text
         xmlSpace="preserve"
-        id="text46"
-        x={1093.546}
-        y={1016.865}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: 400,
+          fontWeight: "normal",
           fontStretch: "normal",
-          fontSize: 13,
+          fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "&quot",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -3307,7 +3507,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000",
+          fill: "#000000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -3317,13 +3517,23 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
+        x={1098.4358}
+        y={1018.2624}
+        id="text46"
       >
         <tspan
+          sodipodi:role="line"
           id="tspan46"
-          x={1093.546}
-          y={1016.865}
+          x={1098.4358}
+          y={1018.2624}
           style={{
-            fontSize: 13,
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 16,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
           }}
         >
           {"LAGUNA"}
@@ -3331,17 +3541,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
       </text>
       <text
         xmlSpace="preserve"
-        id="text46-6"
-        x={1019.637}
-        y={711.68}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: 400,
+          fontWeight: "normal",
           fontStretch: "normal",
           fontSize: 10,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "&quot",
+          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -3350,7 +3557,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000",
+          fill: "#000000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -3360,23 +3567,40 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
+        x={1002.3475}
+        y={709.95068}
+        id="text46-6"
       >
         <tspan
+          sodipodi:role="line"
           id="tspan46-7"
-          x={1019.637}
-          y={711.68}
+          x={1002.3475}
+          y={709.95068}
           style={{
-            fontSize: 10,
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 16,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
           }}
         >
           {"TK LIMPIEZA"}
         </tspan>
         <tspan
+          sodipodi:role="line"
+          x={1002.3475}
+          y={729.95068}
           id="tspan47"
-          x={1019.637}
-          y={724.18}
           style={{
-            fontSize: 10,
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: "normal",
+            fontStretch: "normal",
+            fontSize: 16,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
           }}
         >
           {"FONDO"}
@@ -3385,17 +3609,14 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <text
       xmlSpace="preserve"
-      id="text37-0"
-      x={498.322}
-      y={688.667}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3404,7 +3625,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3414,24 +3635,38 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={492.39377}
+      y={426.85751}
+      id="text37-0"
     >
-      <tspan id="tspan37-4" x={498.322} y={688.667}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-4"
+        x={492.39377}
+        y={426.85751}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"VE-322"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37-9"
-      x={1155.01}
-      y={405.065}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3440,7 +3675,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3450,24 +3685,38 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1149.2325}
+      y={139.54506}
+      id="text37-9"
     >
-      <tspan id="tspan37-56" x={1155.01} y={405.065}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-56"
+        x={1149.2325}
+        y={139.54506}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"VE-320"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37-9-8"
-      x={1188.382}
-      y={773.401}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3476,7 +3725,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3486,24 +3735,38 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={1185.9119}
+      y={503.19379}
+      id="text37-9-8"
     >
-      <tspan id="tspan37-56-2" x={1188.382} y={773.401}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-56-2"
+        x={1185.9119}
+        y={503.19379}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"VE-318"}
       </tspan>
     </text>
     <text
       xmlSpace="preserve"
-      id="text37-9-8-6"
-      x={594.407}
-      y={929.637}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3512,7 +3775,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3522,25 +3785,42 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
+      x={588.47968}
+      y={667.82654}
+      id="text37-9-8-6"
     >
-      <tspan id="tspan37-56-2-8" x={594.407} y={929.637}>
+      <tspan
+        sodipodi:role="line"
+        id="tspan37-56-2-8"
+        x={588.47968}
+        y={667.82654}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"WM-001"}
       </tspan>
     </text>
     <path
+      d="m 497.75789,782.04052 v 58.7636"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-6"
-      d="M503.686 1043.85v58.764"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 493.48059,781.61742 4.3666,-13.4953 4.5942,13.7316 z"
       id="path1-1-6-1"
-      d="m499.408 1043.427 4.367-13.495 4.594 13.732z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3548,21 +3828,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 0.999999,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="m 464.91561,644.3577 v 55.91543"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1"
-      d="M470.843 906.168v55.915"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 460.63831,643.95508 4.3666,-12.84116 4.5942,13.06603 z"
       id="path1-1-6-7"
-      d="m466.566 905.765 4.367-12.841 4.594 13.066z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3570,10 +3851,10 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 0.999999,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
-      id="path1-3-4-7-0-1-0"
-      d="M393.195 778.806v34.472"
+      d="m 387.26722,516.99609 v 34.47227"
       style={{
         fill: "none",
         stroke: "#008ae5",
@@ -3581,10 +3862,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit: 10,
         strokeOpacity: 1,
       }}
+      id="path1-3-4-7-0-1-0"
     />
     <path
+      d="m 382.98992,516.74787 4.3666,-7.91667 4.5942,8.0553 z"
       id="path1-1-6-7-0"
-      d="m388.918 778.558 4.366-7.917 4.594 8.055z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3592,21 +3874,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 0.999997,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="m 441.80063,324.09925 v 73.87114"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8"
-      d="M447.728 585.91v73.87"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 437.52333,323.56734 4.3666,-16.96475 4.5942,17.26183 z"
       id="path1-1-6-7-3"
-      d="m443.451 585.377 4.367-16.964 4.594 17.261z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3614,21 +3897,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="m 526.84469,251.14307 v 73.87114"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-1"
-      d="M532.772 512.953v73.871"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 522.56739,250.61116 4.3666,-16.96475 4.5942,17.26183 z"
       id="path1-1-6-7-3-2"
-      d="m528.495 512.421 4.367-16.965 4.594 17.262z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3636,21 +3920,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 718.67638,200.25249 H 682.77455"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0"
-      d="M724.604 462.062h-35.902"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 718.93489,195.97519 8.24497,4.3666 -8.38935,4.5942 z"
       id="path1-1-6-7-3-3"
-      d="m724.863 457.785 8.245 4.367-8.39 4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3658,21 +3943,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 913.97406,198.29092 H 878.07223"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-8"
-      d="M919.902 460.1H884"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 914.23257,194.01362 8.24497,4.3666 -8.38935,4.5942 z"
       id="path1-1-6-7-3-3-5"
-      d="m920.16 455.824 8.245 4.366-8.389 4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3680,21 +3966,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 854.9129,160.33397 H 819.01107"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-7"
-      d="M861.088 424.676h-35.902"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 855.17141,155.93317 8.24497,4.3666 -8.38935,4.5942 z"
       id="path1-1-6-7-3-3-0"
-      d="m861.346 420.398 8.245 4.367-8.39 4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3702,21 +3989,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="m 1213.1036,178.09935 h -35.9018"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-9"
-      d="M1219.031 439.91h-35.901"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 1213.3621,173.82205 8.245,4.3666 -8.3893,4.5942 z"
       id="path1-1-6-7-3-3-3"
-      d="m1219.29 435.632 8.245 4.367-8.39 4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3724,21 +4012,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 747.94688,322.5234 V 286.62157"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74"
-      d="M753.875 584.333v-35.901"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 752.22418,322.78191 -4.3666,8.24497 -4.5942,-8.38935 z"
       id="path1-1-6-7-3-3-7"
-      d="m758.152 584.592-4.367 8.245-4.594-8.39z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3746,21 +4035,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 934.2817,318.93536 V 283.03353"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74-3"
-      d="M940.21 580.745v-35.901"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 938.559,319.19387 -4.3666,8.24497 -4.5942,-8.38935 z"
       id="path1-1-6-7-3-3-7-7"
-      d="m944.487 581.004-4.367 8.245-4.594-8.39z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3768,21 +4058,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 1106.3298,351.94985 V 316.04802"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74-0"
-      d="M1112.258 613.76v-35.902"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
+      inkscape:transform-center-x={0.77095189}
+      inkscape:transform-center-y={-15.646536}
     />
     <path
+      d="m 1110.6071,352.20836 -4.3666,8.24497 -4.5942,-8.38935 z"
       id="path1-1-6-7-3-3-7-0"
-      d="m1116.535 614.018-4.367 8.245-4.594-8.389z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3790,21 +4083,26 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
+      inkscape:transform-center-x={0.97405189}
+      inkscape:transform-center-y={6.6131849}
     />
     <path
+      d="M 1225.6312,257.87517 V 221.97334"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74-0-5"
-      d="M1231.559 519.685v-35.902"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
+      inkscape:transform-center-x={0.77095189}
+      inkscape:transform-center-y={-15.646536}
     />
     <path
+      d="m 1229.9085,258.13368 -4.3666,8.24497 -4.5942,-8.38935 z"
       id="path1-1-6-7-3-3-7-0-6"
-      d="m1235.836 519.944-4.366 8.245-4.595-8.39z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3812,21 +4110,24 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
+      inkscape:transform-center-x={0.97405189}
+      inkscape:transform-center-y={6.6131849}
     />
     <path
+      d="m 836.21962,575.58853 h 80.6119"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74-34"
-      d="M842.147 837.399h80.612"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 836.25051,579.86583 -8.24497,-4.3666 8.38935,-4.5942 z"
       id="path1-1-6-7-3-3-7-5"
-      d="m842.178 841.676-8.245-4.367 8.39-4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3834,21 +4135,22 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
+      d="M 1029.3207,525.2131 H 948.70885"
+      style={{
+        fill: "none",
+        stroke: "#008ae5",
+        strokeWidth: 4.00001,
+        strokeMiterlimit: 10,
+        strokeOpacity: 1,
+      }}
       id="path1-3-4-7-0-1-8-0-74-34-1"
-      d="M1037.745 805.21h-80.612"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
     />
     <path
+      d="m 1029.4345,520.44182 8.245,4.3666 -8.3894,4.5942 z"
       id="path1-1-6-7-3-3-7-5-4"
-      d="m1037.714 800.932 8.245 4.367-8.39 4.594z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3856,10 +4158,10 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <path
-      id="path1-3-4-7-0-1-8-0-74-34-2"
-      d="M1227.197 933.962V853.35"
+      d="m 1221.269,672.15152 v -80.6119"
       style={{
         fill: "none",
         stroke: "#008ae5",
@@ -3867,10 +4169,11 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit: 10,
         strokeOpacity: 1,
       }}
+      id="path1-3-4-7-0-1-8-0-74-34-2"
     />
     <path
+      d="m 1225.5463,672.12062 -4.3666,8.245 -4.5942,-8.3894 z"
       id="path1-1-6-7-3-3-7-5-0"
-      d="m1231.474 933.93-4.367 8.246-4.594-8.39z"
       style={{
         fill: "#101820",
         fillOpacity: 1,
@@ -3878,20 +4181,18 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth: 1,
         strokeOpacity: 1,
       }}
+      sodipodi:nodetypes="cccc"
     />
     <text
       xmlSpace="preserve"
-      id="text49"
-      x={664.405}
-      y={758.261}
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: 400,
+        fontWeight: "normal",
         fontStretch: "normal",
-        fontSize: 10,
+        fontSize: 14,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "&quot",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3900,7 +4201,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000",
+        fill: "#000000",
         fillOpacity: 1,
         stroke: "#008ae5",
         strokeWidth: 0,
@@ -3910,14 +4211,486 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         strokeOpacity: 1,
         paintOrder: "stroke markers fill",
       }}
+      x={658.47681}
+      y={496.45102}
+      id="text49"
     >
-      <tspan id="tspan50" x={664.405} y={758.261}>
+      <tspan
+        sodipodi:role="line"
+        x={658.47681}
+        y={496.45102}
+        id="tspan50"
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"DIFERENCIAL DE "}
       </tspan>
-      <tspan id="tspan51" x={664.405} y={770.761}>
+      <tspan
+        sodipodi:role="line"
+        x={658.47681}
+        y={514.47363}
+        id="tspan51"
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: "normal",
+          fontStretch: "normal",
+          fontSize: 14,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
         {"PRESI\xD3N"}
       </tspan>
     </text>
+    <path
+      d="m 212.60014,294.07876 c 0.095,11.9416 1.64487,176.75223 1.71978,197.23197"
+      style={{
+        fill: "none",
+        stroke: "#00aeed",
+        strokeWidth: 6,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-3-0-7"
+      sodipodi:nodetypes="cc"
+    />
+    <g id="Group_32" transform="translate(595.82408,-59.596518)">
+      <path
+        id="Vector_65"
+        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
+        fill="#323e48"
+      />
+      <g id="Group_33">
+        <path
+          id="Vector_66"
+          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
+          fill="#323e48"
+        />
+        <path
+          id="Vector_67"
+          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
+          fill="#323e48"
+        />
+      </g>
+      <path
+        id="Vector_68"
+        d="m 589.2,585 v 10"
+        stroke="#323e48"
+        strokeWidth={4}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_69"
+        d="m 580.2,577 h 18"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_70"
+        d="m 589.2,578 v 8"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+    </g>
+    <g id="Group_32-5" transform="translate(560.07041,-425.04502)">
+      <path
+        id="Vector_65-4"
+        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
+        fill="#323e48"
+      />
+      <g id="Group_33-3">
+        <path
+          id="Vector_66-1"
+          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
+          fill="#323e48"
+        />
+        <path
+          id="Vector_67-2"
+          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
+          fill="#323e48"
+        />
+      </g>
+      <path
+        id="Vector_68-3"
+        d="m 589.2,585 v 10"
+        stroke="#323e48"
+        strokeWidth={4}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_69-3"
+        d="m 580.2,577 h 18"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_70-4"
+        d="m 589.2,578 v 8"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+    </g>
+    <g id="Group_32-5-1" transform="translate(-90.718047,-408.89166)">
+      <path
+        id="Vector_65-4-3"
+        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
+        fill="#323e48"
+      />
+      <g id="Group_33-3-8">
+        <path
+          id="Vector_66-1-7"
+          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
+          fill="#323e48"
+        />
+        <path
+          id="Vector_67-2-4"
+          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
+          fill="#323e48"
+        />
+      </g>
+      <path
+        id="Vector_68-3-2"
+        d="m 589.2,585 v 10"
+        stroke="#323e48"
+        strokeWidth={4}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_69-3-7"
+        d="m 580.2,577 h 18"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_70-4-7"
+        d="m 589.2,578 v 8"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+      />
+    </g>
+    <g
+      id="pt-card-87-9-0"
+      transform="matrix(0.92260641,0,0,0.68220176,507.07686,78.972079)"
+      style={{
+        strokeWidth: 1.26048,
+      }}
+    >
+      <rect
+        x={1}
+        y={1}
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
+        stroke="#8a94a6"
+        strokeWidth={2.52096}
+        id="rect1-2-7-48-0"
+        style={{
+          display: "inline",
+        }}
+      />
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
+        stroke="#8a94a6"
+        strokeWidth={1.89072}
+        id="line1-8-8-6"
+      />
+    </g>
+    <text
+      xmlSpace="preserve"
+      id="text38-8"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: "normal",
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        whiteSpace: "pre",
+        shapeInside: "url(#rect38-1)",
+        display: "inline",
+        fill: "#000000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      transform="translate(-3.4655042,-258.81144)"
+    >
+      <tspan x={551.28027} y={354.45666} id="tspan18">
+        <tspan
+          style={{
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+          id="tspan17"
+        >
+          {"PT-148"}
+        </tspan>
+      </tspan>
+    </text>
+    <path
+      style={{
+        fill: "none",
+        fillRule: "evenodd",
+        stroke: "#000000",
+        strokeWidth: "1.00884px",
+        strokeLinecap: "butt",
+        strokeLinejoin: "miter",
+        strokeOpacity: 1,
+      }}
+      d="M 42.253908,83.626177 335.25907,83.975386"
+      id="path5"
+      inkscape:connector-type="polyline"
+      inkscape:connector-curvature={0}
+      inkscape:highlight-color="#797979"
+    />
+    <rect
+      style={{
+        fill: "#0a0404",
+        fillOpacity: 0,
+        stroke: "#0b0808",
+        strokeWidth: 3.81,
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 0.481203,
+        paintOrder: "normal",
+      }}
+      id="rect14"
+      width={299.18857}
+      height={101.34457}
+      x={38.327713}
+      y={35.882633}
+    />
+    <path
+      style={{
+        display: "inline",
+        fill: "none",
+        fillRule: "evenodd",
+        stroke: "#000000",
+        strokeWidth: 1,
+        strokeLinecap: "butt",
+        strokeLinejoin: "miter",
+        strokeOpacity: 1,
+      }}
+      d="m 304.29235,95.708836 v 0"
+      id="path14"
+      inkscape:connector-type="polyline"
+      inkscape:connector-curvature={0}
+    />
+    <path
+      id="Vector_185-8"
+      d="m 73.621908,238.35503 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      fill="#2f3e49"
+    />
+    <path
+      id="Vector_185-8-2"
+      d="m 1309.0051,184.39719 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      fill="#2f3e49"
+    />
+    <path
+      id="Vector_185-8-2-7"
+      d="m 1390.8806,183.64467 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      fill="#2f3e49"
+    />
+    <path
+      d="m 1377.506,176.19629 v 28.79066"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.458,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        opacity: 1,
+      }}
+      id="path1-36-2-9"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1403.7287,176.58158 -26.22,-0.54969"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.34584,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-36-2-9-8"
+      sodipodi:nodetypes="cc"
+    />
+    <g
+      id="Group_12-6-4-7-9"
+      transform="matrix(1.1977023,0,0,1.0625837,916.03974,-372.86586)"
+    >
+      <g id="Group_15-0-9-0-2">
+        <g id="Group_12-6-4-0-5-6" transform="translate(2.2740076,-7.9444343)">
+          <g id="Group_15-0-9-6-6-5">
+            <g id="Group_16-6-6-7-7">
+              <path
+                id="Vector_29-6-3-3-7"
+                d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+                stroke="#2f3e49"
+                strokeWidth={4.28328}
+                strokeMiterlimit={10}
+                style={{
+                  fill: "#00a39b",
+                  fillOpacity: 1,
+                }}
+                sodipodi:nodetypes="cssssc"
+              />
+              <g
+                id="Group_17-1-7-8-4"
+                transform="translate(-7.5025782,-12.630209)"
+              />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <path
+      d="m 1292.7863,175.55131 v 28.79066"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.458,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-36-2-9-2"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1319.009,175.9366 -26.22,-0.54969"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.34584,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-36-2-9-8-4"
+      sodipodi:nodetypes="cc"
+    />
+    <g
+      id="Group_12-6-4-7"
+      transform="matrix(1.1977023,0,0,1.0625837,830.97506,-372.6473)"
+    >
+      <g id="Group_15-0-9-0">
+        <g id="Group_12-6-4-0-5" transform="translate(2.2740076,-7.9444343)">
+          <g id="Group_15-0-9-6-6">
+            <g id="Group_16-6-6-7">
+              <path
+                id="Vector_29-6-3-3"
+                d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+                stroke="#2f3e49"
+                strokeWidth={4.28328}
+                strokeMiterlimit={10}
+                style={{
+                  fill: "#00a39b",
+                  fillOpacity: 1,
+                }}
+                sodipodi:nodetypes="cssssc"
+              />
+              <g
+                id="Group_17-1-7-8"
+                transform="translate(-7.5025782,-12.630209)"
+              />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <path
+      d="m 57.777366,229.30276 v 36.86913"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-36-2-9-2-1"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="M 78.003758,229.39816 57.725105,228.73855"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.89008,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-36-2-9-8-4-7"
+      sodipodi:nodetypes="cc"
+    />
+    <g
+      id="Group_12-6-4"
+      transform="matrix(1.769273,0,0,1.5723018,-609.97487,-586.76417)"
+      inkscape:label="Group_12-6-4"
+    >
+      <g id="Group_15-0-9">
+        <g id="Group_12-6-4-0" transform="translate(2.2740076,-7.9444343)">
+          <g id="Group_15-0-9-6">
+            <g id="Group_16-6-6">
+              <path
+                id="Vector_29-6-3"
+                d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+                stroke="#2f3e49"
+                strokeWidth={4.28328}
+                strokeMiterlimit={10}
+                style={{
+                  fill: "#00a39b",
+                  fillOpacity: 1,
+                }}
+                sodipodi:nodetypes="cssssc"
+              />
+              <g
+                id="Group_17-1-7"
+                transform="translate(-7.5025782,-12.630209)"
+              />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
   </svg>
-)
-export default SvgComponent
+);
+export default SVGComponent;

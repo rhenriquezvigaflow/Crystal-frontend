@@ -10,6 +10,7 @@ interface Props {
   data: HistoryResponse;
   visibleStart: Date;
   visibleEnd: Date;
+  selectedTags?: string[]; // opcional (selector múltiple)
 }
 
 /* ======================================================
@@ -34,7 +35,12 @@ function getWeekNumber(date: Date) {
 /* ======================================================
    Component
 ====================================================== */
-const HistoryChart = ({ data, visibleStart, visibleEnd }: Props) => {
+const HistoryChart = ({
+  data,
+  visibleStart,
+  visibleEnd,
+  selectedTags,
+}: Props) => {
   if (!data?.series?.length) return null;
 
   /* ---------------------------
@@ -71,12 +77,24 @@ const HistoryChart = ({ data, visibleStart, visibleEnd }: Props) => {
     }
   };
 
+  /* =====================================================
+     FILTRADO DE TAGS
+     - Si hay selección → respetarla
+     - Si NO hay selección → excluir WM001 por defecto
+  ====================================================== */
+  const filteredSeries =
+    selectedTags && selectedTags.length > 0
+      ? data.series.filter((s) => selectedTags.includes(s.tag_key))
+      : data.series.filter((s) => s.tag_key !== "WM001_TOT_SCADA");
+
+  if (!filteredSeries.length) return null;
+
   /* ---------------------------
      Timeline global
   ---------------------------- */
   const timeline = Array.from(
     new Set(
-      data.series.flatMap((s) =>
+      filteredSeries.flatMap((s) =>
         s.points.map((p) => new Date(p.timestamp).getTime())
       )
     )
@@ -87,7 +105,7 @@ const HistoryChart = ({ data, visibleStart, visibleEnd }: Props) => {
   /* ---------------------------
      Series alineadas
   ---------------------------- */
-  const series = data.series.map((serie, index) => {
+  const series = filteredSeries.map((serie, index) => {
     const map = new Map(
       serie.points.map((p) => [
         new Date(p.timestamp).getTime(),

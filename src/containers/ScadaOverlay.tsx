@@ -8,34 +8,37 @@ interface Props {
 
 export default function ScadaOverlay({ tags }: Props) {
   return (
-    <div className="absolute inset-0 pointer-events-none">
-      {layout.kpis
-        .filter((kpi) => kpi.type === "kpi")
-        .map((kpi) => {
-          const value = tags[kpi.backendTag];
+    <div className="absolute inset-0">
+      {layout.kpis.map((item: any) => {
+        if (item.type !== "kpi") return null;
 
-          if (value === undefined || value === null) return null;
-          if (!kpi.position) return null;
+        const value = tags?.[item.backendTag];
+        if (value === undefined || value === null) return null;
 
-          return (
-            <div
-              key={kpi.id}
-              className="absolute text-xs md:text-sm font-semibold text-slate-800"
-              style={{
-                top: kpi.position.top,
-                left: kpi.position.left,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
+        return (
+          <div
+            key={item.id}
+            className="absolute font-bold text-[14px] md:text-[16px] whitespace-nowrap"
+            style={{
+              top: item.position.top,
+              left: item.position.left,
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <span>
               {typeof value === "number"
                 ? value.toFixed(2)
-                : String(value)}{" "}
-              <span className="text-[10px] text-slate-500">
-                {kpi.unit}
+                : String(value)}
+            </span>
+
+            {item.unit && (
+              <span className="ml-1 text-[11px] md:text-[12px] font-semibold text-gray-700 italic">
+                {item.unit}
               </span>
-            </div>
-          );
-        })}
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -9,20 +9,26 @@ interface Props {
   visibleStart: Date;
   visibleEnd: Date;
   onRangeChange: (start: Date, end: Date) => void;
+  selectedTags?: string[];
 }
 
-/* =========================
-   Helpers
-========================= */
-const isAnalogTag = (tagKey?: string) => {
+const isPlottableTag = (tagKey?: string) => {
   if (!tagKey) return false;
+
   const k = String(tagKey).toUpperCase();
-  return !(
+
+  if (k === "WM001_TOT_SCADA") return false;
+
+  if (
     k.includes("_ST_") ||
     k.includes("_STATUS") ||
     k.includes("_BOOL") ||
     k.includes("RETRO")
-  );
+  ) {
+    return false;
+  }
+
+  return true;
 };
 
 function daysBetween(a: Date, b: Date) {
@@ -35,10 +41,6 @@ function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
   return "weekly";
 }
 
-/**
- * ✅ Para DAILY: anclamos al MEDIODÍA (12:00) para evitar saltos de DST (+/-1h)
- * No usamos UTC porque tu sistema está usando horario local en UI.
- */
 function normalizeDayToNoon(ts: string | Date) {
   const d = new Date(ts);
   d.setHours(12, 0, 0, 0);
@@ -51,34 +53,20 @@ export default function LagoonLineChart({
   visibleStart,
   visibleEnd,
   onRangeChange,
+  selectedTags,
 }: Props) {
-  if (loading) {
-    return (
-      <Box className="flex items-center justify-center h-full">
-        <CircularProgress size={22} />
-      </Box>
-    );
-  }
+  const sourceSeries = data?.series ?? [];
 
-  if (!data?.series?.length) {
-    return (
-      <Box className="flex items-center justify-center h-full text-xs text-slate-400">
-        Sin datos históricos
-      </Box>
-    );
-  }
+  const selectedTagSet = useMemo(() => {
+    if (!selectedTags?.length) return null;
+    return new Set(selectedTags);
+  }, [selectedTags]);
 
-  /* =========================
-     View inferida
-  ========================= */
   const view = useMemo(() => {
     const days = daysBetween(visibleStart, visibleEnd);
     return getViewByDays(days);
   }, [visibleStart, visibleEnd]);
 
-  /* =========================
-     Timeline diario único (anclado a 12:00)
-  ========================= */
   const dailyTimeline = useMemo(() => {
     if (view !== "daily") return null;
 
@@ -99,13 +87,17 @@ export default function LagoonLineChart({
     return days;
   }, [visibleStart, visibleEnd, view]);
 
-  /* =========================
-     Series → Apex (daily con nulls + noon anchor)
-  ========================= */
   const series = useMemo(() => {
-    return data.series
-      .filter((s: any) => isAnalogTag(s.tag))
+    return sourceSeries
+      .filter((s: any) => {
+        const tag = String(s.tag ?? s.tag_key ?? "");
+        if (!isPlottableTag(tag)) return false;
+        if (!selectedTagSet) return true;
+        return selectedTagSet.has(tag);
+      })
       .map((s: any) => {
+        const tag = String(s.tag ?? s.tag_key ?? "");
+
         if (view === "daily" && dailyTimeline) {
           const map = new Map<number, number>();
 
@@ -118,10 +110,9 @@ export default function LagoonLineChart({
             map.has(t) ? map.get(t)! : null,
           ]);
 
-          return { name: s.tag, data: points };
+          return { name: tag, data: points };
         }
 
-        // hourly/weekly: directo
         const points: [number, number | null][] = (s.points ?? [])
           .map((p: any) => [
             new Date(p.timestamp).getTime(),
@@ -129,13 +120,10 @@ export default function LagoonLineChart({
           ])
           .sort((a, b) => a[0] - b[0]);
 
-        return { name: s.tag, data: points };
+        return { name: tag, data: points };
       });
-  }, [data, view, dailyTimeline]);
+  }, [sourceSeries, selectedTagSet, view, dailyTimeline]);
 
-  /* =========================
-     Options
-  ========================= */
   const options: ApexCharts.ApexOptions = useMemo(
     () => ({
       chart: {
@@ -168,16 +156,13 @@ export default function LagoonLineChart({
           },
         },
       },
-
       stroke: { width: 2, curve: "straight" },
       grid: { strokeDashArray: 3 },
       markers: { size: 0 },
-
       xaxis: {
         type: "datetime",
         min: visibleStart.getTime(),
         max: visibleEnd.getTime(),
-
         labels: {
           formatter: (value: number) => {
             return new Date(value).toLocaleDateString(undefined, {
@@ -187,17 +172,14 @@ export default function LagoonLineChart({
           },
         },
       },
-
       yaxis: {
         labels: {
           formatter: (v: number) => v.toFixed(2),
         },
       },
-
       tooltip: {
         shared: true,
         intersect: false,
-
         x: {
           formatter: (value: number) => {
             return new Date(value).toLocaleString(undefined, {
@@ -210,17 +192,39 @@ export default function LagoonLineChart({
             });
           },
         },
-
         y: {
           formatter: (v?: number) =>
             typeof v === "number" ? v.toFixed(3) : "--",
         },
       },
-
       legend: { show: true, position: "top" },
     }),
-    [visibleStart, visibleEnd, onRangeChange, view],
+    [visibleStart, visibleEnd, onRangeChange],
   );
+
+  if (loading) {
+    return (
+      <Box className="flex items-center justify-center h-full">
+        <CircularProgress size={22} />
+      </Box>
+    );
+  }
+
+  if (!sourceSeries.length) {
+    return (
+      <Box className="flex items-center justify-center h-full text-xs text-slate-400">
+        Sin datos historicos
+      </Box>
+    );
+  }
+
+  if (!series.length) {
+    return (
+      <Box className="flex items-center justify-center h-full text-xs text-slate-400">
+        Selecciona al menos un TAG para visualizar el grafico
+      </Box>
+    );
+  }
 
   return (
     <Box
