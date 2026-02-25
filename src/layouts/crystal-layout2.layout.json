@@ -1,0 +1,106 @@
+{
+  "plant": "LAYOUT2 - SCADA",
+  "version": "1.0",
+  "description": "Layout SCADA Crystal Lagoons - datos crudos PLC",
+
+  "kpis": [
+    {
+      "id": "pt117",
+      "type": "kpi",
+      "label": "PT117_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT117_R_SCADA",
+      "position": { "top": "23.5%", "left": "28%" }
+    },
+    {
+      "id": "pt148",
+      "type": "kpi",
+      "label": "PT148_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT148_R_SCADA",
+      "position": { "top": "13%", "left": "40.5%" }
+    },
+    {
+      "id": "pt141",
+      "type": "kpi",
+      "label": "PT141_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT141_R_SCADA",
+      "position": { "top": "43%", "left": "56.7%" }
+    },
+    {
+      "id": "pt145",
+      "type": "kpi",
+      "label": "PT145_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT145_R_SCADA",
+      "position": { "top": "35.5%", "left": "76%" }
+    },
+    {
+      "id": "pt143",
+      "type": "kpi",
+      "label": "PT143_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT143_R_SCADA",
+      "position": { "top": "43%", "left": "66.5%" }
+    },
+
+    {
+      "id": "WM01_TOT_SCADA",
+      "type": "kpi",
+      "label": "WM01_TOT_SCADA",
+      "unit": "m3",
+      "iconType": "volume",
+      "backendTag": "WM01_TOT_SCADA",
+      "position": { "top": "73.8%", "left": "42%" }
+    },
+      {
+      "id": "DIF_PRES_SCADA",
+      "type": "kpi",
+      "label": "DIF_PRES_SCADA",
+      "unit": "bar",
+      "iconType": "volume",
+      "backendTag": "DIF_PRES_SCADA",
+      "position": { "top": "40.5%", "left": "46%" }
+    },
+    {
+      "id": "plc_status",
+      "type": "plc_status",
+      "position": { "top": "12%", "left": "14%" }
+    },
+
+    {
+      "id": "pumps_status",
+      "type": "pumps",
+      "title": "Estado Bombas",
+      "pumps": [
+        {
+          "id": "P002_STS_SCADA",
+          "label": "Bomba Retrolavado",
+          "backendTag": "P002_STS_SCADA"
+        },
+        {
+          "id": "P006_STS_SCADA",
+          "label": "Bomba Filtración",
+          "backendTag": "P006_STS_SCADA"
+        },
+        {
+          "id": "P007_STS_SCADA",
+          "label": "Bomba Retorno Clarificado",
+          "backendTag": "P007_STS_SCADA"
+        },
+        {
+          "id": "RETRO_SCADA",
+          "label": "Retrolavado Filtros",
+          "backendTag": "RETRO_SCADA"
+        }
+
+      ]
+    }
+  ]
+}

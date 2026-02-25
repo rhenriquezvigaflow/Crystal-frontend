@@ -11,7 +11,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT117_R_SCADA",
-      "position": { "top": "42%", "left": "27.5%" }
+      "position": { "top": "30.3%", "left": "26.5%" }
     },
     {
       "id": "pt148",
@@ -20,7 +20,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT148_R_SCADA",
-      "position": { "top": "12%", "left": "41.7%" }
+      "position": { "top": "16.4%", "left": "40%" }
     },
     {
       "id": "pt141",
@@ -29,7 +29,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT141_R_SCADA",
-      "position": { "top": "50.2%", "left": "58.6%" }
+      "position": { "top": "51.3%", "left": "57.3%" }
     },
     {
       "id": "pt145",
@@ -38,7 +38,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT145_R_SCADA",
-      "position": { "top": "42.5%", "left": "77.5%" }
+      "position": { "top": "43%", "left": "78%" }
     },
     {
       "id": "pt143",
@@ -47,17 +47,17 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT143_R_SCADA",
-      "position": { "top": "50.2%", "left": "68.5%" }
+      "position": { "top": "51.3%", "left": "68%" }
     },
 
     {
-      "id": "WM01_TOT_DELTA_SCADA",
+      "id": "WM01_TOT_SCADA",
       "type": "kpi",
-      "label": "WM01_TOT_DELTA_SCADA",
-      "unit": "bar",
+      "label": "WM01_TOT_SCADA",
+      "unit": "m3",
       "iconType": "volume",
-      "backendTag": "WM01_TOT_DELTA_SCADA",
-      "position": { "top": "76.5%", "left": "42.5%" }
+      "backendTag": "WM01_TOT_SCADA",
+      "position": { "top": "73.8%", "left": "42%" }
     },
       {
       "id": "DIF_PRES_SCADA",
@@ -66,7 +66,12 @@
       "unit": "bar",
       "iconType": "volume",
       "backendTag": "DIF_PRES_SCADA",
-      "position": { "top": "48.5%", "left": "46.5%" }
+      "position": { "top": "48.5%", "left": "45%" }
+    },
+    {
+      "id": "plc_status",
+      "type": "plc_status",
+      "position": { "top": "12%", "left": "14%" }
     },
 
     {
@@ -94,6 +99,7 @@
           "label": "Retrolavado Filtros",
           "backendTag": "RETRO_SCADA"
         }
+
       ]
     }
   ]

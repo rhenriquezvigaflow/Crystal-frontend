@@ -1,10 +1,14 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 
 import "./App.css";
 import "./styles/charts.css";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import LagoonsView from "./pages/lagoonsView";
+import Login from "./pages/LoginPage";
+import { AuthProvider } from "./auth/AuthContext";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 const AUTO_REFRESH_MS = 30 * 60 * 1000; // 30 minutos
 
@@ -19,16 +23,33 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-       
-        <Route
-          path="/"
-          element={<Navigate to="/lagoon/costa_del_lago" replace />}
-        />
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
- 
-        <Route path="/lagoon/:lagoonId" element={<LagoonsView />} />
-      </Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Navigate to="/lagoon/costa_del_lago" replace />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/lagoon/:lagoonId"
+            element={
+              <ProtectedRoute>
+                <LagoonsView />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

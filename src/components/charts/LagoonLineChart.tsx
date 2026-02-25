@@ -10,6 +10,7 @@ interface Props {
   visibleEnd: Date;
   onRangeChange: (start: Date, end: Date) => void;
   selectedTags?: string[];
+  timezone?: string | null;
 }
 
 const isPlottableTag = (tagKey?: string) => {
@@ -41,10 +42,32 @@ function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
   return "weekly";
 }
 
-function normalizeDayToNoon(ts: string | Date) {
+function normalizeDayUtc(ts: string | Date) {
   const d = new Date(ts);
-  d.setHours(12, 0, 0, 0);
-  return d.getTime();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12);
+}
+
+function normalizeWeekUtc(ts: string | Date) {
+  const d = new Date(ts);
+  const day = d.getUTCDay(); // 0=domingo, 1=lunes...
+  const diffToMonday = (day + 6) % 7;
+  return Date.UTC(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate() - diffToMonday,
+    12,
+  );
+}
+
+function normalizeByView(
+  ts: string | Date,
+  view: "hourly" | "daily" | "weekly",
+) {
+  if (view === "daily") return normalizeDayUtc(ts);
+  if (view === "weekly") return normalizeWeekUtc(ts);
+
+  const ms = new Date(ts).getTime();
+  return Math.floor(ms / (1000 * 60 * 60)) * (1000 * 60 * 60);
 }
 
 export default function LagoonLineChart({
@@ -54,8 +77,37 @@ export default function LagoonLineChart({
   visibleEnd,
   onRangeChange,
   selectedTags,
+  timezone,
 }: Props) {
   const sourceSeries = data?.series ?? [];
+
+  // Timezone planta (IANA). Backend recomendado: data.timezone
+  const lagoonTz: string = useMemo(() => {
+    return (
+      timezone ||
+      data?.timezone ||
+      data?.lagoon_timezone ||
+      data?.tz ||
+      "UTC"
+    );
+  }, [timezone, data]);
+
+  // Helpers de formato SIEMPRE en timezone de planta
+  const fmtDate = useMemo(() => {
+    return (valueMs: number, options: Intl.DateTimeFormatOptions) => {
+      try {
+        return new Intl.DateTimeFormat(undefined, {
+          timeZone: lagoonTz,
+          ...options,
+        }).format(new Date(valueMs));
+      } catch {
+        // Fallback si viene un timezone inválido
+        return new Intl.DateTimeFormat(undefined, options).format(
+          new Date(valueMs),
+        );
+      }
+    };
+  }, [lagoonTz]);
 
   const selectedTagSet = useMemo(() => {
     if (!selectedTags?.length) return null;
@@ -67,62 +119,59 @@ export default function LagoonLineChart({
     return getViewByDays(days);
   }, [visibleStart, visibleEnd]);
 
-  const dailyTimeline = useMemo(() => {
-    if (view !== "daily") return null;
+  const filteredSeries = useMemo(() => {
+    return sourceSeries.filter((s: any) => {
+      const tag = String(s.tag ?? s.tag_key ?? "");
+      if (!isPlottableTag(tag)) return false;
+      if (!selectedTagSet) return true;
+      return selectedTagSet.has(tag);
+    });
+  }, [sourceSeries, selectedTagSet]);
 
-    const start = new Date(visibleStart);
-    start.setHours(12, 0, 0, 0);
+  const alignedTimeline = useMemo(() => {
+    const set = new Set<number>();
+    const min = visibleStart.getTime();
+    const max = visibleEnd.getTime();
 
-    const end = new Date(visibleEnd);
-    end.setHours(12, 0, 0, 0);
+    filteredSeries.forEach((s: any) => {
+      (s.points ?? []).forEach((p: any) => {
+        const t = normalizeByView(p.timestamp, view);
+        if (!Number.isNaN(t) && t >= min && t <= max) set.add(t);
+      });
+    });
 
-    const days: number[] = [];
-    const cur = new Date(start);
-
-    while (cur <= end) {
-      days.push(cur.getTime());
-      cur.setDate(cur.getDate() + 1);
-    }
-
-    return days;
-  }, [visibleStart, visibleEnd, view]);
+    return Array.from(set).sort((a, b) => a - b);
+  }, [view, filteredSeries, visibleStart, visibleEnd]);
 
   const series = useMemo(() => {
-    return sourceSeries
-      .filter((s: any) => {
-        const tag = String(s.tag ?? s.tag_key ?? "");
-        if (!isPlottableTag(tag)) return false;
-        if (!selectedTagSet) return true;
-        return selectedTagSet.has(tag);
-      })
-      .map((s: any) => {
-        const tag = String(s.tag ?? s.tag_key ?? "");
+    return filteredSeries.map((s: any) => {
+      const tag = String(s.tag ?? s.tag_key ?? "");
+      const map = new Map<number, number | null>();
 
-        if (view === "daily" && dailyTimeline) {
-          const map = new Map<number, number>();
+      (s.points ?? []).forEach((p: any) => {
+        const t = normalizeByView(p.timestamp, view);
+        if (Number.isNaN(t)) return;
 
-          (s.points ?? []).forEach((p: any) => {
-            map.set(normalizeDayToNoon(p.timestamp), p.value);
-          });
+        const next =
+          typeof p.value === "number" && Number.isFinite(p.value)
+            ? p.value
+            : null;
+        const prev = map.get(t);
 
-          const points: [number, number | null][] = dailyTimeline.map((t) => [
-            t,
-            map.has(t) ? map.get(t)! : null,
-          ]);
-
-          return { name: tag, data: points };
+        // Evita que un null tardío borre un valor numérico ya capturado.
+        if (next !== null || prev == null) {
+          map.set(t, next);
         }
-
-        const points: [number, number | null][] = (s.points ?? [])
-          .map((p: any) => [
-            new Date(p.timestamp).getTime(),
-            typeof p.value === "number" ? p.value : null,
-          ])
-          .sort((a, b) => a[0] - b[0]);
-
-        return { name: tag, data: points };
       });
-  }, [sourceSeries, selectedTagSet, view, dailyTimeline]);
+
+      const points: [number, number | null][] = alignedTimeline.map((t) => [
+        t,
+        map.has(t) ? map.get(t)! : null,
+      ]);
+
+      return { name: tag, data: points };
+    });
+  }, [filteredSeries, view, alignedTimeline]);
 
   const options: ApexCharts.ApexOptions = useMemo(
     () => ({
@@ -165,7 +214,7 @@ export default function LagoonLineChart({
         max: visibleEnd.getTime(),
         labels: {
           formatter: (value: number) => {
-            return new Date(value).toLocaleDateString(undefined, {
+            return fmtDate(value, {
               day: "2-digit",
               month: "short",
             });
@@ -180,14 +229,17 @@ export default function LagoonLineChart({
       tooltip: {
         shared: true,
         intersect: false,
+        hideEmptySeries: false,
         x: {
           formatter: (value: number) => {
-            return new Date(value).toLocaleString(undefined, {
+            // Fecha+hora en TZ planta
+            return fmtDate(value, {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",
               hour: "2-digit",
               minute: "2-digit",
+              second: "2-digit",
               hour12: false,
             });
           },
@@ -199,7 +251,7 @@ export default function LagoonLineChart({
       },
       legend: { show: true, position: "top" },
     }),
-    [visibleStart, visibleEnd, onRangeChange],
+    [visibleStart, visibleEnd, onRangeChange, fmtDate],
   );
 
   if (loading) {

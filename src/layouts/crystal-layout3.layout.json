@@ -1,0 +1,115 @@
+{
+  "plant": "LAYOUT3 - SCADA",
+  "version": "1.0",
+  "description": "Layout SCADA Crystal Lagoons - datos crudos PLC",
+
+  "kpis": [
+    {
+      "id": "pt117",
+      "type": "kpi",
+      "label": "PT117_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT117_R_SCADA",
+      "position": { "top": "30.3%", "left": "26.5%" }
+    },
+    {
+      "id": "pt148",
+      "type": "kpi",
+      "label": "PT148_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT148_R_SCADA",
+      "position": { "top": "16.4%", "left": "40%" }
+    },
+    {
+      "id": "pt141",
+      "type": "kpi",
+      "label": "PT141_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT141_R_SCADA",
+      "position": { "top": "51.3%", "left": "57.3%" }
+    },
+    {
+      "id": "pt145",
+      "type": "kpi",
+      "label": "PT145_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT145_R_SCADA",
+      "position": { "top": "43%", "left": "78%" }
+    },
+    {
+      "id": "pt143",
+      "type": "kpi",
+      "label": "PT143_R_SCADA",
+      "unit": "bar",
+      "iconType": "pressure",
+      "backendTag": "PT143_R_SCADA",
+      "position": { "top": "50.3%", "left": "50%" }
+    },
+    {
+      "id": "FIT003_R_SCADA",
+      "type": "kpi",
+      "label": "FIT003_R_SCADA",
+      "unit": "l/s",
+      "iconType": "flow",
+      "backendTag": "FIT003_R_SCADA",
+      "position": { "top": "42%", "left": "26.5%" }
+    },
+
+    {
+      "id": "WM01_TOT_SCADA",
+      "type": "kpi",
+      "label": "WM01_TOT_SCADA",
+      "unit": "m3",
+      "iconType": "volume",
+      "backendTag": "WM01_TOT_SCADA",
+      "position": { "top": "73.8%", "left": "42%" }
+    },
+      {
+      "id": "DIF_PRES_SCADA",
+      "type": "kpi",
+      "label": "DIF_PRES_SCADA",
+      "unit": "bar",
+      "iconType": "volume",
+      "backendTag": "DIF_PRES_SCADA",
+      "position": { "top": "48.5%", "left": "45%" }
+    },
+    {
+      "id": "plc_status",
+      "type": "plc_status",
+      "position": { "top": "12%", "left": "14%" }
+    },
+
+    {
+      "id": "pumps_status",
+      "type": "pumps",
+      "title": "Estado Bombas",
+      "pumps": [
+        {
+          "id": "P002_STS_SCADA",
+          "label": "Bomba Retrolavado",
+          "backendTag": "P002_STS_SCADA"
+        },
+        {
+          "id": "P006_STS_SCADA",
+          "label": "Bomba Filtración",
+          "backendTag": "P006_STS_SCADA"
+        },
+        {
+          "id": "P007_STS_SCADA",
+          "label": "Bomba Retorno Clarificado",
+          "backendTag": "P007_STS_SCADA"
+        },
+        {
+          "id": "RETRO_SCADA",
+          "label": "Retrolavado Filtros",
+          "backendTag": "RETRO_SCADA"
+        }
+
+      ]
+    }
+  ]
+}

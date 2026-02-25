@@ -1,11 +1,13 @@
-import CostaDelLagoSvg from "../svg/costa-del-lago";
+import CostaDelLagoSvg from "../svg/layout1";
 
 export default function LagoonSVG() {
   return (
-    <CostaDelLagoSvg
-      preserveAspectRatio="xMidYMid meet"
-      className="w-full h-full"
-      style={{ display: "block" }}
-    />
+    <div className="relative w-full aspect-video">
+      <CostaDelLagoSvg
+        preserveAspectRatio="xMidYMid meet"
+        className="w-full h-full"
+        style={{ display: "block" }}
+      />
+    </div>
   );
 }

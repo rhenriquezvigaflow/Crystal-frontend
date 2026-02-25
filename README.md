@@ -1,129 +1,80 @@
-# Crystal Lagoons - Frontend
+# Crystal Lagoons Frontend
 
-Proyecto frontend para la plataforma de monitoreo de Crystal Lagoons (React + Vite + TypeScript).
+Frontend SCADA para monitoreo de lagunas Crystal (React + Vite + TypeScript).
 
-## Descripción
+## Objetivo
 
-Interfaz web para visualizar estado de lagunas, históricos, KPIs y paneles de alarmas.
+Mostrar en una sola vista:
+- Estado en tiempo real (WebSocket)
+- KPIs y overlay SCADA por layout
+- Historico por rango (1D, 7D, 30D, 90D, etc.)
+- Eventos de bombas (ultimos 3)
 
-## Requisitos
+## Stack
 
-- Node.js 18+ (o versión LTS reciente)
-- npm o yarn
+- React 19
+- Vite 7
+- TypeScript 5
+- TailwindCSS 4
+- MUI 7
+- ApexCharts
+- Axios
 
-## Instalación
-
-1. Instalar dependencias:
+## Quick Start
 
 ```bash
 npm install
-```
-
-2. Ejecutar en desarrollo:
-
-```bash
 npm run dev
 ```
 
-3. Construir para producción:
+Build de produccion:
 
 ```bash
 npm run build
 ```
 
-## Estructura relevante
+## Configuracion API
 
-- `src/` - código fuente principal
-  - `components/` - componentes UI y charts
-  - `pages/` - vistas (Dashboard, LagoonHistory, etc.)
-  - `api/` - llamadas API
-  - `hooks/` - hooks personalizados
-  - `styles/` - estilos globales y de charts
+- HTTP/WS principal: `src/config/api.ts`
+- Auth API: `src/auth/authApi.ts` (usa `VITE_API_HTTP` o `VITE_API_BASE_URL`)
 
-## Contribuir
+Nota: hoy existen dos estrategias de configuracion (hardcoded y env vars). Ver arquitectura para estandarizacion recomendada.
 
-1. Crear una rama descriptiva.
-2. Abrir PR con descripción y capturas si aplica.
+## Arquitectura (resumen)
 
-## Licencia
-
-Licencia del proyecto (consultar al equipo). 
-
----
-
-Si quieres, puedo añadir badges, guía de desarrollo local más detallada o ejemplos de endpoints en `api/`.
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+Browser
+  -> React Router (/lagoon/:lagoonId)
+    -> LagoonContainer
+      -> useScadaRealtime (WS /ws/scada)
+      -> useHistory (HTTP /scada/history/hourly)
+      -> usePumpEventsLast3 (HTTP /scada/{lagoon_id}/pump-events/last-3)
+      -> ScadaOverlay + PumpStatusKpi + LagoonLineChart
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Documentacion completa:
+- [Arquitectura](docs/ARCHITECTURE.md)
+- [Contratos API](docs/API_CONTRACTS.md)
+- [Troubleshooting Operativo](docs/TROUBLESHOOTING.md)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Estructura principal
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `src/components`: UI, charts y contenedores de modulo
+- `src/hooks`: consumo y estado de datos remotos
+- `src/api`: clientes HTTP
+- `src/layouts`: configuraciones JSON por laguna/layout
+- `src/svg`: SVG por layout
+- `src/scada/svgRegistry.ts`: registro de layouts SVG
+
+## Flujos criticos
+
+- Realtime: `useScadaRealtime` actualiza tags, PLC status, hora local y timezone.
+- Historico: `useHistory` consulta buckets y alimenta `LagoonLineChart`.
+- Eventos bomba: `usePumpEventsLast3` trae lista de eventos; `PumpStatusKpi` renderiza hasta 3 por bomba.
+- Resolucion de estado de bomba: soporta `number` y `boolean` (`true/false` => `FUNCIONANDO/DETENIDA`).
+
+## Convenciones
+
+- Los tags tecnicos se transforman a labels visibles en UI.
+- En cards de bombas, si faltan datos se manejan estados `loading`, `error`, `empty`.
+- Los layouts SCADA se cargan dinamicamente desde JSON + SVG registry.
