@@ -1,5 +1,5 @@
 import * as React from "react";
-const SVGComponent2 = (props) => (
+const SVGComponent = (props) => (
   <svg
     id="Capa_1"
     x="0px"
@@ -18,24 +18,6 @@ const SVGComponent2 = (props) => (
     {...props}
   >
     <defs id="defs489">
-      <linearGradient id="linearGradient13" inkscape:collect="always">
-        <stop
-          style={{
-            stopColor: "#160a0a",
-            stopOpacity: 0.232346,
-          }}
-          offset={0}
-          id="stop13"
-        />
-        <stop
-          style={{
-            stopColor: "#140c0c",
-            stopOpacity: 0,
-          }}
-          offset={1}
-          id="stop14"
-        />
-      </linearGradient>
       <linearGradient id="swatch12" inkscape:swatch="solid">
         <stop
           style={{
@@ -361,39 +343,6 @@ const SVGComponent2 = (props) => (
         height={22.355032}
         id="rect36-0-0"
       />
-      <linearGradient
-        inkscape:collect="always"
-        xlinkHref="#linearGradient13"
-        id="linearGradient14"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11125}
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(0.98512187,0,0,1.000351,18.774513,-0.10603977)"
-      />
-      <linearGradient
-        inkscape:collect="always"
-        xlinkHref="#linearGradient13"
-        id="linearGradient15"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(0.98512187,0,0,1.000351,131.29967,-0.10653113)"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11125}
-      />
-      <linearGradient
-        inkscape:collect="always"
-        xlinkHref="#linearGradient13"
-        id="linearGradient16"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(0.98512187,0,0,1.000351,-1185.7107,-77.630472)"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11125}
-      />
       <rect
         x={241.01518}
         y={625.94092}
@@ -506,6 +455,13 @@ const SVGComponent2 = (props) => (
         height={21.656437}
         id="rect35-6-2-0-5-2"
       />
+      <rect
+        x={141.81474}
+        y={523.94604}
+        width={60.777744}
+        height={21.656437}
+        id="rect35-6-2-0-5-4"
+      />
     </defs>
     <sodipodi:namedview
       id="namedview489"
@@ -517,9 +473,9 @@ const SVGComponent2 = (props) => (
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
       showguides="false"
-      inkscape:zoom={0.796875}
-      inkscape:cx={555.29412}
-      inkscape:cy={250.35294}
+      inkscape:zoom={0.56347572}
+      inkscape:cx={567.01645}
+      inkscape:cy={394.87061}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
       inkscape:window-x={1912}
@@ -906,13 +862,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(-7.5204948,-327.60115)"
     >
-      <tspan x={36.717773} y={671.27697} id="tspan18">
+      <tspan x={36.717773} y={671.27697} id="tspan3">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan17"
+          id="tspan1"
         >
           {"CL-FLO12"}
         </tspan>
@@ -951,13 +907,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(-7.2091496,-282.2694)"
     >
-      <tspan x={153.69531} y={538.5426} id="tspan20">
+      <tspan x={153.69531} y={538.5426} id="tspan5">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan19"
+          id="tspan4"
         >
           {"P-009"}
         </tspan>
@@ -1190,13 +1146,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(-232.83367,-176.40889)"
     >
-      <tspan x={264.75244} y={637.8017} id="tspan22">
+      <tspan x={264.75244} y={637.8017} id="tspan7">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan21"
+          id="tspan6"
         >
           {"TK LIMPIEZA"}
         </tspan>
@@ -1260,13 +1216,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(-232.123,-161.01121)"
     >
-      <tspan x={277.86987} y={637.8017} id="tspan24">
+      <tspan x={277.86987} y={637.8017} id="tspan9">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan23"
+          id="tspan8"
         >
           {"FONDO"}
         </tspan>
@@ -1305,13 +1261,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(-177.17252,174.97916)"
     >
-      <tspan x={269.69531} y={640.53869} id="tspan26">
+      <tspan x={269.69531} y={640.53869} id="tspan11">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan25"
+          id="tspan10"
         >
           {"LAGUNA"}
         </tspan>
@@ -1381,13 +1337,13 @@ const SVGComponent2 = (props) => (
       inkscape:transform-center-x={12.54902}
       inkscape:transform-center-y={-1.254902}
     >
-      <tspan x={158.66504} y={538.5426} id="tspan28">
+      <tspan x={158.66504} y={538.5426} id="tspan13">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan27"
+          id="tspan12"
         >
           {"FIT-002"}
         </tspan>
@@ -1457,13 +1413,13 @@ const SVGComponent2 = (props) => (
       inkscape:transform-center-x={12.54902}
       inkscape:transform-center-y={-1.254902}
     >
-      <tspan x={150.21875} y={538.5426} id="tspan58">
+      <tspan x={150.21875} y={538.5426} id="tspan15">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan29"
+          id="tspan14"
         >
           {"PT-112"}
         </tspan>
@@ -1533,13 +1489,13 @@ const SVGComponent2 = (props) => (
       inkscape:transform-center-x={12.54902}
       inkscape:transform-center-y={-1.254902}
     >
-      <tspan x={150.21875} y={538.5426} id="tspan60">
+      <tspan x={150.21875} y={538.5426} id="tspan17">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan59"
+          id="tspan16"
         >
           {"PT-116"}
         </tspan>
@@ -1565,8 +1521,9 @@ const SVGComponent2 = (props) => (
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 1.96913,
+        strokeWidth: 2,
         strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
       id="path1-38"
       sodipodi:nodetypes="cc"
@@ -1645,11 +1602,11 @@ const SVGComponent2 = (props) => (
       />
     </g>
     <path
-      d="M 763.08712,437.74024 634.25166,436.81845"
+      d="M 772.50681,437.73899 634.24373,436.8197"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 5.77529,
+        strokeWidth: 5.975,
         strokeMiterlimit: 10,
         strokeDasharray: "none",
       }}
@@ -1707,11 +1664,11 @@ const SVGComponent2 = (props) => (
       />
     </g>
     <path
-      d="M 761.14705,318.51269 633.4878,317.58844"
+      d="M 773.02471,318.5111 633.47789,317.59003"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 5.67217,
+        strokeWidth: 5.9202,
         strokeMiterlimit: 10,
         strokeDasharray: "none",
       }}
@@ -1756,15 +1713,15 @@ const SVGComponent2 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={781.16052}
-      y={291.60962}
+      x={799.35663}
+      y={290.98218}
       id="text32-8-5"
     >
       <tspan
         sodipodi:role="line"
         id="tspan32-3-5"
-        x={781.16052}
-        y={291.60962}
+        x={799.35663}
+        y={290.98218}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
@@ -1779,11 +1736,11 @@ const SVGComponent2 = (props) => (
       </tspan>
     </text>
     <path
-      d="M 1005.2065,318.45667 802.93884,317.54376"
+      d="M 1005.2023,318.45737 813.29602,317.54306"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 5.58357,
+        strokeWidth: 5.44287,
         strokeMiterlimit: 10,
         strokeDasharray: "none",
       }}
@@ -1801,17 +1758,17 @@ const SVGComponent2 = (props) => (
         strokeOpacity: 0.154898,
       }}
       id="path2-1"
-      cx={782.1012}
-      cy={318.09369}
+      cx={793.0816}
+      cy={318.72113}
       rx={17.938143}
       ry={15.715229}
     />
     <path
-      d="M 975.39625,437.18374 807.51856,436.27075"
+      d="M 975.48479,438.29346 813.41772,437.37941"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 6.00962,
+        strokeWidth: 5.90811,
         strokeMiterlimit: 10,
         strokeDasharray: "none",
       }}
@@ -1855,8 +1812,8 @@ const SVGComponent2 = (props) => (
         strokeOpacity: 0.154898,
       }}
       id="path2-1-5"
-      cx={784.61102}
-      cy={436.38806}
+      cx={793.0816}
+      cy={436.2312}
       rx={17.938143}
       ry={15.715229}
     />
@@ -1963,7 +1920,7 @@ const SVGComponent2 = (props) => (
       id="path1-3-2-3-6-7-2-7-9-8-2-5"
     />
     <path
-      d="M 1114.7032,437.80566 993.91641,436.91281"
+      d="M 1114.5598,439.14899 993.773,438.25614"
       style={{
         fill: "none",
         stroke: "#00aeed",
@@ -1974,11 +1931,11 @@ const SVGComponent2 = (props) => (
       id="path1-3-2-3-6-7-2-7-9-8"
     />
     <path
-      d="M 1112.0697,317.2576 1111.7,440.55554"
+      d="m 1112.0696,317.25671 -0.3695,124.7507"
       style={{
         fill: "none",
         stroke: "#00aeed",
-        strokeWidth: 6,
+        strokeWidth: 6.03431,
         strokeMiterlimit: 10,
         strokeDasharray: "none",
       }}
@@ -2119,23 +2076,33 @@ const SVGComponent2 = (props) => (
       </g>
     </g>
     <path
-      id="Vector_185"
-      d="m 1279.1863,292.72549 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      id="Vector_185-8-4"
+      d="m 1286.1719,292.64706 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
       fill="#2f3e49"
     />
     <path
+      d="m 1268.3583,284.50057 0.064,28.7648"
       style={{
-        opacity: 1,
-        mixBlendMode: "screen",
-        fill: "url(#linearGradient14)",
-        fillOpacity: 0.232346,
-        stroke: "#30404a",
-        strokeOpacity: 1,
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
       }}
-      d="m 1277.9281,282.54889 -12.8432,0.11096 c -0.9851,0.009 -1.7732,0.80028 -1.7732,1.80062 v 39.21377"
-      id="Vector_184-5"
-      sodipodi:nodetypes="ccsc"
-      className="st0"
+      id="path1-38-2-2-2"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1287.1518,285.31252 -20.2855,-0.31325"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-2-6-3"
+      sodipodi:nodetypes="cc"
     />
     <g
       id="Group_12-6-4-7-2"
@@ -2162,26 +2129,6 @@ const SVGComponent2 = (props) => (
         </g>
       </g>
     </g>
-    <path
-      id="Vector_185-1"
-      d="m 1391.7115,292.725 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
-      fill="#2f3e49"
-    />
-    <path
-      style={{
-        mixBlendMode: "screen",
-        fill: "url(#linearGradient15)",
-        fillOpacity: 0.232346,
-        stroke: "#30404a",
-        strokeWidth: 4.02975,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      d="m 1390.4533,282.5484 -12.8432,0.11096 c -0.9851,0.009 -1.7732,0.80028 -1.7732,1.80062 v 39.21377"
-      id="Vector_184-5-3"
-      sodipodi:nodetypes="ccsc"
-      className="st0"
-    />
     <path
       d="m 1240.7403,286.80392 v 26.3963"
       style={{
@@ -2300,293 +2247,8 @@ const SVGComponent2 = (props) => (
     </g>
     <path
       id="Vector_185-8"
-      d="m 74.701073,213.42636 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      d="m 74.701073,215.93616 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
       fill="#2f3e49"
-    />
-    <path
-      style={{
-        mixBlendMode: "screen",
-        fill: "url(#linearGradient16)",
-        fillOpacity: 0.232346,
-        stroke: "#30404a",
-        strokeWidth: 4.02975,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      d="m 73.442874,205.02446 -12.8432,0.11096 c -0.9851,0.009 -1.7732,0.80028 -1.7732,1.80062 v 39.21377"
-      id="Vector_184-5-6"
-      sodipodi:nodetypes="ccsc"
-      className="st0"
-    />
-    <line
-      className="st25"
-      x1={452.23999}
-      y1={895.88226}
-      x2={452.19385}
-      y2={772.33661}
-      id="line136-8-7-6-1-5-9"
-      style={{
-        fill: "none",
-        stroke: "#36ace8",
-        strokeWidth: 5.70604,
-        strokeMiterlimit: 10,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-    />
-    <text
-      xmlSpace="preserve"
-      id="text36-9-4-6"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect36-0-0-0)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(159.96037,279.54684)"
-    >
-      <tspan x={267.76172} y={640.53869} id="tspan62">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan61"
-        >
-          {"AGUA DE"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text36-9-4-6-8"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect36-0-0-0-1)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(161.13269,293.80175)"
-    >
-      <tspan x={257.48828} y={640.53869} id="tspan64">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan63"
-        >
-          {"REPOSICI\xD3N"}
-        </tspan>
-      </tspan>
-    </text>
-    <line
-      className="st25"
-      x1={449.52936}
-      y1={775.15686}
-      x2={580.86139}
-      y2={775.15686}
-      id="line136-8-7-6-1-7-4"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 6.01526,
-        strokeMiterlimit: 10,
-        strokeDasharray: "none",
-      }}
-    />
-    <g
-      id="g34"
-      transform="matrix(0.39487317,0,0,0.37602389,569.249,747.7938)"
-      style={{
-        strokeWidth: 2.59516,
-      }}
-    >
-      <rect
-        x={30}
-        y={45}
-        width={100}
-        height={50}
-        rx={6}
-        fill="#1e40af"
-        id="rect1-73"
-        style={{
-          strokeWidth: 2.59516,
-        }}
-      />
-      <rect
-        x={20}
-        y={90}
-        width={120}
-        height={16}
-        rx={4}
-        fill="#1e3a8a"
-        id="rect2-0"
-        style={{
-          strokeWidth: 2.59516,
-        }}
-      />
-      <rect
-        x={45}
-        y={30}
-        width={70}
-        height={22}
-        rx={5}
-        fill="#2563eb"
-        id="rect3-38"
-        style={{
-          strokeWidth: 2.59516,
-        }}
-      />
-      <rect
-        x={55}
-        y={22}
-        width={50}
-        height={10}
-        rx={4}
-        fill="#60a5fa"
-        id="rect4-25"
-        style={{
-          strokeWidth: 2.59516,
-        }}
-      />
-      <path
-        d="m 60,22 c 0,-12 40,-12 40,0"
-        fill="none"
-        stroke="#6b7280"
-        strokeWidth={10.3806}
-        strokeLinecap="round"
-        id="path4-2"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={600.43433}
-      y={746.52441}
-      id="text37-9-8-6"
-    >
-      <tspan
-        sodipodi:role="line"
-        id="tspan37-56-2-8"
-        x={600.43433}
-        y={746.52441}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"WM-001"}
-      </tspan>
-    </text>
-    <g
-      id="pt-card-0-0"
-      transform="matrix(0.71418741,0,0,0.5524794,549.18826,794.47046)"
-      style={{
-        strokeWidth: 1.59198,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={3.18395}
-        id="rect1-2-6-3"
-      />
-    </g>
-    <line
-      className="st25"
-      x1={620.80084}
-      y1={775.54596}
-      x2={708.13501}
-      y2={775.54596}
-      id="line136-8-7-6-8-3"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 6,
-        strokeMiterlimit: 10,
-        strokeDasharray: "none",
-      }}
     />
     <g
       id="g33"
@@ -2962,13 +2624,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(219.24625,154.41705)"
     >
-      <tspan x={153.69531} y={538.5426} id="tspan66">
+      <tspan x={153.69531} y={538.5426} id="tspan19">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan65"
+          id="tspan18"
         >
           {"P-005"}
         </tspan>
@@ -3007,13 +2669,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(81.462316,72.267852)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan68">
+      <tspan x={149.25} y={538.5426} id="tspan21">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan67"
+          id="tspan20"
         >
           {"VE-401"}
         </tspan>
@@ -3052,13 +2714,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(453.08334,-251.7287)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan70">
+      <tspan x={149.25} y={538.5426} id="tspan23">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan69"
+          id="tspan22"
         >
           {"VE-237"}
         </tspan>
@@ -3097,13 +2759,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(69.259423,349.09139)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan72">
+      <tspan x={149.25} y={538.5426} id="tspan25">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan71"
+          id="tspan24"
         >
           {"VE-402"}
         </tspan>
@@ -3142,13 +2804,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(454.28786,-133.93822)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan74">
+      <tspan x={149.25} y={538.5426} id="tspan27">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan73"
+          id="tspan26"
         >
           {"VE-239"}
         </tspan>
@@ -3187,13 +2849,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(844.61237,-251.72852)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan76">
+      <tspan x={149.25} y={538.5426} id="tspan29">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan75"
+          id="tspan28"
         >
           {"VE-237"}
         </tspan>
@@ -3232,13 +2894,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(813.49473,-133.93817)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan78">
+      <tspan x={149.25} y={538.5426} id="tspan31">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan77"
+          id="tspan30"
         >
           {"VE-240"}
         </tspan>
@@ -3277,13 +2939,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(840.98492,2.7251829)"
     >
-      <tspan x={149.25} y={538.5426} id="tspan80">
+      <tspan x={149.25} y={538.5426} id="tspan33">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan79"
+          id="tspan32"
         >
           {"VE-244"}
         </tspan>
@@ -3422,13 +3084,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(1106.2878,-265.71349)"
     >
-      <tspan x={153.69531} y={538.5426} id="tspan82">
+      <tspan x={153.69531} y={538.5426} id="tspan35">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan81"
+          id="tspan34"
         >
           {"P-008"}
         </tspan>
@@ -3467,13 +3129,13 @@ const SVGComponent2 = (props) => (
       }}
       transform="translate(1222.844,-266.64793)"
     >
-      <tspan x={153.69531} y={538.5426} id="tspan84">
+      <tspan x={153.69531} y={538.5426} id="tspan37">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan83"
+          id="tspan36"
         >
           {"P-007"}
         </tspan>
@@ -3865,34 +3527,6 @@ const SVGComponent2 = (props) => (
         inkscape:transform-center-y={6.6131849}
       />
       <path
-        d="M -318.14573,417.68268 V 519.00456"
-        style={{
-          fill: "none",
-          stroke: "#008ae5",
-          strokeWidth: 6.22462,
-          strokeMiterlimit: 10,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        id="path1-3-4-7-0-1-8-0-74-0-5-7-8"
-        inkscape:transform-center-x={0.74497019}
-        inkscape:transform-center-y={24.396132}
-      />
-      <path
-        d="m -312.35853,416.95312 -5.90803,-23.2689 -6.21597,23.67636 z"
-        id="path1-1-6-7-3-3-7-0-6-7-4"
-        style={{
-          fill: "#101820",
-          fillOpacity: 1,
-          stroke: "#008ae5",
-          strokeWidth: 1.95408,
-          strokeOpacity: 1,
-        }}
-        sodipodi:nodetypes="cccc"
-        inkscape:transform-center-x={0.9412283}
-        inkscape:transform-center-y={-10.311298}
-      />
-      <path
         d="M -476.47691,420.47532 V 521.7972"
         style={{
           fill: "none",
@@ -4082,7 +3716,7 @@ const SVGComponent2 = (props) => (
     </style>
     <g
       id="g5"
-      transform="matrix(0.38243145,0,0,0.32517787,724.65447,358.33747)"
+      transform="matrix(0.38243145,0,0,0.32517787,733.08429,358.33747)"
     >
       <path
         className="st0"
@@ -4124,10 +3758,163 @@ const SVGComponent2 = (props) => (
       />
       <polygon
         className="st3"
-        points="159.7,8.2 147.5,8.2 131.2,65.2 131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 "
+        points="147.5,8.2 131.2,65.2 131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 159.7,8.2 "
         id="polygon5"
       />
     </g>
+    <g
+      id="pt-card-87-7-6-0-9"
+      transform="matrix(0.70716487,0,0,0.59523728,476.76041,231.52259)"
+      style={{
+        strokeWidth: 1.32344,
+      }}
+    >
+      <rect
+        x={2.4755995}
+        y={1}
+        width={138}
+        height={68}
+        rx={4.8942113}
+        ry={6.0626636}
+        fill="#ffffff"
+        stroke="#8a94a6"
+        strokeWidth={2.64687}
+        id="rect1-2-7-4-2-0-4"
+      />
+      <line
+        x1={6}
+        y1={34}
+        x2={134}
+        y2={34}
+        stroke="#8a94a6"
+        strokeWidth={1.98516}
+        id="line1-8-3-6-8-8"
+      />
+    </g>
+    <text
+      xmlSpace="preserve"
+      id="text35-5-9-6-9-51"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: "normal",
+        fontStretch: "normal",
+        fontSize: 14,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        whiteSpace: "pre",
+        shapeInside: "url(#rect35-6-2-0-5-4)",
+        display: "inline",
+        fill: "#000000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      transform="translate(355.97651,-289.28825)"
+      inkscape:transform-center-x={12.54902}
+      inkscape:transform-center-y={-1.254902}
+    >
+      <tspan x={152.9668} y={536.71794} id="tspan39">
+        <tspan
+          style={{
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+          }}
+          id="tspan38"
+        >
+          {"PT-114"}
+        </tspan>
+      </tspan>
+    </text>
+    <path
+      d="m 527.33907,273.57092 0.0635,40.40762"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 1.69684,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 949.70196,573.6063 0.0648,9.70365"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 1.88858,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-1"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 56.416857,206.37791 0.06388,28.7648"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-2"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="M 75.21041,207.18986 54.924862,206.87661"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-2-6"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      id="Vector_185-8-4-2"
+      d="m 1396.5249,292.78431 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
+      fill="#2f3e49"
+    />
+    <path
+      d="m 1378.7113,284.63782 0.064,28.7648"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-2-2-1"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      d="m 1397.5048,285.44977 -20.2855,-0.31325"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      id="path1-38-2-2-6-3-6"
+      sodipodi:nodetypes="cc"
+    />
   </svg>
 );
-export default SVGComponent2;
+export default SVGComponent;

@@ -35,7 +35,7 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
         if (cancelled) return;
         console.error("PUMP EVENTS ERROR", err);
         setEvents([]);
-        setError("Error cargando eventos de bombas");
+        setError("Sin datos historicos");
       })
       .finally(() => {
         if (cancelled) return;
