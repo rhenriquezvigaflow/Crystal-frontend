@@ -11,7 +11,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT117_R_SCADA",
-      "position": { "top": "30.3%", "left": "26.5%" }
+      "position": { "top": "28%", "left": "24.7%" }
     },
     {
       "id": "pt148",
@@ -20,7 +20,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT148_R_SCADA",
-      "position": { "top": "16.4%", "left": "40%" }
+      "position": { "top": "12.8%", "left": "39.7%" }
     },
     {
       "id": "pt141",
@@ -29,7 +29,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT141_R_SCADA",
-      "position": { "top": "51.3%", "left": "57.3%" }
+      "position": { "top": "51.3%", "left": "59.3%" }
     },
     {
       "id": "pt145",
@@ -38,7 +38,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT145_R_SCADA",
-      "position": { "top": "43%", "left": "78%" }
+      "position": { "top": "42.3%", "left": "82.7%" }
     },
     {
       "id": "pt143",
@@ -56,7 +56,7 @@
       "unit": "l/s",
       "iconType": "flow",
       "backendTag": "FIT003_R_SCADA",
-      "position": { "top": "42%", "left": "26.5%" }
+      "position": { "top": "41%", "left": "24.7%" }
     },
 
     {
@@ -66,16 +66,16 @@
       "unit": "m3",
       "iconType": "volume",
       "backendTag": "WM01_TOT_SCADA",
-      "position": { "top": "73.8%", "left": "42%" }
+      "position": { "top": "76.3%", "left": "41%" }
     },
       {
       "id": "DIF_PRES_SCADA",
       "type": "kpi",
       "label": "DIF_PRES_SCADA",
       "unit": "bar",
-      "iconType": "volume",
+      "iconType": "pressure",
       "backendTag": "DIF_PRES_SCADA",
-      "position": { "top": "48.5%", "left": "45%" }
+      "position": { "top": "48.3%", "left": "45.8%" }
     },
     {
       "id": "plc_status",

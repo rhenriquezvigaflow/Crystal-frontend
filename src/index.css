@@ -1,11 +1,123 @@
 @import "tailwindcss";
 
-html, body {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Arial, sans-serif;
+:root {
+  --lagoon-bg: #eef8ff;
+  --lagoon-bg-deep: #d9f1ff;
+  --lagoon-surface: rgba(255, 255, 255, 0.9);
+  --lagoon-surface-strong: #ffffff;
+  --lagoon-border: rgba(123, 192, 230, 0.28);
+  --lagoon-shadow: 0 24px 60px -30px rgba(14, 71, 114, 0.24);
+  --lagoon-shadow-soft: 0 18px 44px -26px rgba(29, 92, 128, 0.18);
+  --lagoon-cyan: #6fd3ff;
+  --lagoon-sky: #3ea6ff;
+  --lagoon-teal: #3fc7c2;
+  --lagoon-ink: #0f2740;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
 
+body {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--lagoon-ink);
+  background:
+    radial-gradient(circle at top left, rgba(120, 215, 255, 0.34), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(92, 193, 255, 0.18), transparent 24%),
+    radial-gradient(circle at bottom center, rgba(103, 220, 229, 0.12), transparent 26%),
+    linear-gradient(180deg, #f6fcff 0%, #ecf7ff 46%, #f7fcff 100%);
+}
+
+.lagoon-topbar {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(242, 251, 255, 0.88)),
+    linear-gradient(90deg, rgba(91, 205, 255, 0.06), transparent 34%);
+  box-shadow: var(--lagoon-shadow);
+  backdrop-filter: blur(14px);
+}
+
+.lagoon-topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 220px;
+  background: linear-gradient(90deg, rgba(92, 198, 255, 0.12), transparent);
+  pointer-events: none;
+}
+
+.lagoon-sidebar {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.75), transparent 24%),
+    linear-gradient(180deg, #def5ff 0%, #e9f8ff 35%, #f8fdff 100%);
+}
+
+.lagoon-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 14px 18px auto auto;
+  height: 150px;
+  width: 150px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(95, 206, 255, 0.2), transparent 70%);
+  pointer-events: none;
+}
+
+.lagoon-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--lagoon-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 253, 255, 0.98));
+  box-shadow: var(--lagoon-shadow-soft);
+}
+
+.lagoon-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 86px;
+  background: linear-gradient(180deg, rgba(111, 211, 255, 0.09), transparent);
+  pointer-events: none;
+}
+
+.lagoon-map-shell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(119, 194, 236, 0.24);
+  background:
+    radial-gradient(circle at top left, rgba(115, 217, 255, 0.16), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(63, 199, 194, 0.1), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fbfeff 100%);
+  box-shadow: var(--lagoon-shadow-soft);
+}
+
+.lagoon-map-frame {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.lagoon-glow {
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(10px);
+  opacity: 0.58;
+}
+
+.scada-stage svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 @keyframes kpi-breath {
   0% {

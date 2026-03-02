@@ -132,7 +132,7 @@ export default function PumpStatusKpi({
   eventsEmpty,
 }: Props) {
   return (
-    <div className="w-full bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm">
       <div className="px-4 py-3 border-b border-slate-200">
         <div className="text-sm font-semibold text-slate-700">Estado de Bombas</div>
         <div className="text-xs text-slate-500 mt-0.5">Ultimos 3 eventos por bomba</div>
@@ -146,7 +146,7 @@ export default function PumpStatusKpi({
           return (
             <article
               key={id}
-              className={`rounded-xl border ${config.border} ${config.bg} p-3 sm:p-4 min-h-[190px] sm:min-h-[210px] flex flex-col transition-colors`}
+              className={`rounded-lg border ${config.border} ${config.bg} p-3 sm:p-4 min-h-[190px] sm:min-h-[210px] flex flex-col transition-colors`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -157,7 +157,7 @@ export default function PumpStatusKpi({
                   </div>
                 </div>
 
-                <span className="rounded-md bg-white/70 border border-white px-2 py-0.5 text-[10px] text-slate-500 shrink-0">
+                <span className="rounded-sm bg-white/70 border border-white px-2 py-0.5 text-[10px] text-slate-500 shrink-0">
                   {id}
                 </span>
               </div>

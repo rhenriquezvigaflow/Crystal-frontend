@@ -177,7 +177,7 @@ export default function LagoonLineChart({
     () => ({
       chart: {
         type: "line",
-        height: 380,
+        height: "100%",
         animations: { enabled: false },
         toolbar: {
           show: true,
@@ -289,7 +289,7 @@ export default function LagoonLineChart({
       }}
       onWheel={(e) => e.stopPropagation()}
     >
-      <Chart options={options} series={series} type="line" height={380} />
+      <Chart options={options} series={series} type="line" height="100%" />
     </Box>
   );
 }

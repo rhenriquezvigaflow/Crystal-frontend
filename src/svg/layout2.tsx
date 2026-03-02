@@ -1,5 +1,98 @@
 import * as React from "react";
-const SVGComponent = (props) => (
+
+type ValveCode =
+  | "ve237"
+  | "ve238"
+  | "ve239"
+  | "ve240"
+  | "ve244"
+  | "ve401"
+  | "ve402";
+
+type ValveState = 0 | 1 | 2 | 3;
+
+const VALVE_STATE_COLORS: Record<ValveState, string> = {
+  0: "#ef4444",
+  1: "#22c55e",
+  2: "#3b82f6",
+  3: "#facc15",
+};
+
+const DEFAULT_VALVE_COLOR = VALVE_STATE_COLORS[0];
+
+function normalizeTagKey(key: string) {
+  return key.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+}
+
+function buildNormalizedTags(tags: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(tags ?? {}).map(([key, value]) => [normalizeTagKey(key), value]),
+  );
+}
+
+function getValveTagCandidates(valveCode: ValveCode) {
+  const suffix = valveCode.slice(2);
+
+  return [
+    valveCode,
+    valveCode.toUpperCase(),
+    `ve-${suffix}`,
+    `VE-${suffix}`,
+    `ve_${suffix}`,
+    `VE_${suffix}`,
+    `${valveCode}_scada`,
+    `${valveCode.toUpperCase()}_SCADA`,
+    `ve-${suffix}_scada`,
+    `VE-${suffix}_SCADA`,
+    `ve_${suffix}_scada`,
+    `VE_${suffix}_SCADA`,
+  ];
+}
+
+function coerceValveState(value: unknown): ValveState | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const parsed = Math.trunc(value);
+    return parsed >= 0 && parsed <= 3 ? (parsed as ValveState) : null;
+  }
+
+  if (typeof value === "boolean") {
+    return value ? 1 : 0;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? coerceValveState(parsed) : null;
+  }
+
+  return null;
+}
+
+function getValveColor(
+  normalizedTags: Record<string, unknown>,
+  valveCode: ValveCode,
+) {
+  for (const candidate of getValveTagCandidates(valveCode)) {
+    const state = coerceValveState(normalizedTags[normalizeTagKey(candidate)]);
+    if (state !== null) return VALVE_STATE_COLORS[state];
+  }
+
+  return DEFAULT_VALVE_COLOR;
+}
+
+const SVGComponent = ({
+  tags = {},
+  ...props
+}: React.SVGProps<SVGSVGElement> & { tags?: Record<string, unknown> }) => {
+  const normalizedTags = buildNormalizedTags(tags);
+  const ve237Color = getValveColor(normalizedTags, "ve237");
+  const ve238Color = getValveColor(normalizedTags, "ve238");
+  const ve239Color = getValveColor(normalizedTags, "ve239");
+  const ve240Color = getValveColor(normalizedTags, "ve240");
+  const ve244Color = getValveColor(normalizedTags, "ve244");
+  const ve401Color = getValveColor(normalizedTags, "ve401");
+  const ve402Color = getValveColor(normalizedTags, "ve402");
+
+  return (
   <svg
     id="Capa_1"
     x="0px"
@@ -473,15 +566,15 @@ const SVGComponent = (props) => (
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
       showguides="false"
-      inkscape:zoom={0.56347572}
-      inkscape:cx={567.01645}
-      inkscape:cy={394.87061}
+      inkscape:zoom={1.1269514}
+      inkscape:cx={432.58297}
+      inkscape:cy={705.88667}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
-      inkscape:window-x={1912}
+      inkscape:window-x={-8}
       inkscape:window-y={-8}
       inkscape:window-maximized={1}
-      inkscape:current-layer="Capa_1"
+      inkscape:current-layer="Group_32-5"
       showgrid="false"
     >
       <inkscape:grid
@@ -935,28 +1028,32 @@ const SVGComponent = (props) => (
       inkscape:connector-type="polyline"
       inkscape:connector-curvature={0}
     />
-    <g id="Group_32-5" transform="translate(-338.05097,47.246876)">
+    <g
+      id="Group_32-5"
+      transform="translate(-338.05097,47.246876)"
+      inkscape:label="ve401"
+    >
       <path
         id="Vector_65-4"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve401Color}
       />
       <g id="Group_33-3">
         <path
           id="Vector_66-1"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve401Color}
         />
         <path
           id="Vector_67-2"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve401Color}
         />
       </g>
       <path
         id="Vector_68-3"
         d="m 589.2,585 v 10"
-        stroke="#323e48"
+        stroke={ve401Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -1020,28 +1117,32 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
       }}
     />
-    <g id="Group_32-5-6" transform="translate(-347.42445,246.57159)">
+    <g
+      id="Group_32-5-6"
+      transform="translate(-347.42445,246.57159)"
+      inkscape:label="ve-402"
+    >
       <path
         id="Vector_65-4-0"
         d="m 595.72676,663.02007 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve402Color}
       />
       <g id="Group_33-3-6" transform="translate(-0.87324345,77.020072)">
         <path
           id="Vector_66-1-1"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve402Color}
         />
         <path
           id="Vector_67-2-1"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve402Color}
         />
       </g>
       <path
         id="Vector_68-3-1"
         d="m 588.32676,662.02007 v 10"
-        stroke="#323e48"
+        stroke={ve402Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -1561,28 +1662,32 @@ const SVGComponent = (props) => (
       }}
       id="path1-3-2-3"
     />
-    <g id="Group_32-5-67" transform="translate(35.407233,-159.08442)">
+    <g
+      id="Group_32-5-67"
+      transform="translate(35.407233,-159.08442)"
+      inkscape:label="ve239"
+    >
       <path
         id="Vector_65-4-6"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve239Color}
       />
       <g id="Group_33-3-7">
         <path
           id="Vector_66-1-7"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve239Color}
         />
         <path
           id="Vector_67-2-19"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve239Color}
         />
       </g>
       <path
         id="Vector_68-3-16"
         d="m 589.2,585 v 10"
-        stroke="#323e48"
+        stroke={ve239Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -1623,28 +1728,32 @@ const SVGComponent = (props) => (
       }}
       id="path1-3-2-3-6-3"
     />
-    <g id="Group_32-5-67-9" transform="translate(35.120159,-277.50677)">
+    <g
+      id="Group_32-5-67-9"
+      transform="translate(35.120159,-277.50677)"
+      inkscape:label="ve237"
+    >
       <path
         id="Vector_65-4-6-9"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve237Color}
       />
       <g id="Group_33-3-7-5">
         <path
           id="Vector_66-1-7-9"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve237Color}
         />
         <path
           id="Vector_67-2-19-2"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve237Color}
         />
       </g>
       <path
         id="Vector_68-3-16-6"
         d="m 589.2,585 v 10"
-        stroke="#323e48"
+        stroke={ve237Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -1817,28 +1926,32 @@ const SVGComponent = (props) => (
       rx={17.938143}
       ry={15.715229}
     />
-    <g id="Group_32-5-67-3" transform="translate(467.59555,-159.10226)">
+    <g
+      id="Group_32-5-67-3"
+      transform="translate(467.59555,-159.10226)"
+      inkscape:label="ve240"
+    >
       <path
         id="Vector_65-4-6-2"
         d="m 524.44314,586.62745 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve240Color}
       />
       <g id="Group_33-3-7-4" transform="translate(-72.156863,0.62745098)">
         <path
           id="Vector_66-1-7-1"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve240Color}
         />
         <path
           id="Vector_67-2-19-1"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve240Color}
         />
       </g>
       <path
         id="Vector_68-3-16-5"
         d="m 517.04314,585.62745 v 10"
-        stroke="#323e48"
+        stroke={ve240Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -1857,28 +1970,32 @@ const SVGComponent = (props) => (
         strokeMiterlimit={10}
       />
     </g>
-    <g id="Group_32-5-67-3-0" transform="translate(488.84322,-275.95839)">
+    <g
+      id="Group_32-5-67-3-0"
+      transform="translate(488.84322,-275.95839)"
+      inkscape:label="ve238"
+    >
       <path
         id="Vector_65-4-6-2-6"
         d="m 533.54118,585.37255 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve238Color}
       />
       <g id="Group_33-3-7-4-4" transform="translate(-63.058824,-0.62745098)">
         <path
           id="Vector_66-1-7-1-5"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve238Color}
         />
         <path
           id="Vector_67-2-19-1-3"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve238Color}
         />
       </g>
       <path
         id="Vector_68-3-16-5-0"
         d="m 526.14118,584.37255 v 10"
-        stroke="#323e48"
+        stroke={ve238Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -2351,28 +2468,32 @@ const SVGComponent = (props) => (
       }}
       id="path1-3-2-3-6-7-2-7-9-8-1-4"
     />
-    <g id="Group_32-5-67-3-6" transform="translate(495.34902,-23.921568)">
+    <g
+      id="Group_32-5-67-3-6"
+      transform="translate(495.34902,-23.921568)"
+      inkscape:label="ve244"
+    >
       <path
         id="Vector_65-4-6-2-3"
         d="m 524.44314,586.62745 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        fill={ve244Color}
       />
       <g id="Group_33-3-7-4-7" transform="translate(-72.156863,0.62745098)">
         <path
           id="Vector_66-1-7-1-8"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          fill={ve244Color}
         />
         <path
           id="Vector_67-2-19-1-8"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          fill={ve244Color}
         />
       </g>
       <path
         id="Vector_68-3-16-5-2"
         d="m 517.04314,585.62745 v 10"
-        stroke="#323e48"
+        stroke={ve244Color}
         strokeWidth={4}
         strokeMiterlimit={10}
       />
@@ -2857,7 +2978,7 @@ const SVGComponent = (props) => (
           }}
           id="tspan28"
         >
-          {"VE-237"}
+          {"VE-238"}
         </tspan>
       </tspan>
     </text>
@@ -3916,5 +4037,6 @@ const SVGComponent = (props) => (
       sodipodi:nodetypes="cc"
     />
   </svg>
-);
+  );
+};
 export default SVGComponent;

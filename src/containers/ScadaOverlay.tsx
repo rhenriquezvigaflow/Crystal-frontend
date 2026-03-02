@@ -18,36 +18,30 @@ export default function ScadaOverlay({
   if (!layout?.kpis) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-50">
+    <div className="absolute inset-0 z-50 pointer-events-none">
       {layout.kpis.map((item: any) => {
-        // ===============================
-        // KPI NORMAL
-        // ===============================
         if (item.type === "kpi") {
           const value = tags?.[item.backendTag];
           if (value === undefined || value === null) return null;
 
           const formatted =
-            typeof value === "number"
-              ? value.toFixed(2)
-              : String(value);
+            typeof value === "number" ? value.toFixed(2) : String(value);
 
           return (
             <div
               key={item.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
+              className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
               style={{
                 top: item.position?.top,
                 left: item.position?.left,
+                textShadow: "0 1px 2px rgba(255,255,255,0.92)",
               }}
             >
               <div className="flex items-baseline justify-center gap-1">
                 <span
-                  className="font-semibold text-[12px] md:text-[13px]"
+                  className="text-[clamp(11px,0.95vw,16px)] font-semibold leading-none text-slate-900"
                   style={{
                     fontVariantNumeric: "tabular-nums",
-                    width: "60px",
-                    display: "inline-block",
                     textAlign: "right",
                   }}
                 >
@@ -55,7 +49,7 @@ export default function ScadaOverlay({
                 </span>
 
                 {item.unit && (
-                  <span className="text-[10px] md:text-[11px] italic text-slate-700">
+                  <span className="text-[clamp(9px,0.72vw,12px)] text-slate-700">
                     {item.unit}
                   </span>
                 )}
@@ -64,64 +58,46 @@ export default function ScadaOverlay({
           );
         }
 
-        // ===============================
-        // PLC STATUS + RELOJ (RESTORED)
-        // ===============================
         if (item.type === "plc_status") {
           const isOnline = plc_status === "online";
 
           return (
             <div
               key={item.id}
-              className="
-                absolute
-                -translate-x-1/2
-                -translate-y-1/2
-                bg-white
-                rounded-xl
-                border
-                border-slate-300
-                shadow-md
-                px-6
-                py-4
-                w-[16%]
-                min-w-[200px]
-                max-w-[280px]
-                text-center
-              "
+              className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
               style={{
                 top: item.position?.top,
                 left: item.position?.left,
+                width: "clamp(170px, 20vw, 250px)",
               }}
             >
-              {/* STATUS */}
-              <div className="flex items-center justify-center gap-2">
-                <span
-                  className={`w-3 h-3 rounded-full ${
-                    isOnline ? "bg-emerald-500" : "bg-red-500"
-                  }`}
-                />
+              <div className="rounded-[14px] border border-slate-200 bg-white/96 px-4 py-3 shadow-[0_22px_48px_-26px_rgba(15,23,42,0.45)] sm:px-5 sm:py-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${
+                      isOnline ? "bg-emerald-500" : "bg-red-500"
+                    }`}
+                  />
 
-                <span
-                  className={`text-sm font-semibold ${
-                    isOnline ? "text-emerald-600" : "text-red-600"
-                  }`}
+                  <span
+                    className={`text-[clamp(10px,0.85vw,14px)] font-semibold tracking-[0.08em] uppercase ${
+                      isOnline ? "text-emerald-700" : "text-red-700"
+                    }`}
+                  >
+                    {isOnline ? "En linea" : "Desconectado"}
+                  </span>
+                </div>
+
+                <div
+                  className="mt-2 text-[clamp(15px,1.25vw,22px)] font-bold text-slate-900"
+                  style={{ fontVariantNumeric: "tabular-nums" }}
                 >
-                  {isOnline ? "En línea" : "Desconectado"}
-                </span>
-              </div>
+                  {local_time ?? "--:--:--"}
+                </div>
 
-              {/* HORA */}
-              <div
-                className="mt-2 text-[16px] font-bold text-slate-800"
-                style={{ fontVariantNumeric: "tabular-nums" }}
-              >
-                {local_time ?? "--:--:--"}
-              </div>
-
-              {/* TIMEZONE */}
-              <div className="mt-1 text-[10px] text-slate-500">
-                {timezone ?? ""}
+                <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">
+                  {timezone ?? ""}
+                </div>
               </div>
             </div>
           );

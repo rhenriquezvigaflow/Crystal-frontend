@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 
-import ScadaOverlay from "../containers/ScadaOverlay";
-import PumpStatusKpi from "../components/lagoon/PumpStatusKpi";
-import LagoonLineChart from "../components/charts/LagoonLineChart";
-import DateRangePicker from "../components/filters/DateRangePicker";
+import LagoonLineChart from "./charts/LagoonLineChart";
+import DateRangePicker from "./filters/DateRangePicker";
+import PumpStatusKpi from "./lagoon/PumpStatusKpi";
+import ScadaMapPanel from "./lagoon/ScadaMapPanel";
 
 import { useScadaRealtime } from "../hooks/useScadaRealtime";
 import { useHistory } from "../hooks/useHistory";
@@ -29,9 +29,6 @@ interface Props {
   lagoonId: string;
 }
 
-/* =========================
-   Helpers
-========================= */
 function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
   if (days <= 14) return "hourly";
   if (days <= 180) return "daily";
@@ -170,63 +167,30 @@ function normalizePumpState(value: unknown): number | null {
   return null;
 }
 
-export default function LagoonContainer({ lagoonId }: Props) {
+interface PumpStatusSectionProps {
+  lagoonId: string;
+  layout: any;
+  tags: Record<string, any>;
+  pumpLastOn: Record<string, any>;
+  timezone?: string | null;
+}
 
-  /* =========================
-     Layout dinámico JSON
-  ========================== */
-  const lagoonConfig = lagoons.find((l) => l.id === lagoonId);
-  const [layout, setLayout] = useState<any>(null);
-
-  useEffect(() => {
-    if (!lagoonConfig?.layout) return;
-
-    import(`../layouts/crystal-${lagoonConfig.layout}.layout.json`)
-      .then((module) => setLayout(module.default))
-      .catch(() => setLayout(null));
-  }, [lagoonConfig]);
-
-  /* =========================
-     SVG dinámico
-  ========================== */
-  const SvgComponent =
-    lagoonConfig?.layout && svgRegistry[lagoonConfig.layout]
-      ? svgRegistry[lagoonConfig.layout]
-      : null;
-
-  /* =========================
-     Fechas
-  ========================== */
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-  const [startISO, setStartISO] = useState(oneDayAgo.toISOString());
-  const [endISO, setEndISO] = useState(now.toISOString());
-
-  const [visibleStart, setVisibleStart] = useState<Date>(oneDayAgo);
-  const [visibleEnd, setVisibleEnd] = useState<Date>(now);
-
-  const daysVisible = useMemo(
-    () => daysBetween(visibleStart, visibleEnd),
-    [visibleStart, visibleEnd],
-  );
-
-  const view = getViewByDays(daysVisible);
-
-  const { tags, pumpLastOn, plc_status, local_time, timezone } =
-    useScadaRealtime(lagoonId);
+function PumpStatusSection({
+  lagoonId,
+  layout,
+  tags,
+  pumpLastOn,
+  timezone,
+}: PumpStatusSectionProps) {
   const {
     events: latestPumpEvents,
     loading: pumpEventsLoading,
     error: pumpEventsError,
   } = usePumpEventsLast3(lagoonId);
 
-  /* =========================
-     Pumps desde layout
-  ========================== */
-  const pumpsKpi = layout?.kpis?.find(
-    (kpi: any) => kpi.type === "pumps"
-  ) as any;
+  const pumpsKpi = layout?.kpis?.find((kpi: any) => kpi.type === "pumps") as
+    | any
+    | undefined;
 
   const pumpEventsByTag = useMemo(() => {
     const map = new Map<string, PumpEvent[]>();
@@ -251,41 +215,73 @@ export default function LagoonContainer({ lagoonId }: Props) {
     !pumpEventsError &&
     latestPumpEvents.length === 0;
 
-  const resolvedPumps = pumpsKpi?.pumps
-    ? Object.fromEntries(
-        pumpsKpi.pumps.map((pump: any) => [
-          pump.id,
-          (() => {
-            const endpointEvents = pumpEventsByTag.get(pump.backendTag) ?? [];
-            const fallbackEvents = normalizePumpEvents(
-              pumpLastOn?.[pump.backendTag],
-            ).map((startLocal) => ({
-              lagoon_id: lagoonId,
-              tag_id: pump.backendTag,
-              tag_label: pump.label || pump.backendTag,
-              start_local: startLocal,
-            }));
+  const resolvedPumps = useMemo(() => {
+    if (!pumpsKpi?.pumps) return null;
 
-            const events = (endpointEvents.length
-              ? endpointEvents
-              : pumpEventsError
-                ? fallbackEvents
-                : []
-            ).slice(0, 3);
+    return Object.fromEntries(
+      pumpsKpi.pumps.map((pump: any) => [
+        pump.id,
+        (() => {
+          const endpointEvents = pumpEventsByTag.get(pump.backendTag) ?? [];
+          const fallbackEvents = normalizePumpEvents(
+            pumpLastOn?.[pump.backendTag],
+          ).map((startLocal) => ({
+            lagoon_id: lagoonId,
+            tag_id: pump.backendTag,
+            tag_label: pump.label || pump.backendTag,
+            start_local: startLocal,
+          }));
 
-            return {
-              label: pump.label,
-              state: normalizePumpState(tags[pump.backendTag]),
-              events,
-            };
-          })(),
-        ]),
-      )
-    : null;
+          const events = (endpointEvents.length
+            ? endpointEvents
+            : pumpEventsError
+              ? fallbackEvents
+              : []
+          ).slice(0, 3);
 
-  /* =========================
-     Histórico
-  ========================== */
+          return {
+            label: pump.label,
+            state: normalizePumpState(tags[pump.backendTag]),
+            events,
+          };
+        })(),
+      ]),
+    );
+  }, [lagoonId, pumpEventsByTag, pumpEventsError, pumpLastOn, pumpsKpi, tags]);
+
+  if (!resolvedPumps) return null;
+
+  return (
+    <PumpStatusKpi
+      pumps={resolvedPumps}
+      timezone={timezone}
+      eventsLoading={pumpEventsLoading}
+      eventsError={pumpEventsError}
+      eventsEmpty={isPumpEventsEmpty}
+    />
+  );
+}
+
+interface HistorySectionProps {
+  lagoonId: string;
+  timezone?: string | null;
+}
+
+function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
+  const now = new Date();
+  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  const [startISO, setStartISO] = useState(oneDayAgo.toISOString());
+  const [endISO, setEndISO] = useState(now.toISOString());
+  const [visibleStart, setVisibleStart] = useState<Date>(oneDayAgo);
+  const [visibleEnd, setVisibleEnd] = useState<Date>(now);
+
+  const daysVisible = useMemo(
+    () => daysBetween(visibleStart, visibleEnd),
+    [visibleStart, visibleEnd],
+  );
+  const view = getViewByDays(daysVisible);
+
   const { data, loading } = useHistory({
     lagoonId,
     startDate: visibleStart.toISOString(),
@@ -334,9 +330,9 @@ export default function LagoonContainer({ lagoonId }: Props) {
   const someTagsSelected =
     selectedTags.length > 0 && selectedTags.length < availableTags.length;
 
-  const onDateRangeChange = (s: string, e: string) => {
-    const start = new Date(s);
-    const end = new Date(e);
+  const onDateRangeChange = (startValue: string, endValue: string) => {
+    const start = new Date(startValue);
+    const end = new Date(endValue);
 
     if (start > end) return;
     start.setHours(0, 0, 0, 0);
@@ -362,153 +358,182 @@ export default function LagoonContainer({ lagoonId }: Props) {
     setVisibleEnd(end);
   };
 
-  const lagoonName = lagoons.find((l) => l.id === lagoonId)?.name ?? lagoonId;
+  return (
+    <section className="lagoon-panel rounded-[16px] p-4 sm:p-5">
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 700,
+          letterSpacing: 1,
+          color: "#4f7fa2",
+          mb: 2,
+          display: "block",
+        }}
+      >
+        HISTORICO - VISTA {view.toUpperCase()}
+      </Typography>
+
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "minmax(0, 260px) minmax(0, 1fr) auto",
+          },
+          alignItems: "center",
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: { xs: "100%", md: 240 },
+            maxWidth: { xs: "100%", md: 280 },
+          }}
+        >
+          <InputLabel>TAG</InputLabel>
+          <Select
+            multiple
+            value={selectedTags}
+            onChange={handleTagChange}
+            input={<OutlinedInput label="TAG" />}
+            renderValue={(selected) => {
+              const list = selected as string[];
+              if (!list.length) return "Seleccionar TAG";
+              if (list.length === availableTags.length) return "Todos los TAG";
+              return list.join(", ");
+            }}
+            MenuProps={MENU_PROPS}
+          >
+            <MenuItem value={ALL_TAGS_VALUE}>
+              <Checkbox
+                size="small"
+                checked={allTagsSelected}
+                indeterminate={someTagsSelected}
+              />
+              <ListItemText primary="Seleccionar todo" />
+            </MenuItem>
+
+            {availableTags.map((tag) => (
+              <MenuItem key={tag} value={tag}>
+                <Checkbox size="small" checked={selectedTags.includes(tag)} />
+                <ListItemText primary={tag} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "flex-start", md: "center" },
+            gap: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          {quickRanges.map((range) => (
+            <button
+              key={range.label}
+              className="rounded-md border border-sky-100 bg-white/88 px-3 py-1.5 text-xs font-medium text-sky-900 shadow-[0_12px_24px_-20px_rgba(29,92,128,0.45)] transition hover:border-sky-200 hover:bg-sky-50"
+              onClick={() => quickRange(range.days)}
+            >
+              {range.label}
+            </button>
+          ))}
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
+          <DateRangePicker
+            startISO={startISO}
+            endISO={endISO}
+            onChange={onDateRangeChange}
+          />
+        </Box>
+      </Box>
+
+      <div className="relative w-full overflow-hidden rounded-xl border border-sky-100 bg-white/92 shadow-[0_18px_34px_-24px_rgba(29,92,128,0.28)]">
+        <div className="h-[19rem] sm:h-[22rem] lg:h-[24rem]">
+          <LagoonLineChart
+            data={data}
+            loading={loading}
+            visibleStart={visibleStart}
+            visibleEnd={visibleEnd}
+            selectedTags={selectedTags}
+            timezone={timezone}
+            onRangeChange={(start, end) => {
+              setVisibleStart(start);
+              setVisibleEnd(end);
+            }}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function LagoonContainer({
+  lagoonId,
+}: Props) {
+  const lagoonConfig = lagoons.find((lagoon) => lagoon.id === lagoonId);
+  const lagoonName = lagoonConfig?.name ?? lagoonId;
+  const lagoonCountry = lagoonConfig?.country ?? "Laguna";
+  const [layout, setLayout] = useState<any>(null);
+
+  useEffect(() => {
+    if (!lagoonConfig?.layout) {
+      setLayout(null);
+      return;
+    }
+
+    import(`../layouts/crystal-${lagoonConfig.layout}.layout.json`)
+      .then((module) => setLayout(module.default))
+      .catch(() => setLayout(null));
+  }, [lagoonConfig]);
+
+  const svgEntry =
+    lagoonConfig?.layout && svgRegistry[lagoonConfig.layout]
+      ? svgRegistry[lagoonConfig.layout]
+      : null;
+
+  const SvgComponent = svgEntry?.component ?? null;
+  const aspectRatio = svgEntry?.aspectRatio ?? "1429.5 / 960";
+
+  const { tags, pumpLastOn, plc_status, local_time, timezone } =
+    useScadaRealtime(lagoonId);
+
+  const mapPanel = (
+    <ScadaMapPanel
+      heading={lagoonCountry}
+      title={lagoonName}
+      layout={layout}
+      tags={tags}
+      plcStatus={plc_status}
+      localTime={local_time}
+      timezone={timezone}
+      SvgComponent={SvgComponent}
+      aspectRatio={aspectRatio}
+    />
+  );
 
   return (
-    <main className="h-full overflow-y-auto">
-      <div className="min-h-175 p-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white">
-        <div className="mb-4 text-sm font-semibold text-slate-700">
-          Laguna: {lagoonName}
-        </div>
+    <main className="h-full">
+      <div className="space-y-6 p-1 sm:p-2">
+        {mapPanel}
 
-          <div
-            className="relative w-full overflow-hidden flex items-center justify-center"
-            style={{ aspectRatio: "1429.5 / 960" }}
-          >
-            {SvgComponent && (
-              <div className="w-full h-full flex items-center justify-center">
-                <SvgComponent className="max-w-full max-h-full" />
-              </div>
-            )}
-
-            {layout && (
-              <ScadaOverlay
-                layout={layout}
-                tags={tags}
-                plc_status={plc_status}
-                local_time={local_time}
-                timezone={timezone}
-              />
-            )}
-          </div>
-
-        {resolvedPumps && (
-          <div className="mt-6 w-full">
-            <PumpStatusKpi
-              pumps={resolvedPumps}
+        <div className="mt-6 space-y-6">
+          {layout && (
+            <PumpStatusSection
+              lagoonId={lagoonId}
+              layout={layout}
+              tags={tags}
+              pumpLastOn={pumpLastOn}
               timezone={timezone}
-              eventsLoading={pumpEventsLoading}
-              eventsError={pumpEventsError}
-              eventsEmpty={isPumpEventsEmpty}
             />
-          </div>
-        )}
+          )}
 
-        <section className="mt-36">
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 600,
-              letterSpacing: 1,
-              color: "#64748b",
-              mb: 2,
-              display: "block",
-            }}
-          >
-            HISTÓRICO · VISTA {view.toUpperCase()}
-          </Typography>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm: "1fr",
-                md: "1fr 1fr 1fr",
-              },
-              alignItems: "center",
-              gap: 2,
-              mb: 3,
-            }}
-          >
-            {/* LEFT TAG SELECT */}
-            <FormControl size="small" sx={{ minWidth: 200, maxWidth: 240 }}>
-              <InputLabel>TAG</InputLabel>
-              <Select
-                multiple
-                value={selectedTags}
-                onChange={handleTagChange}
-                input={<OutlinedInput label="TAG" />}
-                renderValue={(selected) => {
-                  const list = selected as string[];
-                  if (!list.length) return "Seleccionar TAG";
-                  if (list.length === availableTags.length)
-                    return "Todos los TAG";
-                  return list.join(", ");
-                }}
-                MenuProps={MENU_PROPS}
-              >
-                <MenuItem value={ALL_TAGS_VALUE}>
-                  <Checkbox
-                    size="small"
-                    checked={allTagsSelected}
-                    indeterminate={someTagsSelected}
-                  />
-                  <ListItemText primary="Seleccionar todo" />
-                </MenuItem>
-
-                {availableTags.map((tag) => (
-                  <MenuItem key={tag} value={tag}>
-                    <Checkbox
-                      size="small"
-                      checked={selectedTags.includes(tag)}
-                    />
-                    <ListItemText primary={tag} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* QUICK RANGES */}
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-              {quickRanges.map((r) => (
-                <button
-                  key={r.label}
-                  className="px-3 py-1 text-xs rounded-md border border-slate-300 bg-white hover:bg-slate-100 transition"
-                  onClick={() => quickRange(r.days)}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </Box>
-
-            {/* DATE PICKER */}
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <DateRangePicker
-                startISO={startISO}
-                endISO={endISO}
-                onChange={onDateRangeChange}
-              />
-            </Box>
-          </Box>
-
-          <div className="relative w-full rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div className="h-95 overflow-hidden">
-              <LagoonLineChart
-                data={data}
-                loading={loading}
-                visibleStart={visibleStart}
-                visibleEnd={visibleEnd}
-                selectedTags={selectedTags}
-                timezone={timezone}
-                onRangeChange={(s, e) => {
-                  setVisibleStart(s);
-                  setVisibleEnd(e);
-                }}
-              />
-            </div>
-          </div>
-        </section>
+          <HistorySection lagoonId={lagoonId} timezone={timezone} />
+        </div>
       </div>
     </main>
   );

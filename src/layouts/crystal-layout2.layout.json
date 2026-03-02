@@ -11,16 +11,16 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT112_R_SCADA",
-      "position": { "top": "51.5%", "left": "29.7%" }
+      "position": { "top": "51.5%", "left": "28.5%" }
     },
     {
       "id": "FIT002_R_SCADA",
       "type": "kpi",
       "label": "FIT002_R_SCADA",
       "unit": "l/s",
-      "iconType": "pressure",
+      "iconType": "flow",
       "backendTag": "FIT002_R_SCADA",
-      "position": { "top": "60.5%", "left": "29.7%" }
+      "position": { "top": "61.5%", "left": "28.5%" }
     },
     {
       "id": "PT116_R_SCADA",
@@ -29,7 +29,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT116_R_SCADA",
-      "position": { "top": "63.3%", "left": "62%" }
+      "position": { "top": "64.5%", "left": "64.5%" }
     },
     {
       "id": "DIF_PRES_SCADA",
@@ -38,7 +38,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "DIF_PRES_SCADA",
-      "position": { "top": "62.3%", "left": "50.5%" }
+      "position": { "top": "63.4%", "left": "52%" }
     },
 
     {
@@ -48,7 +48,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT114_R_SCADA",
-      "position": { "top": "29.5%", "left": "37.5%" }
+      "position": { "top": "27.5%", "left": "37.5%" }
     },
 
 
