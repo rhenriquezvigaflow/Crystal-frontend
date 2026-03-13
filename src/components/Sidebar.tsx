@@ -1,14 +1,21 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { lagoons } from "../data/lagoons";
+import { useNavigate } from "react-router-dom";
+
+import type { LagoonAccess } from "../api/lagoonsApi";
 
 interface Props {
+  lagoons: LagoonAccess[];
+  selectedLagoonId: string | null;
   onNavigate?: () => void;
   className?: string;
 }
 
-export default function Sidebar({ onNavigate, className }: Props) {
+export default function Sidebar({
+  lagoons,
+  selectedLagoonId,
+  onNavigate,
+  className,
+}: Props) {
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <aside
@@ -31,14 +38,20 @@ export default function Sidebar({ onNavigate, className }: Props) {
       </div>
 
       <nav className="relative space-y-2">
+        {!lagoons.length && (
+          <div className="rounded-[14px] border border-slate-200 bg-white/75 px-4 py-3 text-sm text-slate-600">
+            Sin lagunas disponibles.
+          </div>
+        )}
+
         {lagoons.map((lagoon) => {
-          const active = location.pathname === `/lagoon/${lagoon.id}`;
+          const active = selectedLagoonId === lagoon.lagoon_id;
 
           return (
             <button
-              key={lagoon.id}
+              key={lagoon.lagoon_id}
               onClick={() => {
-                navigate(`/lagoon/${lagoon.id}`);
+                navigate(`/lagoon/${encodeURIComponent(lagoon.lagoon_id)}`);
                 onNavigate?.();
               }}
               className={[
@@ -48,7 +61,7 @@ export default function Sidebar({ onNavigate, className }: Props) {
                   : "text-slate-700 hover:bg-white/72 hover:text-slate-900",
               ].join(" ")}
             >
-              <div className="truncate">{lagoon.name}</div>
+              <div className="truncate">{lagoon.lagoon_name}</div>
             </button>
           );
         })}

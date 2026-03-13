@@ -265,7 +265,7 @@ export default function LagoonLineChart({
   if (!sourceSeries.length) {
     return (
       <Box className="flex items-center justify-center h-full text-xs text-slate-400">
-        Sin datos historicos
+        Sin datos históricos
       </Box>
     );
   }
@@ -273,7 +273,7 @@ export default function LagoonLineChart({
   if (!series.length) {
     return (
       <Box className="flex items-center justify-center h-full text-xs text-slate-400">
-        Selecciona al menos un TAG para visualizar el grafico
+        Selecciona al menos un TAG para visualizar el gráfico
       </Box>
     );
   }

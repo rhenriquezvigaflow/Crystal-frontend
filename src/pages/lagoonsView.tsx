@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import TopBar from "../components/TopBar";
 import Sidebar from "../components/Sidebar";
 import LagoonContainer from "../components/lagoonContainer";
+import { useAuth } from "../auth/AuthContext";
+import { useLagoons } from "../lagoons/LagoonsContext";
 
 function CloseIcon() {
   return (
@@ -18,8 +20,47 @@ function CloseIcon() {
   );
 }
 
+type FullscreenMessageProps = {
+  message: string;
+  actionLabel?: string;
+  onAction?: () => void;
+};
+
+function FullscreenMessage({ message, actionLabel, onAction }: FullscreenMessageProps) {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-6 text-center">
+      <div className="rounded-xl border border-slate-200 bg-white px-6 py-5 text-sm font-medium text-slate-700 shadow-sm">
+        <p>{message}</p>
+        {actionLabel && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            className="mt-4 inline-flex items-center justify-center rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
+          >
+            {actionLabel}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export default function LagoonsView() {
-  const { lagoonId } = useParams<{ lagoonId: string }>();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { lagoonId: rawLagoonId } = useParams<{ lagoonId: string }>();
+  const lagoonId = rawLagoonId ? safeDecode(rawLagoonId) : null;
+  const { lagoons, loading, error, errorStatus, getLagoonById } = useLagoons();
+
+  const selectedLagoon = lagoonId ? getLagoonById(lagoonId) : null;
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
@@ -45,20 +86,61 @@ export default function LagoonsView() {
     };
   }, [isMobileNavOpen]);
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  if (loading) {
+    return <FullscreenMessage message="Cargando lagunas..." />;
+  }
+
+  if (errorStatus === 403) {
+    return <FullscreenMessage message="Acceso no permitido" />;
+  }
+
+  if (error) {
+    return <FullscreenMessage message={error} />;
+  }
+
+  if (!lagoons.length) {
+    return (
+      <FullscreenMessage
+        message="No hay lagunas disponibles para tu usuario."
+        actionLabel="Cerrar sesión"
+        onAction={handleLogout}
+      />
+    );
+  }
+
+  if (!selectedLagoon) {
+    return <FullscreenMessage message="Acceso no permitido" />;
+  }
+
+  const handleLagoonChange = (nextLagoonId: string) => {
+    navigate(`/lagoon/${encodeURIComponent(nextLagoonId)}`);
+    setIsMobileNavOpen(false);
+  };
+
   return (
     <div className="min-h-screen">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[260px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
         <div className="hidden lg:row-span-2 lg:block">
-          <Sidebar />
+          <Sidebar lagoons={lagoons} selectedLagoonId={selectedLagoon.lagoon_id} />
         </div>
 
         <TopBar
+          lagoons={lagoons}
+          selectedLagoonId={selectedLagoon.lagoon_id}
+          onLagoonChange={handleLagoonChange}
+          canEdit={selectedLagoon.can_edit}
+          onLogout={handleLogout}
           onMenuToggle={() => setIsMobileNavOpen((open) => !open)}
           isMenuOpen={isMobileNavOpen}
         />
 
-        <div className="px-3 pb-4 pt-2 sm:px-4 lg:px-4 lg:pb-4 lg:pt-1">
-          <LagoonContainer lagoonId={lagoonId ?? "--"} />
+        <div className="px-2 pb-4 pt-2 sm:px-3 lg:px-3 lg:pb-4 lg:pt-1">
+          <LagoonContainer lagoon={selectedLagoon} />
         </div>
       </div>
 
@@ -66,7 +148,7 @@ export default function LagoonsView() {
         <div className="fixed inset-0 z-[120] lg:hidden">
           <button
             type="button"
-            aria-label="Cerrar menu lateral"
+            aria-label="Cerrar menú lateral"
             className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
             onClick={() => setIsMobileNavOpen(false)}
           />
@@ -76,7 +158,7 @@ export default function LagoonsView() {
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(false)}
-                aria-label="Cerrar menu"
+                aria-label="Cerrar menú"
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/70 bg-white/90 text-slate-700 shadow-sm"
               >
                 <CloseIcon />
@@ -84,6 +166,8 @@ export default function LagoonsView() {
             </div>
 
             <Sidebar
+              lagoons={lagoons}
+              selectedLagoonId={selectedLagoon.lagoon_id}
               onNavigate={() => setIsMobileNavOpen(false)}
               className="shadow-[0_22px_48px_-24px_rgba(15,23,42,0.55)]"
             />

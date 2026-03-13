@@ -35,7 +35,7 @@ export default function Login() {
         if (err.status === 401) {
           setError("Credenciales inválidas");
         } else if (err.status === 403) {
-          setError("No autorizado");
+          setError("Acceso no permitido");
         } else {
           setError("Error al iniciar sesión");
         }
@@ -63,7 +63,7 @@ export default function Login() {
           <div className="rounded-2xl bg-white/18 backdrop-blur-[6px] border border-white/25 shadow-2xl p-8 text-white">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-semibold tracking-wide">Crystal Lagoons</h1>
-              <p className="text-sm opacity-80 mt-1">SCADA Platform</p>
+              <p className="text-sm opacity-80 mt-1">Plataforma SCADA</p>
             </div>
 
             {error && (
@@ -74,7 +74,7 @@ export default function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="text-sm opacity-85">Email</label>
+                <label className="text-sm opacity-85">Correo electrónico</label>
                 <input
                   type="email"
                   autoComplete="username"
@@ -87,7 +87,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="text-sm opacity-85">Password</label>
+                <label className="text-sm opacity-85">Contraseña</label>
                 <input
                   type="password"
                   autoComplete="current-password"

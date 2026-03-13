@@ -1,4 +1,11 @@
+import type { LagoonAccess } from "../api/lagoonsApi";
+
 interface Props {
+  lagoons: LagoonAccess[];
+  selectedLagoonId: string | null;
+  onLagoonChange?: (lagoonId: string) => void;
+  canEdit?: boolean;
+  onLogout?: () => void;
   onMenuToggle?: () => void;
   isMenuOpen?: boolean;
 }
@@ -34,7 +41,15 @@ function GearIcon() {
   );
 }
 
-export default function TopBar({ onMenuToggle, isMenuOpen }: Props) {
+export default function TopBar({
+  lagoons,
+  selectedLagoonId,
+  onLagoonChange,
+  canEdit = false,
+  onLogout,
+  onMenuToggle,
+  isMenuOpen,
+}: Props) {
   return (
     <header className="lagoon-topbar sticky top-0 z-30 mx-4 mt-3 rounded-[18px] px-3 py-3 sm:mx-6">
       <div className="relative flex items-center justify-between gap-3">
@@ -42,7 +57,7 @@ export default function TopBar({ onMenuToggle, isMenuOpen }: Props) {
           <button
             type="button"
             onClick={onMenuToggle}
-            aria-label={isMenuOpen ? "Cerrar menu lateral" : "Abrir menu lateral"}
+            aria-label={isMenuOpen ? "Cerrar menú lateral" : "Abrir menú lateral"}
             className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
           >
             <HamburgerIcon />
@@ -59,23 +74,66 @@ export default function TopBar({ onMenuToggle, isMenuOpen }: Props) {
         </div>
 
         <div className="hidden flex-1 justify-center px-2 md:flex">
-          <input
-            type="text"
-            placeholder="Buscar en el panel..."
-            className="h-10 w-full max-w-md rounded-xl border border-sky-100 bg-white/88 px-4 text-sm text-slate-700 placeholder-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-sky-200"
-          />
+          <label className="w-full max-w-md">
+            <span className="sr-only">Seleccionar laguna</span>
+            <select
+              value={selectedLagoonId ?? ""}
+              onChange={(event) => onLagoonChange?.(event.target.value)}
+              disabled={!lagoons.length}
+              className="h-10 w-full rounded-xl border border-sky-100 bg-white/88 px-4 text-sm font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-sky-200 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {!lagoons.length && <option value="">Sin lagunas disponibles</option>}
+              {lagoons.map((lagoon) => (
+                <option key={lagoon.lagoon_id} value={lagoon.lagoon_id}>
+                  {lagoon.lagoon_name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-slate-600">
-          <span className="hidden xl:inline text-sky-800/75">Administrador</span>
+          <span className="hidden xl:inline text-sky-800/75">
+            {canEdit ? "Editor" : "Solo lectura"}
+          </span>
+
           <button
             type="button"
-            aria-label="Configuracion"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/88 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
+            onClick={onLogout}
+            className="h-11 rounded-xl border border-rose-100 bg-white/88 px-3 text-xs font-semibold tracking-wide text-rose-700 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-rose-200 hover:bg-rose-50"
           >
-            <GearIcon />
+            Cerrar sesión
           </button>
+
+          {canEdit && (
+            <button
+              type="button"
+              aria-label="Configuración"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/88 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
+            >
+              <GearIcon />
+            </button>
+          )}
         </div>
+      </div>
+
+      <div className="mt-3 md:hidden">
+        <label className="block">
+          <span className="sr-only">Seleccionar laguna</span>
+          <select
+            value={selectedLagoonId ?? ""}
+            onChange={(event) => onLagoonChange?.(event.target.value)}
+            disabled={!lagoons.length}
+            className="h-10 w-full rounded-xl border border-sky-100 bg-white/88 px-4 text-sm font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-sky-200 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {!lagoons.length && <option value="">Sin lagunas disponibles</option>}
+            {lagoons.map((lagoon) => (
+              <option key={lagoon.lagoon_id} value={lagoon.lagoon_id}>
+                {lagoon.lagoon_name}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </header>
   );

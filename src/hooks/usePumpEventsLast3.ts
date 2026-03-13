@@ -3,6 +3,7 @@ import {
   fetchPumpEventsLast3,
   type PumpEvent,
 } from "../api/scadaPumpEvents";
+import { ApiError } from "../auth/authApi";
 
 interface UsePumpEventsLast3Result {
   events: PumpEvent[];
@@ -31,11 +32,14 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
         if (cancelled) return;
         setEvents(res.events ?? []);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (cancelled) return;
-        console.error("PUMP EVENTS ERROR", err);
         setEvents([]);
-        setError("Sin datos historicos");
+        if (err instanceof ApiError && err.status === 403) {
+          setError("Acceso no permitido");
+          return;
+        }
+        setError("Sin datos históricos");
       })
       .finally(() => {
         if (cancelled) return;

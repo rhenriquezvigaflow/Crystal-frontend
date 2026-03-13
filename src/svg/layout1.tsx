@@ -1,73 +1,320 @@
 import * as React from "react";
-const SVGComponent1 = (props) => (
+
+type DeviceCode =
+  | "P-017"
+  | "BOMBA-FILTRACION"
+  | "BOMBA-RETROLAVADO"
+  | "BOMBA-RETORNO-CLARIFICADO"
+  | "VE-288"
+  | "VE-322"
+  | "VE-320"
+  | "VE-318"
+  | "P-015"
+  | "P-016";
+
+type DeviceState = 0 | 1 | 2 | 3;
+
+const DEVICE_STATE_COLORS: Record<DeviceState, string> = {
+  0: "#ef4444",
+  1: "#22c55e",
+  2: "#3b82f6",
+  3: "#facc15",
+};
+
+const DEFAULT_DEVICE_COLOR = DEVICE_STATE_COLORS[0];
+
+const DEVICE_TAG_ALIASES: Partial<Record<DeviceCode, string[]>> = {
+  "P-017": ["CL-FLO12", "CL-FL012"],
+  "BOMBA-FILTRACION": ["FILTRACION-RETROLAVADO"],
+  "BOMBA-RETROLAVADO": ["FILTRACION-RETROLAVADO"],
+  "BOMBA-RETORNO-CLARIFICADO": ["RETORNO-CLARIFICADO"],
+  "P-015": ["P-008"],
+  "P-016": ["P-007"],
+};
+
+function normalizeTagKey(key: string) {
+  return key.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+}
+
+function buildNormalizedTags(tags: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(tags ?? {}).map(([key, value]) => [normalizeTagKey(key), value]),
+  );
+}
+
+function getDeviceTagCandidates(deviceCode: DeviceCode) {
+  const aliases = DEVICE_TAG_ALIASES[deviceCode] ?? [];
+  const baseCandidates = [deviceCode, ...aliases].flatMap((code) => {
+    const compactCode = code.replace(/[^a-zA-Z0-9]/g, "");
+    const underscoredCode = code
+      .replace(/[^a-zA-Z0-9]/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .replace(/_+/g, "_");
+    const dashedCode = code
+      .replace(/[^a-zA-Z0-9]/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-+/g, "-");
+
+    return [
+      code,
+      code.toUpperCase(),
+      code.toLowerCase(),
+      compactCode,
+      compactCode.toUpperCase(),
+      compactCode.toLowerCase(),
+      underscoredCode,
+      underscoredCode.toUpperCase(),
+      underscoredCode.toLowerCase(),
+      dashedCode,
+      dashedCode.toUpperCase(),
+      dashedCode.toLowerCase(),
+    ];
+  });
+
+  const suffixes = [
+    "",
+    "_SCADA",
+    "_scada",
+    "_STS_SCADA",
+    "_sts_scada",
+    "_STATUS_SCADA",
+    "_status_scada",
+    "_STATE_SCADA",
+    "_state_scada",
+  ];
+
+  return Array.from(
+    new Set(
+      baseCandidates.flatMap((candidate) =>
+        suffixes.map((suffix) => `${candidate}${suffix}`),
+      ),
+    ),
+  );
+}
+
+function coerceDeviceState(value: unknown): DeviceState | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const parsed = Math.trunc(value);
+    return parsed >= 0 && parsed <= 3 ? (parsed as DeviceState) : null;
+  }
+
+  if (typeof value === "boolean") {
+    return value ? 1 : 0;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    switch (normalized) {
+      case "fault":
+      case "falla":
+      case "error":
+      case "alarm":
+      case "alarma":
+        return 0;
+      case "running":
+      case "funcionando":
+      case "open":
+      case "abierta":
+      case "abierto":
+        return 1;
+      case "moving":
+      case "moviendose":
+        return 2;
+      case "stopped":
+      case "detenida":
+      case "detenido":
+      case "closed":
+      case "cerrada":
+      case "cerrado":
+        return 3;
+      default: {
+        const parsed = Number(normalized);
+        return Number.isFinite(parsed) ? coerceDeviceState(parsed) : null;
+      }
+    }
+  }
+
+  return null;
+}
+
+function getDeviceColor(
+  normalizedTags: Record<string, unknown>,
+  deviceCode: DeviceCode,
+) {
+  for (const candidate of getDeviceTagCandidates(deviceCode)) {
+    const state = coerceDeviceState(normalizedTags[normalizeTagKey(candidate)]);
+    if (state !== null) return DEVICE_STATE_COLORS[state];
+  }
+
+  return DEFAULT_DEVICE_COLOR;
+}
+
+function getDeviceIndicatorStyle(color: string, strokeWidth: number) {
+  return {
+    fill: color,
+    strokeWidth,
+  };
+}
+
+const SVGComponent = ({
+  tags = {},
+  ...props
+}: React.SVGProps<SVGSVGElement> & { tags?: Record<string, unknown> }) => {
+  const normalizedTags = buildNormalizedTags(tags);
+  const P017Color = getDeviceColor(normalizedTags, "P-017");
+  const BombaFiltracionColor = getDeviceColor(normalizedTags, "BOMBA-FILTRACION");
+  const BombaRetrolavadoColor = getDeviceColor(normalizedTags, "BOMBA-RETROLAVADO");
+  const BombaRetornoClarificadoColor = getDeviceColor(
+    normalizedTags,
+    "BOMBA-RETORNO-CLARIFICADO",
+  );
+  const VE288Color = getDeviceColor(normalizedTags, "VE-288");
+  const VE322Color = getDeviceColor(normalizedTags, "VE-322");
+  const VE320Color = getDeviceColor(normalizedTags, "VE-320");
+  const VE318Color = getDeviceColor(normalizedTags, "VE-318");
+  const P015Color = getDeviceColor(normalizedTags, "P-015");
+  const P016Color = getDeviceColor(normalizedTags, "P-016");
+
+  return (
   <svg
     id="Capa_1"
-    x="0px"
-    y="0px"
-    viewBox="0 0 1393.0437 960.00002"
+    x={0}
+    y={0}
+    viewBox="0 0 1393.044 1150"
     xmlSpace="preserve"
-    width={1393.0437}
-    height={960}
-    sodipodi:docname="planilla_1.svg"
-    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
-    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width={1393.044}
+    height={1150}
     xmlnsXlink="http://www.w3.org/1999/xlink"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:svg="http://www.w3.org/2000/svg"
     {...props}
   >
-
     <defs id="defs489">
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47"
-      />
-      <rect
-        x={601.66895}
-        y={165.48366}
-        width={257.36414}
-        height={39.518486}
-        id="rect39"
-      />
-      <rect
-        x={523.12598}
-        y={339.85898}
-        width={100.27816}
-        height={22.229149}
-        id="rect38"
-      />
-      <rect
-        x={241.01518}
-        y={625.94092}
-        width={113.17235}
-        height={22.355032}
-        id="rect36"
-      />
-      <rect
-        x={141.81474}
-        y={523.94604}
-        width={60.777744}
-        height={21.656437}
-        id="rect35"
-      />
-      <rect
-        x={28.642385}
-        y={656.67908}
-        width={76.845421}
-        height={20.957844}
-        id="rect34"
-      />
-      <rect
-        x={653.8847}
-        y={527.43903}
-        width={107.58359}
-        height={39.121307}
-        id="rect31"
-      />
+      <path id="rect2" d="M1134.477 31.501h230.267v31.501h-230.267z" />
+      <path id="rect47" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect39" d="M601.669 165.484h257.364v39.518H601.669z" />
+      <path id="rect38" d="M523.126 339.859h100.278v22.229H523.126z" />
+      <path id="rect36" d="M241.015 625.941h113.172v22.355H241.015z" />
+      <path id="rect35" d="M141.815 523.946h60.778v21.656h-60.778z" />
+      <path id="rect34" d="M28.642 656.679h76.845v20.958H28.642z" />
+      <path id="rect31" d="M653.885 527.439h107.584v39.121H653.885z" />
+      <path id="rect20" d="M669.952 522.549h69.161v27.944h-69.161z" />
+      <path id="rect18" d="M655.282 521.85h96.406v27.944h-96.406z" />
+      <path id="rect17" d="M836.917 520.453h101.296v32.135H836.917z" />
+      <path id="rect47-6" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-67" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-1" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-67-2" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-67-1" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-6-9" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect47-5" d="M322.323 656.748h49.645V681.2h-49.645z" />
+      <path id="rect38-8" d="M523.126 339.859h100.278v22.229H523.126z" />
+      <path id="rect38-8-0" d="M523.126 339.859h100.278v22.229H523.126z" />
+      <path id="rect38-8-0-5" d="M523.126 339.859h100.278v22.229H523.126z" />
+      <path id="rect31-6" d="M653.885 527.439h107.584v39.121H653.885z" />
+      <path id="rect31-6-7" d="M653.885 527.439h107.584v39.121H653.885z" />
+      <linearGradient id="swatch12">
+        <stop
+          style={{
+            stopColor: "#11063d",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop12"
+        />
+      </linearGradient>
+      <linearGradient id="swatch49">
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop49"
+        />
+      </linearGradient>
+      <linearGradient id="linearGradient26-2">
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0.88195992,
+          }}
+          offset={0}
+          id="stop40"
+        />
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop41"
+        />
+      </linearGradient>
+      <linearGradient id="linearGradient26-1">
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0.88195992,
+          }}
+          offset={0}
+          id="stop38"
+        />
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop39"
+        />
+      </linearGradient>
+      <linearGradient id="linearGradient26">
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0.88195992,
+          }}
+          offset={0}
+          id="stop36"
+        />
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop37"
+        />
+      </linearGradient>
+      <linearGradient id="swatch35">
+        <stop
+          style={{
+            stopColor: "#5d8a54",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop35"
+        />
+      </linearGradient>
+      <linearGradient id="linearGradient26-3">
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0.88195992,
+          }}
+          offset={0}
+          id="stop24"
+        />
+        <stop
+          style={{
+            stopColor: "#000",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop26"
+        />
+      </linearGradient>
       <linearGradient id="swatch25">
         <stop
           style={{
@@ -78,85 +325,15 @@ const SVGComponent1 = (props) => (
           id="stop25"
         />
       </linearGradient>
-      <rect
-        x={669.95239}
-        y={522.54889}
-        width={69.160881}
-        height={27.94379}
-        id="rect20"
-      />
-      <rect
-        x={655.28186}
-        y={521.85028}
-        width={96.406075}
-        height={27.94379}
-        id="rect18"
-      />
-      <rect
-        x={836.9165}
-        y={520.45306}
-        width={101.29624}
-        height={32.135361}
-        id="rect17"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-6"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-67"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-1"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-67-2"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-67-1"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-6-9"
-      />
-      <rect
-        x={322.32266}
-        y={656.74786}
-        width={49.6451}
-        height={24.452065}
-        id="rect47-5"
-      />
       <linearGradient
         xlinkHref="#linearGradient13"
         id="linearGradient16"
         gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(0.98512187,0,0,1.000351,-1208.0367,-43.738231)"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11124}
+        gradientTransform="matrix(.98512 0 0 1.00035 -1208.037 -43.738)"
+        x1={1291.686}
+        y1={314.19}
+        x2={1278.187}
+        y2={302.111}
       />
       <linearGradient id="linearGradient13">
         <stop
@@ -180,57 +357,65 @@ const SVGComponent1 = (props) => (
         xlinkHref="#linearGradient13"
         id="linearGradient16-8"
         gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(1.4032878,0,0,1.0332772,-651.20797,-854.40745)"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11124}
+        gradientTransform="matrix(1.40329 0 0 1.03328 -651.208 -854.407)"
+        x1={1291.686}
+        y1={314.19}
+        x2={1278.187}
+        y2={302.111}
       />
       <linearGradient
         xlinkHref="#linearGradient13"
         id="linearGradient1"
         gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(1.4032878,0,0,1.0332772,-500.97842,-853.21253)"
-        x1={1291.6862}
-        y1={314.18967}
-        x2={1278.1874}
-        y2={302.11124}
+        gradientTransform="matrix(1.40329 0 0 1.03328 -500.978 -853.213)"
+        x1={1291.686}
+        y1={314.19}
+        x2={1278.187}
+        y2={302.111}
       />
-      <rect
-        x={523.12598}
-        y={339.85898}
-        width={100.27816}
-        height={22.229149}
-        id="rect38-8"
-      />
-      <rect
-        x={523.12598}
-        y={339.85898}
-        width={100.27816}
-        height={22.229149}
-        id="rect38-8-0"
+      <linearGradient
+        xlinkHref="#swatch12"
+        id="linearGradient12"
+        x1={1090.585}
+        y1={95.016}
+        x2={1353.869}
+        y2={95.016}
+        gradientUnits="userSpaceOnUse"
       />
     </defs>
     <style type="text/css" id="style1">
       {
-        ".st0{fill:none;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st1{fill:none;stroke:#00AEED;stroke-width:4;stroke-miterlimit:10;}\n\t.st2{fill:#FFFFFF;}\n\t.st3{fill:#E33F09;}\n\t.st4{fill:#00CD98;}\n\t.st5{fill:#3574E0;}\n\t.st6{fill:#FBC43B;}\n\t.st7{fill:#FF6200;}\n\t.st8{fill:#666666;}\n\t.st9{font-family:'ArialMT';}\n\t.st10{font-size:14px;}\n\t.st11{fill:#606060;}\n\t.st12{font-family:'Arial-BoldMT';}\n\t.st13{font-size:17px;}\n\t.st14{fill:#00E098;}\n\t.st15{opacity:0.5;fill:none;stroke:#B3B3B3;stroke-width:0.5;stroke-miterlimit:10;enable-background:new    ;}\n\t.st16{opacity:7.000000e-02;fill:#323E48;enable-background:new    ;}\n\t.st17{fill:#2F3E49;}\n\t.st18{fill:#00AEED;}\n\t.st19{opacity:0.15;fill:#0E76E7;enable-background:new    ;}\n\t.st20{font-size:11px;}\n\t.st21{opacity:0.6;fill:none;stroke:#CBCBCB;stroke-width:2;stroke-miterlimit:10;enable-background:new    ;}\n\t.st22{fill:#CBCBCB;}\n\t.st23{fill:none;stroke:#2F3E49;stroke-width:4;stroke-miterlimit:10;}\n\t.st24{fill:#00A39B;}\n\t.st25{fill:none;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st26{fill:#0E76E7;}\n\t.st27{fill:#323E48;}\n\t.st28{fill:none;stroke:#323E48;stroke-width:4;stroke-miterlimit:10;}\n\t.st29{fill:none;stroke:#FFFFFF;stroke-width:2;stroke-miterlimit:10;}\n\t.st30{fill:#7C7C7C;}\n\t.st31{font-size:9px;}\n\t.st32{fill:none;stroke:#2F3E49;stroke-width:3;stroke-miterlimit:10;}\n\t.st33{font-size:16px;}\n\t.st34{font-size:13px;}\n\t.st35{fill:#C6C6C6;}\n\t.st36{font-size:10px;}\n\t.st37{fill:#FFFFFF;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st38{enable-background:new    ;}\n\t.st39{fill:#FFFFFF;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st40{fill:#00AEED;stroke:#FFFFFF;stroke-width:4;stroke-miterlimit:10;}"
+        '.st0,.st1{fill:none;stroke:#008ba3;stroke-width:4;stroke-miterlimit:10}.st1{stroke:#00aeed}.st2{fill:#fff}.st3{fill:#e33f09}.st4{fill:#00cd98}.st5{fill:#3574e0}.st6{fill:#fbc43b}.st7{fill:#ff6200}.st8{fill:#666}.st9{font-family:"ArialMT"}.st10{font-size:14px}.st11{fill:#606060}.st12{font-family:"Arial-BoldMT"}.st13{font-size:17px}.st14{fill:#00e098}.st15,.st16{enable-background:new}.st15{opacity:.5;fill:none;stroke:#b3b3b3;stroke-width:.5;stroke-miterlimit:10}.st16{opacity:7.000000e-02;fill:#323e48}.st17{fill:#2f3e49}.st18{fill:#00aeed}.st19{opacity:.15;fill:#0e76e7;enable-background:new}.st20{font-size:11px}.st21{opacity:.6;fill:none;stroke:#cbcbcb;stroke-width:2;stroke-miterlimit:10;enable-background:new}.st22{fill:#cbcbcb}.st23{fill:none;stroke:#2f3e49;stroke-width:4;stroke-miterlimit:10}.st24{fill:#00a39b}.st25{fill:none;stroke:#35ace8;stroke-width:4;stroke-miterlimit:10}.st26{fill:#0e76e7}.st27{fill:#323e48}.st28,.st29{fill:none;stroke:#323e48;stroke-width:4;stroke-miterlimit:10}.st29{stroke:#fff;stroke-width:2}.st30{fill:#7c7c7c}.st31{font-size:9px}.st33{font-size:16px}.st34{font-size:13px}.st35{fill:#c6c6c6}.st36{font-size:10px}.st37{fill:#fff;stroke:#35ace8;stroke-width:4;stroke-miterlimit:10}.st38{enable-background:new}.st39,.st40{fill:#fff;stroke:#008ba3;stroke-width:4;stroke-miterlimit:10}.st40{fill:#00aeed;stroke:#fff}.bg{fill:#e9eaec}.panel{fill:#fff;stroke:#9aa3ad;stroke-width:2;rx:10}.pipe{fill:none;stroke:#7b8794;stroke-width:8}.flow{fill:#2f80ff}.equip{fill:#e7b84b;stroke:#9c7a1e;rx:10}.equip,.lagoon,.tank{stroke-width:2}.tank{rx:10;fill:#f5f7fa;stroke:#9aa3ad}.lagoon{fill:#2fd0e6;stroke:#0aa;rx:18}.label{font-family:Arial,Helvetica,sans-serif;fill:#1f2937;font-size:16px}.small{font-size:14px}.title{font-size:28px;font-weight:700}.status-green{fill:#22c55e}.status-red{fill:#ef4444}.status-yellow{fill:#f59e0b}'
       }
     </style>
-    <rect
-      x={98.952621}
-      y={488.63422}
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fff",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#35aae9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 0.853007,
+      }}
+      d="m608.206 1011.334 66.824-.314"
+      id="path64"
+    />
+    <path
       className="st26"
-      width={124.8}
-      height={58.181511}
       id="rect37"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
       }}
+      d="M100.727 682.243h124.8v58.182h-124.8z"
     />
     <path
       className="st23"
-      d="m 223.65262,472.73902 v 71.50444 c 0,1.09315 -0.6,1.99338 -1.2,1.99338 h -122 c -0.699995,0 -1.199995,-0.90023 -1.199995,-1.99338 v -71.50444"
+      d="M225.427 666.348v71.504c0 1.093-.6 1.993-1.2 1.993h-122c-.7 0-1.2-.9-1.2-1.993v-71.504"
       id="path38"
       style={{
         fill: "none",
@@ -241,7 +426,7 @@ const SVGComponent1 = (props) => (
     />
     <path
       className="st23"
-      d="m 167.39248,720.16018 v 71.50438 c 0,1.0932 -0.6,1.9934 -1.2,1.9934 H 44.192479 c -0.7,0 -1.2,-0.9002 -1.2,-1.9934 v -71.50438"
+      d="M169.089 913.769v71.504c0 1.093-.6 1.994-1.2 1.994h-122c-.7 0-1.2-.9-1.2-1.994V913.77"
       id="path38-9"
       style={{
         fill: "none",
@@ -250,30 +435,16 @@ const SVGComponent1 = (props) => (
         strokeMiterlimit: 10,
       }}
     />
-    <line
-      className="st25"
-      x1={225.85878}
-      y1={490.25824}
-      x2={361.80313}
-      y2={490.25824}
-      id="line136-8"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00002,
-        strokeMiterlimit: 10,
-      }}
-    />
     <g
       id="g24"
-      transform="matrix(1.3372687,0,0,1.3392637,-280.3553,-227.02515)"
+      transform="matrix(1.33727 0 0 1.33926 -278.58 -33.417)"
       style={{
         strokeWidth: 0.747236,
       }}
     >
       <path
         className="st17"
-        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3q0-2.25-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7"
         id="path23"
         style={{
           fill: "#2f3e49",
@@ -283,7 +454,7 @@ const SVGComponent1 = (props) => (
     </g>
     <g
       id="g27"
-      transform="matrix(1.2663699,0,0,1.3007382,-259.56257,-212.40468)"
+      transform="matrix(1.26637 0 0 1.30074 -257.788 -18.796)"
       style={{
         strokeWidth: 0.779157,
       }}
@@ -299,12 +470,11 @@ const SVGComponent1 = (props) => (
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
-            enableBackground: "new",
           }}
           width={40}
           height={40}
           xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          transform="translate(293.273 379.5)scale(.875)"
           id="image24"
         />
         <g
@@ -315,12 +485,12 @@ const SVGComponent1 = (props) => (
         >
           <circle
             className="st2"
-            cx={311.10001}
-            cy={397.29999}
+            cx={311.1}
+            cy={397.3}
             r={10.9}
             id="circle24"
             style={{
-              fill: "#ffffff",
+              fill: "#fff",
               strokeWidth: 0.779157,
             }}
           />
@@ -328,138 +498,58 @@ const SVGComponent1 = (props) => (
       </g>
       <circle
         className="st19"
-        cx={311.10001}
-        cy={397.10001}
+        cx={311.1}
+        cy={397.1}
         r={8}
         id="circle26"
         style={{
-          opacity: 0.15,
-          fill: "#0e76e7",
-          strokeWidth: 0.779157,
-          enableBackground: "new",
+          ...getDeviceIndicatorStyle(P017Color, 0.779157),
+          opacity: 1,
         }}
       />
     </g>
-    <line
+    <path
       className="st1"
-      x1={78.2136}
-      y1={302.79379}
-      x2={115.21359}
-      y2={302.79379}
       id="line37"
       style={{
         fill: "none",
-        stroke: "#00aeed",
+        stroke: "#2a8b8b",
         strokeWidth: 4,
         strokeMiterlimit: 10,
+        strokeOpacity: 1,
       }}
-    />
-    <line
-      className="st25"
-      x1={169.49763}
-      y1={294.75687}
-      x2={209.36266}
-      y2={294.75687}
-      id="line136"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 3.43865,
-        strokeMiterlimit: 10,
-      }}
+      d="M75 496.402h43"
     />
     <path
-      d="m 1249.0027,150.49811 v 43.7678"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.88429,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36"
-    />
-    <rect
-      x={1262.0973}
-      y={364.07922}
       className="st26"
-      width={124.8}
-      height={58.181511}
       id="rect37-8"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
       }}
+      d="M1221.205 499.962h124.8v58.182h-124.8z"
     />
     <path
       className="st23"
-      d="m 1386.7972,348.18408 v 71.50444 c 0,1.09315 -0.6,1.99338 -1.2,1.99338 h -122 c -0.7,0 -1.2,-0.90023 -1.2,-1.99338 v -71.50444"
+      d="M1345.266 485.31v72.716c0 1.112-.6 2.027-1.2 2.027H1222.09c-.7 0-1.2-.915-1.2-2.027V485.31"
       id="path38-2"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      className="st25"
-      d="m 360.90711,490.21073 h 9.4 c 4.1,0 7.4,2.75882 7.4,6.18643 0,81.18067 0,73.08344 0,42.30184"
-      id="path160-4"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      d="m 158.66985,548.34388 v 88.69441"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3"
-    />
-    <line
-      className="st25"
-      x1={156.74193}
-      y1={635.28271}
-      x2={292.68625}
-      y2={635.28271}
-      id="line136-8-7-9"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00002,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <line
-      className="st25"
-      x1={95.803009}
-      y1={868.6333}
-      x2={231.74733}
-      y2={868.6333}
-      id="line136-8-7-9-5"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00002,
+        strokeWidth: 4.03337,
         strokeMiterlimit: 10,
       }}
     />
     <g
       id="g24-6"
-      transform="matrix(1.3372687,0,0,1.3392637,-101.47418,102.72608)"
+      transform="matrix(1.33727 0 0 1.33926 -100.015 352.445)"
       style={{
         strokeWidth: 0.747236,
       }}
     >
       <path
         className="st17"
-        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3q0-2.25-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7"
         id="path23-5"
         style={{
           fill: "#2f3e49",
@@ -469,14 +559,14 @@ const SVGComponent1 = (props) => (
     </g>
     <g
       id="g24-6-8"
-      transform="matrix(-1.2297462,0,0,1.3392637,1639.4528,42.330424)"
+      transform="matrix(-1.22975 0 0 1.33926 1670.273 281.298)"
       style={{
         strokeWidth: 0.779219,
       }}
     >
       <path
         className="st17"
-        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3q0-2.25-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7"
         id="path23-5-6"
         style={{
           fill: "#2f3e49",
@@ -486,7 +576,7 @@ const SVGComponent1 = (props) => (
     </g>
     <g
       id="g27-2"
-      transform="matrix(1.2663699,0,0,1.3007382,-79.208816,117.21716)"
+      transform="matrix(1.26637 0 0 1.30074 -78.949 366.05)"
       style={{
         strokeWidth: 0.779157,
       }}
@@ -502,12 +592,11 @@ const SVGComponent1 = (props) => (
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
-            enableBackground: "new",
           }}
           width={40}
           height={40}
           xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          transform="translate(293.273 379.5)scale(.875)"
           id="image24-6"
         />
         <g
@@ -518,12 +607,12 @@ const SVGComponent1 = (props) => (
         >
           <circle
             className="st2"
-            cx={311.10001}
-            cy={397.29999}
+            cx={311.1}
+            cy={397.3}
             r={10.9}
             id="circle24-2"
             style={{
-              fill: "#ffffff",
+              fill: "#fff",
               strokeWidth: 0.779157,
             }}
           />
@@ -531,21 +620,19 @@ const SVGComponent1 = (props) => (
       </g>
       <circle
         className="st19"
-        cx={311.10001}
-        cy={397.10001}
+        cx={311.1}
+        cy={397.1}
         r={8}
         id="circle26-4"
         style={{
-          opacity: 0.15,
-          fill: "#0e76e7",
-          strokeWidth: 0.779157,
-          enableBackground: "new",
+          ...getDeviceIndicatorStyle(BombaFiltracionColor, 0.779157),
+          opacity: 1,
         }}
       />
     </g>
     <g
       id="g27-2-7"
-      transform="matrix(1.2663699,0,0,1.3007382,862.87495,57.495714)"
+      transform="matrix(1.26637 0 0 1.30074 893.695 296.463)"
       style={{
         strokeWidth: 0.779157,
       }}
@@ -561,12 +648,11 @@ const SVGComponent1 = (props) => (
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
-            enableBackground: "new",
           }}
           width={40}
           height={40}
           xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          transform="translate(293.273 379.5)scale(.875)"
           id="image24-6-2"
         />
         <g
@@ -577,12 +663,12 @@ const SVGComponent1 = (props) => (
         >
           <circle
             className="st2"
-            cx={311.10001}
-            cy={397.29999}
+            cx={311.1}
+            cy={397.3}
             r={10.9}
             id="circle24-2-4"
             style={{
-              fill: "#ffffff",
+              fill: "#fff",
               strokeWidth: 0.779157,
             }}
           />
@@ -590,44 +676,18 @@ const SVGComponent1 = (props) => (
       </g>
       <circle
         className="st19"
-        cx={311.10001}
-        cy={397.10001}
+        cx={311.1}
+        cy={397.1}
         r={8}
         id="circle26-4-1"
         style={{
-          opacity: 0.15,
-          fill: "#0e76e7",
-          strokeWidth: 0.779157,
-          enableBackground: "new",
+          ...getDeviceIndicatorStyle(BombaRetornoClarificadoColor, 0.779157),
+          opacity: 1,
         }}
       />
     </g>
-    <line
-      className="st25"
-      x1={349.32413}
-      y1={621.37018}
-      x2={411.58405}
-      y2={621.37018}
-      id="line136-8-7-6"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00003,
-        strokeMiterlimit: 10,
-      }}
-    />
     <path
-      d="m 410.36629,184.70122 c 0.0484,26.56252 0.83528,393.16169 0.8733,438.71617"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 3.99219,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0"
-    />
-    <path
-      d="m 379.45536,256.08004 28.96326,-0.21268"
+      d="m338.563 450.944 28.964-.213"
       style={{
         fill: "none",
         stroke: "#2f3e49",
@@ -636,238 +696,27 @@ const SVGComponent1 = (props) => (
       }}
       id="path1-38"
     />
-    <line
-      className="st25"
-      x1={408.18839}
-      y1={184.27655}
-      x2={467.19516}
-      y2={184.27655}
-      id="line136-3"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.18353,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <line
-      className="st25"
-      x1={486.6153}
-      y1={184.50488}
-      x2={938.08807}
-      y2={184.50488}
-      id="line136-3-1"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.03605,
-        strokeMiterlimit: 10,
-      }}
-    />
     <path
-      d="m 768.87241,183.81667 c 0.0484,2.04758 0.83523,32.05356 0.87324,35.56515"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-9"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 1,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 767.68438,217.70173 v 4 h 29.88477 v -4 z"
-      id="line136-3-2-1-9-6"
-    />
-    <path
-      className="st32"
-      d="m 546.02366,134.80245 v 47.76204"
+      d="M508.07 297.288v68.832"
       id="path67-5"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 3.05992,
+        strokeWidth: 3.67337,
         strokeMiterlimit: 10,
       }}
     />
-    <path
-      d="m 515.07783,184.22899 c 0.0484,16.52887 0.83523,244.64992 0.87324,272.99679"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5"
-    />
-    <line
-      className="st25"
-      x1={479.8743}
-      y1={455.11462}
-      x2={517.84344}
-      y2={455.11462}
-      id="line136-3-2"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.24643,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <line
-      className="st25"
-      x1={433.76651}
-      y1={455.25018}
-      x2={460.6998}
-      y2={455.25018}
-      id="line136-3-2-7"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.74774,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      d="M 435.73452,453.21283 V 857.32276"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-4"
-    />
-    <path
-      className="st16"
-      d="m 701.86326,274.09791 c 0,-24.36034 -23.78696,-44.29153 -67.29762,-44.29153 -43.51066,0 -67.55157,19.93119 -67.55157,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11439,24.89184 v 12.93311 H 615.9424 V 417.691 h 35.1302 v 12.66737 h 14.81394 v -12.93311 c 19.97766,-0.70867 35.97672,-11.60438 35.97672,-24.89184 V 277.99555 Z"
-      id="path16"
-      style={{
-        opacity: 0.07,
-        fill: "#323e48",
-        strokeWidth: 0.999997,
-        enableBackground: "new",
-      }}
-    />
-    <path
-      d="m 569.52366,184.24584 c 0.0484,2.04758 0.83523,32.05356 0.87324,35.56515"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        opacity: 1,
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-        stopOpacity: 1,
-      }}
-      d="m 568.23655,217.11251 v 4 H 601.926 v -4 z"
-      id="line136-3-2-1"
-    />
-    <path
-      d="m 634.52311,166.203 c 0.0484,2.81934 0.83523,41.73012 0.87324,46.56526"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6"
-    />
-    <g id="g6" transform="translate(503.52366,32.003144)">
-      <rect
-        x={99.899048}
-        y={176.74448}
-        width={58.174385}
-        height={21.577288}
-        rx={10}
-        fill="#0b0b0b"
-        id="rect1-7"
-      />
-      <rect
-        x={104.71307}
-        y={178.43175}
-        width={47.935066}
-        height={17.766146}
-        rx={4.2535133}
-        fill="#26e000"
-        id="rect2-7"
-      />
-    </g>
-    <line
-      className="st25"
-      x1={632.56024}
-      y1={167.87634}
-      x2={1125.0203}
-      y2={167.87634}
-      id="line136-3-2-1-3"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.04853,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-      }}
-    />
-    <style id="style1-8">
-      {
-        ".bg { fill:#e9eaec; }\n    .panel { fill:#ffffff; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .pipe { fill:none; stroke:#7b8794; stroke-width:8; }\n    .flow { fill:#2f80ff; }\n    .equip { fill:#e7b84b; stroke:#9c7a1e; stroke-width:2; rx:10; }\n    .tank { fill:#f5f7fa; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .lagoon { fill:#2fd0e6; stroke:#0aa; stroke-width:2; rx:18; }\n    .label { font-family: Arial, Helvetica, sans-serif; fill:#1f2937; font-size:16px; }\n    .small { font-size:14px; }\n    .title { font-size:28px; font-weight:bold; }\n    .status-green { fill:#22c55e; }\n    .status-red { fill:#ef4444; }\n    .status-yellow { fill:#f59e0b; }"
-      }
-    </style>
-    <g id="g9" transform="translate(-58.163465,58.936601)" />
-    <g id="layer1" transform="translate(-29.163465,-30.063399)">
-      <text
-        xmlSpace="preserve"
-        id="text31"
+    <g id="g9" transform="translate(-58.163 58.937)" />
+    <g id="layer1" transform="matrix(1.00222 0 0 1 -71.023 164.8)">
+      <path
+        className="st16"
+        d="M728.973 304.833c0-24.199-23.787-43.998-67.298-43.998-43.51 0-67.551 19.8-67.551 43.998v117.649c0 12.672 15.152 23.231 34.114 24.727v12.847h14.814v-12.583h35.13v12.583h14.814V447.21c19.978-.704 35.977-11.527 35.977-24.727V308.705z"
+        id="path16-4-7"
         style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: "18.5076px",
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          whiteSpace: "pre",
-          shapeInside: "url(#rect31)",
-          display: "inline",
-          fill: "#000000",
-          fillOpacity: 0.378378,
-          stroke: "#606060",
-          strokeWidth: 3.1,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          paintOrder: "fill markers stroke",
+          opacity: 0.578838,
+          fill: "#252d34",
+          fillOpacity: 1,
+          strokeWidth: 0.996673,
         }}
       />
       <text
@@ -875,11 +724,11 @@ const SVGComponent1 = (props) => (
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 24,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          InkscapeFontSpecification: "&quot",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -888,7 +737,7 @@ const SVGComponent1 = (props) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#686868",
+          fill: "#efefef",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -898,94 +747,132 @@ const SVGComponent1 = (props) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
-        x={662.28241}
-        y={321.59332}
+        x={662.282}
+        y={321.593}
         id="text32"
       >
         <tspan
           id="tspan32"
-          x={662.28241}
-          y={321.59332}
+          x={662.282}
+          y={321.593}
           style={{
             fontStyle: "normal",
             fontVariant: "normal",
-            fontWeight: "normal",
+            fontWeight: 400,
             fontStretch: "normal",
             fontSize: 24,
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
+            fill: "#efefef",
+            fillOpacity: 1,
           }}
         >
           {"FIS - 001"}
         </tspan>
       </text>
       <rect
-        x={616.81329}
-        y={339.8797}
-        width={94.61628}
-        height={23.199938}
-        rx={8.3957663}
+        x={613.486}
+        y={345.647}
+        width={94.616}
+        height={23.2}
+        rx={8.396}
         fill="#26e000"
         id="rect2-7-6"
         style={{
-          fill: "#e0aa00",
+          fill: "#e6e6e6",
           fillOpacity: 1,
           strokeWidth: 1,
         }}
+        ry={8.396}
       />
-      <text
-        xmlSpace="preserve"
+    </g>
+    <g
+      id="g5"
+      transform="matrix(.32847 0 0 .26511 541.266 544.824)"
+      style={{
+        strokeWidth: 1.19501,
+      }}
+    >
+      <path
+        className="st0"
+        d="M61.2 44.4c-10.5 9.4-8.2 21.2.5 26.3 9.3 5.3 19.5 1.2 26.4-8 11.5-15.4 6.1-48-25.1-59.2 7.8 6.2 13.1 27.4-1.8 40.9"
+        id="path1-24"
         style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 18,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
         }}
-        x={664.80902}
-        y={356.39798}
-        id="text33"
-      >
-        <tspan
-          id="tspan33"
-          x={664.80902}
-          y={356.39798}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 18,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        >
-          {"FILTRATION"}
-        </tspan>
-      </text>
+      />
+      <path
+        className="st1"
+        d="M43.7 61C40.1 47.4 28.5 44.1 20 49.5c-8.9 5.9-9.9 16.8-4.8 27.1 8.5 17.2 40 27.2 64.1 4.5-9 4.3-30.3-.6-35.6-20.1"
+        id="path2-8"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M39.9 37.4c13.6 3.5 22.2-5 21.5-15.1-.8-10.6-9.8-16.8-21.3-17.4C20.8 4-4.2 23.5 2.5 59.3c.8-9.9 17.9-26.7 37.4-21.9"
+        id="path3-5"
+        style={{
+          fill: "#004b84",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        d="M306 87.7h-6.2l-9 35.5h-.2L282 87.7h-8.5l-8.7 35.5h-.2l-9-35.5h-6.1l10.7 39.6h8.8l8.5-35.5h.2l8.5 35.5h8.7zm-89.6 19.8c0-13.8.8-15.5 11.4-15.5s11.4 1.7 11.4 15.5c0 13.7-.8 15.4-11.4 15.4-10.7 0-11.4-1.6-11.4-15.4m-6.2 0c0 16.7 2.9 20.2 17.6 20.2s17.6-3.5 17.6-20.2c0-16.8-2.9-20.3-17.6-20.3s-17.6 3.6-17.6 20.3M201.1 82h-6v45.3h6zm-23 15.4v-6.1c0-4.2 3.2-4.6 6.2-4.7 1.2 0 3.1 0 4.3.1v-5c-1.2-.1-2.5-.1-3.7-.1-9.7 0-12.8 2.4-12.8 10.1v5.6h-6v4.8h6v25.1h6v-25.1h10.5v-4.8h-10.5z"
+        id="path4-6"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="polyline4"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m248 75.4 20.3-68.1h17.4L306 75.2h-11.5l-4.3-12.6h-17.1l-1.6-10.1h16L277 16.6l-17 58.6h-12.3"
+      />
+      <path
+        className="st3"
+        d="M228.1 8c-3.2-.3-7-.2-10.7-.2-18.9 0-26.9 4-26.9 26.6V50c0 23 7.3 26.8 26.9 26.8 21.8 0 26.3-4.2 26.3-24.3V40.2h-27.1v9.9H232v2.4c0 12.9-3.4 13.1-14.6 13.1-13 0-15-1.4-15.2-15.7V34.4c.2-13.1 1.5-15.5 15.2-15.5 3.3 0 6-.1 8.2.2"
+        id="path5-1"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="rect5"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="M167.8 8.2h11.7v67.9h-11.7z"
+      />
+      <path
+        className="st3"
+        id="polygon5"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m140 76.1 19.7-67.9h-12.2l-16.3 57h-.2l-16.3-57h-12l19.6 67.9z"
+      />
     </g>
     <g
       id="pt-card-0"
-      transform="matrix(0.71418741,0,0,0.5524794,585.68521,441.58686)"
+      transform="matrix(.71419 0 0 .55248 538.573 639.848)"
       style={{
         strokeWidth: 1.59198,
       }}
@@ -995,737 +882,55 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={3.18395}
+        strokeWidth={3.184}
         id="rect1-2-6"
       />
     </g>
-    <g
-      id="pt-card-0-0"
-      transform="matrix(0.71418741,0,0,0.5524794,520.86786,711.15267)"
-      style={{
-        strokeWidth: 1.59198,
-      }}
-    >
+    <g id="g6-9" transform="translate(651.534 226.194)">
       <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={3.18395}
-        id="rect1-2-6-3"
-      />
-    </g>
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 1,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 661.79472,217.26219 v 4 h 79.13571 v -4 z"
-      id="line136-3-2-1-9"
-    />
-    <path
-      d="m 739.10889,217.49034 c 0.0484,19.29786 0.83523,285.6349 0.87324,318.73054"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4"
-    />
-    <path
-      className="st16"
-      d="m 895.10801,273.76543 c 0,-24.36034 -23.78696,-44.29153 -67.29762,-44.29153 -43.51066,0 -67.55157,19.93119 -67.55157,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11439,24.89184 v 12.93311 h 14.81394 v -12.66737 h 35.1302 v 12.66737 h 14.81394 v -12.93311 c 19.97766,-0.70867 35.97672,-11.60438 35.97672,-24.89184 V 277.66307 Z"
-      id="path16-4"
-      style={{
-        opacity: 0.07,
-        fill: "#323e48",
-        strokeWidth: 0.999997,
-        enableBackground: "new",
-      }}
-    />
-    <rect
-      x={781.09839}
-      y={312.31857}
-      width={94.61628}
-      height={23.199938}
-      rx={8.3957663}
-      fill="#26e000"
-      id="rect2-7-6-3"
-      style={{
-        fill: "#e0aa00",
-        fillOpacity: 1,
-        strokeWidth: 1,
-      }}
-    />
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 18,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={827.11133}
-      y={328.65158}
-      id="text33-9"
-    >
-      <tspan
-        id="tspan33-6"
-        x={827.11133}
-        y={328.65158}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 18,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FILTRATION"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 24,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#686868",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={826.98218}
-      y={290.33298}
-      id="text32-8"
-    >
-      <tspan
-        id="tspan32-3"
-        x={826.98218}
-        y={290.33298}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 24,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FIS - 002"}
-      </tspan>
-    </text>
-    <g id="g6-9" transform="translate(698.67276,31.644304)">
-      <rect
-        x={99.899048}
-        y={176.74448}
-        width={58.174385}
-        height={21.577288}
+        x={99.899}
+        y={176.744}
+        width={58.174}
+        height={21.577}
         rx={10}
         fill="#0b0b0b"
         id="rect1-7-8"
-      />
-      <rect
-        x={104.71307}
-        y={178.43175}
-        width={47.935066}
-        height={17.766146}
-        rx={4.2535133}
-        fill="#26e000"
-        id="rect2-7-8"
+        ry={10}
       />
     </g>
     <path
-      d="m 742.17007,479.02483 24.44695,-0.2093"
+      d="m687.58 660.605 40.853-.204"
       style={{
         fill: "none",
         stroke: "#2f3e49",
-        strokeWidth: 2.99999,
+        strokeWidth: 3.82716,
         strokeMiterlimit: 10,
       }}
       id="path1-38-1"
     />
     <path
-      d="m 908.0745,479.4064 24.74763,-0.1091"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-38-1-9"
-    />
-    <path
-      d="m 826.34562,168.50174 c 0.0538,2.39702 0.92846,35.47914 0.97072,39.59"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-3"
-    />
-    <path
-      className="st16"
-      d="m 1063.8308,278.19836 c 0,-24.36034 -23.787,-44.29153 -67.29757,-44.29153 -43.51075,0 -67.5516,19.93119 -67.5516,44.29153 v 3.89764 114.53787 c 0,12.75595 15.15255,23.38592 34.11435,24.89184 v 12.93311 h 14.81395 v -12.66737 h 35.13017 v 12.66737 h 14.814 v -12.93311 c 19.9776,-0.70867 35.9767,-11.60438 35.9767,-24.89184 V 282.096 Z"
-      id="path16-4-4"
-      style={{
-        opacity: 0.07,
-        fill: "#323e48",
-        strokeWidth: 0.999997,
-        enableBackground: "new",
-      }}
-    />
-    <rect
-      x={951.3031}
-      y={311.81161}
-      width={94.61628}
-      height={23.199938}
-      rx={8.3957663}
-      fill="#26e000"
-      id="rect2-7-6-3-9"
-      style={{
-        fill: "#e0aa00",
-        fillOpacity: 1,
-        strokeWidth: 1,
-      }}
-    />
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 18,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1000.28}
-      y={327.65073}
-      id="text33-9-9"
-    >
-      <tspan
-        id="tspan33-6-2"
-        x={1000.28}
-        y={327.65073}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 18,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FILTRATION"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 24,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#686868",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={998.49939}
-      y={295.07578}
-      id="text32-8-5"
-    >
-      <tspan
-        id="tspan32-3-5"
-        x={998.49939}
-        y={295.07578}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 24,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FIS - 003"}
-      </tspan>
-    </text>
-    <g id="g6-9-3" transform="translate(875.29925,34.101314)">
-      <rect
-        x={99.899048}
-        y={176.74448}
-        width={58.174385}
-        height={21.577288}
-        rx={10}
-        fill="#0b0b0b"
-        id="rect1-7-8-3"
-      />
-      <rect
-        x={104.71307}
-        y={178.43175}
-        width={47.935066}
-        height={17.766146}
-        rx={4.2535133}
-        fill="#26e000"
-        id="rect2-7-8-3"
-      />
-    </g>
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 856.56323,217.51017 v 4 h 50.73181 v -4 z"
-      id="line136-3-2-1-9-8"
-    />
-    <path
-      d="m 905.39455,217.44034 c 0.048,19.29786 0.8352,285.6349 0.8732,318.73054"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4-6"
-    />
-    <line
-      className="st25"
-      x1={738.88129}
-      y1={534.42847}
-      x2={1154.7369}
-      y2={534.42847}
-      id="line136-3-2-19"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.02888,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 1,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 937.04736,219.2925 v 4 h 35.99757 v -4 z"
-      id="line136-3-2-1-9-6-2"
-    />
-    <path
-      d="m 939.18905,182.51999 c 0,2.46482 -0.072,36.48264 -0.075,40.70977"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4-8"
-    />
-    <line
-      className="st25"
-      x1={1143.4932}
-      y1={168.00458}
-      x2={1218.0446}
-      y2={168.00458}
-      id="line136-3-2-1-3-4"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 3.99999,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      d="m 1216.0372,166.11366 c 0,11.6883 -0.072,173.00253 -0.075,193.04779"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4-8-5"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 1033.8286,219.53839 v 4 h 44.9892 v -4 z"
-      id="line136-3-2-1-9-8-3"
-    />
-    <path
-      d="m 1076.8156,219.63624 c 0.048,19.17068 0.8352,283.75251 0.8732,316.63005"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4-6-2"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 1213.8084,355.3186 v 4 h 44.9892 v -4 z"
-      id="line136-3-2-1-9-8-3-6"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 1.08208,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 1173.5333,532.46779 v 4 h 39.4878 v -4 z"
-      id="line136-3-2-1-9-8-3-6-3"
-    />
-    <path
-      d="m 1079.9427,478.81785 46.1496,-0.1091"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-38-1-9-6"
-    />
-    <path
-      d="m 1125.0208,419.82361 v 60.43967"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-9"
-    />
-    <path
-      d="m 1211.1005,532.33301 c 0,10.64513 -0.054,157.56201 -0.057,175.81823"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-0-5-0-6-4-8-52"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999743,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 375.82965,560.06508 v 4 h 850.49195 v -4 z"
-      id="line136-3-2-1-9-8-3-6-3-6"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 1,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 1340.2737,424.09276 h -4 v 145.31258 h 4 z"
-      id="line136-3-2-1-9-8-3-6-3-6-8"
-    />
-    <path
-      style={{
-        baselineShift: "baseline",
-        display: "inline",
-        overflow: "visible",
-        vectorEffect: "none",
-        fill: "#35ace8",
-        strokeWidth: 0.999998,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10,
-        enableBackground: "accumulate",
-        stopColor: "#000000",
-      }}
-      d="m 1274.4112,565.46227 v 4 h 65.5746 v -4 z"
-      id="line136-3-2-1-9-8-3-6-3-6-5"
-    />
-    <path
-      d="m 1250.7263,150.55807 h -45.4755"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 2.62378,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-8"
-    />
-    <path
-      d="m 1206.7377,157.86251 v -8.31109"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-8-2"
-    />
-    <path
-      d="m 1209.4448,158.23973 -2.9223,4.98479 -3.0747,-5.07211 z"
-      id="path1-1-4"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-      }}
-    />
-    <path
-      d="M 1343.8211,140.87066 V 195.0912"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-        strokeDasharray: "none",
-      }}
-      id="path1-36-2"
-    />
-    <path
-      d="m 35.166667,236.19608 v 35.36436"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-        strokeLinecap: "round",
-      }}
-      id="path1-36-2-4"
-    />
-    <path
-      d="m 62.554232,235.68323 -27.441798,0.23321"
-      style={{
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeLinecap: "round",
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-2-2"
-      sodipodi:nodetypes="cc"
-    />
-    <path
-      d="m 1258.3075,170.59232 v 25.66931"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 2.55591,
-        strokeLinecap: "round",
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-2-4-1"
-    />
-    <path
-      d="M 1345.2375,142.39043 H 1174.0106"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-8-1"
-    />
-    <path
-      d="M 1175.563,157.83169 V 140.93768"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-8-2-0"
-    />
-    <path
-      d="m 1178.5044,158.30812 -2.9223,4.98479 -3.0747,-5.07211 z"
-      id="path1-1-4-6"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-      }}
-    />
-    <rect
-      x={44.630917}
-      y={734.20874}
       className="st26"
-      width={120.35417}
-      height={58.181511}
       id="rect37-9"
       style={{
         fill: "#0e76e7",
-        strokeWidth: 0.999998,
+        strokeWidth: 1.00114,
       }}
-    />
-    <path
-      d="m 97.408015,795.47406 v 75.1099"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-44"
+      d="M46.627 928.039h120.629v58.182H46.627z"
     />
     <g
       id="g24-6-6"
-      transform="matrix(1.3372687,0,0,1.3392637,-164.79334,336.4695)"
+      transform="matrix(1.33727 0 0 1.33926 -163.019 530.078)"
       style={{
         strokeWidth: 0.747236,
       }}
     >
       <path
         className="st17"
-        d="m 332,382.8 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
+        d="M332 382.8h-17.4c-1.1-.3-2.2-.4-3.4-.4-8.1 0-14.6 6.5-14.6 14.6 0 4.1 1.7 7.8 4.3 10.4l-4.1 9c-.3.7.1 1.6.7 1.6h27.7c.6 0 .9-.9.6-1.6l-4.1-9.1c2.6-2.6 4.2-6.3 4.2-10.3q0-2.25-.6-4.2h6.8c1.4 0 2.6-1.2 2.6-2.7v-4.6c0-1.5-1.2-2.7-2.7-2.7"
         id="path23-5-3"
         style={{
           fill: "#2f3e49",
@@ -1735,7 +940,7 @@ const SVGComponent1 = (props) => (
     </g>
     <g
       id="g27-2-4"
-      transform="matrix(1.2663699,0,0,1.3007382,-142.52797,350.96058)"
+      transform="matrix(1.26637 0 0 1.30074 -140.31 545.013)"
       style={{
         strokeWidth: 0.779157,
       }}
@@ -1751,12 +956,11 @@ const SVGComponent1 = (props) => (
             overflow: "visible",
             opacity: 0.15,
             strokeWidth: 0.779157,
-            enableBackground: "new",
           }}
           width={40}
           height={40}
           xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAACXBIWXMAAAycAAAMnAGTj5aaAAAA GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8dJREFUeNrsmOlS2zAUhWNb2SHs he7v/1wtnZZQSMkeO1GlzrnM4VaO5STDLzxzxsbYyqeru1mNxtvxdrwdtY/klca0+wxoDgyWBCDt vtDJAeC00gCQVdebOrDJnpZLIf93huuM7jUIymtN1xuCtoeGZItlkHebJsmQRT1MAeVQAWCGLrWs 2RFQ4FpQx6nn1MV1k8b2ICunpdPcaQEtFXApqNkR0ADGQx05DaBjpz7uN/FeDqiZ0wQa4zzD/1Zk 2Z0hQ4Ae6MTpwunS6dzpFLA9BTkH1JPTyOnB6dHpD+5NYdkGuUgtSPZBBvRQ75zeQ1e4N4AlW3h/ BWtNAeUBh053OBuVEawGNTWDpIXl9DA3Tp+cPjt9BPApJtDB2JZ8cgareQue0XMZfsPS85buRVsy xfJ1scRXAPvq9MXpA5b9hKyY0g8XWM4TSFxCnpP0JBngRWoykYnaz7aNIPFWvAbkZ1hTrNjDc5mC 3AC+S1mgibFlAku4xZyi/Z81Y5db++I1/PAGVj3DBNolPmZx36j0VFBQjUk5QLdCaivKUgvkFax3 AQv2AdhU1YYDISVJ/lwAyvvpbwRVS61EYiLTjkAOYLVznAe0xCFAXdUynNt4bwAflYATPzUItufZ VS03Qx6R8x9TPjQlgGX1XsaUStWjyRpl8SjIlEpfH6B9iuIYwNCYAtoiGUpJzxNLI9ovGaxNEdop GbRu35lSFctorBd9aRoZ3VwSDQ2aNvY/kqpJxvyIVfkuug+sGJN7zTWN+1/3nlYMxM1qjogT5WVd S+Shq4z0nBs1iSCkbvfX1G7NUYOlxcpLrFC1KjzxJSkPgFZaUgaUdmuMTmaMrkZ6waIGqHTqK4w5 Vb1lrprgygaDuxiBHFEvOKBanaiSmJRMWGr1jCYtfeVMuZGNqd3aktJqDakcNqmtkrSUBCDZglOM 9UDlcASLrhTkc5mK/TKU9NOiSsO5zQYCbk1w0vyOMNEfTt+dbp1+AXaigzKLzF+hb+skkEbWKmJz asHYencA/AZIf32P/y/Ixyt9koOAu+sRLbF0MhNqenXLZgl2gvc90E9Y8LYE0Nb9ELMElChw+eFL 6ma6ylc5OzwCaoglHuLeTPljo050szU19JIi/p4s2Q1Yckb++EjnJ0pnRaiSmRoljEHFD5f0gfWA aA99QhRUDKaB7+5lYJNgp22WpKR7aQGqg7NEPn8FhqrLoqQc2kPuBSWBjSpTsmHVICuxxdbb4A6x 9ZdsSU1JAHKj8mh0J3WInV6dT7ft9trA9atvR8dC1jr+CjAAphWuxrXCynUAAAAASUVORK5CYII="
-          transform="matrix(0.875,0,0,0.875,293.2734,379.5009)"
+          transform="translate(293.273 379.5)scale(.875)"
           id="image24-6-8"
         />
         <g
@@ -1767,12 +971,12 @@ const SVGComponent1 = (props) => (
         >
           <circle
             className="st2"
-            cx={311.10001}
-            cy={397.29999}
+            cx={311.1}
+            cy={397.3}
             r={10.9}
             id="circle24-2-5"
             style={{
-              fill: "#ffffff",
+              fill: "#fff",
               strokeWidth: 0.779157,
             }}
           />
@@ -1780,52 +984,25 @@ const SVGComponent1 = (props) => (
       </g>
       <circle
         className="st19"
-        cx={311.10001}
-        cy={397.10001}
+        cx={311.1}
+        cy={397.1}
         r={8}
         id="circle26-4-8"
         style={{
-          opacity: 0.15,
-          fill: "#0e76e7",
-          strokeWidth: 0.779157,
-          enableBackground: "new",
+          ...getDeviceIndicatorStyle(BombaRetrolavadoColor, 0.779157),
+          opacity: 1,
         }}
       />
     </g>
-    <path
-      d="m 1352.0458,172.1744 v 25.66931"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 2.55591,
-        strokeLinecap: "round",
-        strokeMiterlimit: 10,
-      }}
-      id="path1-36-2-4-1-7"
-    />
-    <line
-      className="st25"
-      x1={283.49844}
-      y1={855.55798}
-      x2={437.08228}
-      y2={855.55798}
-      id="line136-8-7-9-5-2"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00002,
-        strokeMiterlimit: 10,
-      }}
-    />
     <g
       id="g33"
-      transform="matrix(0.58104181,0,0,0.73947207,619.41744,587.6501)"
+      transform="matrix(.58104 0 0 .73947 619.097 737.24)"
       style={{
         strokeWidth: 1.52558,
       }}
     >
       <path
-        d="M 60,120 C 110,40 270,20 410,50 590,30 720,100 750,170 780,260 650,340 460,340 280,360 110,300 80,240 40,190 40,150 60,120 Z"
+        d="M111.16 310.196c50-80 210-100 350-70 180-20 310 50 340 120 30 90-100 170-290 170-180 20-350-40-380-100-40-50-40-90-20-120"
         fill="#e8d8a8"
         id="path1-2"
         style={{
@@ -1833,41 +1010,55 @@ const SVGComponent1 = (props) => (
         }}
       />
       <path
-        d="M 90,130 C 130,70 260,60 400,80 550,60 660,110 680,160 700,220 610,280 460,280 310,300 150,260 120,220 90,190 90,160 90,130 Z"
+        d="M143.451 330.396c40-60 170-70 310-50 150-20 260 30 280 80 20 60-70 120-220 120-150 20-310-20-340-60-30-30-30-60-30-90"
         fill="#1ecbe1"
         id="path2"
         style={{
-          fill: "#00ffff",
+          fill: "#0ff",
           fillOpacity: 1,
           strokeWidth: 1.52558,
         }}
       />
       <text
-        x={410}
-        y={205}
+        x={469.231}
+        y={348.618}
         textAnchor="middle"
         fontFamily="Arial, Helvetica, sans-serif"
-        fontSize="20px"
+        fontSize={31.715}
         fill="#0f172a"
         opacity={0.5}
         id="text2"
         style={{
           strokeWidth: 1.52558,
         }}
+        transform="scale(.9117 1.09685)"
       >
         {"     LAGUNA  "}
       </text>
       <g
         id="Group_12-6-4-7-8-9"
-        transform="matrix(2.5202966,0,0,1.6240535,177.10293,-1424.5483)"
+        transform="matrix(2.5203 0 0 1.57668 139.687 -1396.7)"
+        style={{
+          strokeWidth: 1.54833,
+        }}
       >
-        <g id="Group_15-0-9-6-6-5">
-          <g id="Group_16-6-6-1-0-4">
+        <g
+          id="Group_15-0-9-6-6-5"
+          style={{
+            strokeWidth: 1.54833,
+          }}
+        >
+          <g
+            id="Group_16-6-6-1-0-4"
+            style={{
+              strokeWidth: 1.54833,
+            }}
+          >
             <path
               id="Vector_29-6-3-4-2-3"
-              d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+              d="M395.197 549.87v52.091c0 .807-.398 1.498-.796 1.498h-36.914c-.497 0-.79-.691-.796-1.498l-.418-52.012"
               stroke="#2f3e49"
-              strokeWidth={4.28328}
+              strokeWidth={4.347}
               strokeMiterlimit={10}
               style={{
                 fill: "#00a39b",
@@ -1876,7 +1067,10 @@ const SVGComponent1 = (props) => (
             />
             <g
               id="Group_17-1-7-2-4-1"
-              transform="translate(-7.5025782,-12.630209)"
+              transform="translate(-7.503 -12.63)"
+              style={{
+                strokeWidth: 1.54833,
+              }}
             />
           </g>
         </g>
@@ -1886,11 +1080,11 @@ const SVGComponent1 = (props) => (
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
-          fontSize: 16,
+          fontSize: "24.4092px",
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          InkscapeFontSpecification: "&quot",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -1899,7 +1093,7 @@ const SVGComponent1 = (props) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000000",
+          fill: "#000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -1909,21 +1103,21 @@ const SVGComponent1 = (props) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
-        x={1291.4252}
-        y={157.92886}
+        x={1011.524}
+        y={-644.159}
         id="text40"
-        transform="matrix(1.7210465,0,0,1.3523161,-1066.0462,-794.6887)"
+        transform="scale(1.12812 .88643)"
       >
         <tspan
           id="tspan40"
-          x={1291.4252}
-          y={157.92886}
+          x={1011.524}
+          y={-644.159}
           style={{
             fontStyle: "normal",
             fontVariant: "normal",
-            fontWeight: "normal",
+            fontWeight: 400,
             fontStretch: "normal",
-            fontSize: 16,
+            fontSize: "24.4092px",
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
             strokeWidth: 0,
@@ -1935,21 +1129,29 @@ const SVGComponent1 = (props) => (
       </text>
       <g
         id="Group_12-6-4-7-8-9-1"
-        transform="matrix(2.5202966,0,0,1.6240535,327.33248,-1423.3533)"
+        transform="matrix(2.5203 0 0 1.62405 293.398 -1423.478)"
         style={{
           strokeWidth: 1.52558,
         }}
       >
         <g
           id="Group_15-0-9-6-6-5-3"
-          transform="translate(3.512187e-5,-0.73608435)"
+          transform="matrix(1 0 0 .96107 0 21.918)"
+          style={{
+            strokeWidth: 1.55617,
+          }}
         >
-          <g id="Group_16-6-6-1-0-4-8">
+          <g
+            id="Group_16-6-6-1-0-4-8"
+            style={{
+              strokeWidth: 1.55617,
+            }}
+          >
             <path
               id="Vector_29-6-3-4-2-3-7"
-              d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+              d="M395.197 549.87v52.091c0 .807-.398 1.498-.796 1.498h-36.914c-.497 0-.79-.691-.796-1.498l-.418-52.012"
               stroke="#2f3e49"
-              strokeWidth={4.28328}
+              strokeWidth={4.369}
               strokeMiterlimit={10}
               style={{
                 fill: "#00a39b",
@@ -1958,39 +1160,33 @@ const SVGComponent1 = (props) => (
             />
             <g
               id="Group_17-1-7-2-4-1-4"
-              transform="translate(-7.5025782,-12.630209)"
+              transform="translate(-7.503 -12.63)"
+              style={{
+                strokeWidth: 1.55617,
+              }}
             />
           </g>
         </g>
       </g>
+      <path
+        style={{
+          opacity: 1,
+          fill: "#2a8b8b",
+          fillOpacity: 0,
+          stroke: "#2a8b8b",
+          strokeWidth: 6.83143,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        d="m849.885-570.902.976-86.538 385.435.597.975 120.855v0"
+        id="path8"
+      />
     </g>
-    <path
-      d="M 487.19626,692.48688 V 876.08266"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-4-7"
-    />
-    <line
-      className="st25"
-      x1={485.22076}
-      y1={693.36523}
-      x2={547.48065}
-      y2={693.36523}
-      id="line136-8-7-6-8"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00003,
-        strokeMiterlimit: 10,
-      }}
-    />
     <g
       id="g34"
-      transform="matrix(0.39487317,0,0,0.37602389,536.85297,666.11463)"
+      transform="matrix(.39487 0 0 .37602 552.276 973.789)"
       style={{
         strokeWidth: 2.59516,
       }}
@@ -2006,6 +1202,7 @@ const SVGComponent1 = (props) => (
         style={{
           strokeWidth: 2.59516,
         }}
+        ry={6}
       />
       <rect
         x={20}
@@ -2018,6 +1215,7 @@ const SVGComponent1 = (props) => (
         style={{
           strokeWidth: 2.59516,
         }}
+        ry={4}
       />
       <rect
         x={45}
@@ -2030,6 +1228,7 @@ const SVGComponent1 = (props) => (
         style={{
           strokeWidth: 2.59516,
         }}
+        ry={5}
       />
       <rect
         x={55}
@@ -2042,55 +1241,28 @@ const SVGComponent1 = (props) => (
         style={{
           strokeWidth: 2.59516,
         }}
+        ry={4}
       />
       <path
-        d="m 60,22 c 0,-12 40,-12 40,0"
+        d="M60 22c0-12 40-12 40 0"
         fill="none"
         stroke="#6b7280"
-        strokeWidth={10.3806}
+        strokeWidth={10.381}
         strokeLinecap="round"
         id="path4-2"
       />
     </g>
-    <line
-      className="st25"
-      x1={589.23633}
-      y1={693.75085}
-      x2={645.19794}
-      y2={693.75085}
-      id="line136-8-7-6-8-3"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00003,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <line
-      className="st25"
-      x1={1053.6926}
-      y1={706.53827}
-      x2={1212.6969}
-      y2={706.53827}
-      id="line136-8-7-6-8-3-2"
-      style={{
-        fill: "none",
-        stroke: "#35ace8",
-        strokeWidth: 4.00003,
-        strokeMiterlimit: 10,
-      }}
-    />
     <text
       xmlSpace="preserve"
       id="text34"
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2101,7 +1273,7 @@ const SVGComponent1 = (props) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect34)",
         display: "inline",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2111,15 +1283,15 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      transform="translate(-29.86206,-296.228)"
+      transform="translate(-28.087 -102.62)"
     >
-      <tspan x={36.717773} y={671.27697} id="tspan10">
+      <tspan x={36.718} y={671.277} id="tspan14">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan9"
+          id="tspan11"
         >
           {"CL-FLO12"}
         </tspan>
@@ -2131,11 +1303,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2146,7 +1318,7 @@ const SVGComponent1 = (props) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect35)",
         display: "inline",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2156,15 +1328,15 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      transform="translate(-31.259249,-264.09264)"
+      transform="translate(-29.485 -70.484)"
     >
-      <tspan x={153.69531} y={538.5426} id="tspan12">
+      <tspan x={153.695} y={538.543} id="tspan16">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan11"
+          id="tspan15"
         >
           {"P-017"}
         </tspan>
@@ -2175,11 +1347,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2188,7 +1360,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2198,18 +1370,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={479.44638}
-      y={151.41629}
+      x={439.209}
+      y={329.357}
       id="text37"
     >
       <tspan
         id="tspan37"
-        x={479.44638}
-        y={151.41629}
+        x={439.209}
+        y={329.357}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2224,11 +1396,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2237,7 +1409,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2247,18 +1419,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1371.8179}
-      y={159.05653}
+      x={1365}
+      y={315}
       id="text40-5"
     >
       <tspan
         id="tspan40-1"
-        x={1371.8179}
-        y={159.05653}
+        x={1365}
+        y={315}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2275,11 +1447,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2288,7 +1460,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2298,18 +1470,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1272.1315}
-      y={278.99527}
+      x={1251.323}
+      y={429.746}
       id="text40-5-2"
     >
       <tspan
         id="tspan40-1-2"
-        x={1272.1315}
-        y={278.99527}
+        x={1251.323}
+        y={429.746}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2326,11 +1498,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2339,7 +1511,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2349,18 +1521,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1355.5399}
-      y={278.99521}
+      x={1342.644}
+      y={429.456}
       id="text40-5-2-4"
     >
       <tspan
         id="tspan40-1-2-0"
-        x={1355.5399}
-        y={278.99521}
+        x={1342.644}
+        y={429.456}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2377,11 +1549,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2390,7 +1562,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2400,18 +1572,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1288.1649}
-      y={445.98141}
+      x={1275.928}
+      y={584.207}
       id="text41"
     >
       <tspan
         id="tspan41"
-        x={1288.1649}
-        y={445.98141}
+        x={1275.928}
+        y={584.207}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2426,11 +1598,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2439,7 +1611,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2449,18 +1621,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1288.2616}
-      y={460.76453}
+      x={1276.025}
+      y={598.99}
       id="text41-1"
     >
       <tspan
         id="tspan41-6"
-        x={1288.2616}
-        y={460.76453}
+        x={1276.025}
+        y={598.99}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2475,11 +1647,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2488,7 +1660,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2498,74 +1670,25 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1252.7579}
-      y={548.72235}
-      id="text43"
-    >
-      <tspan
-        id="tspan43"
-        x={1252.7579}
-        y={548.72235}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"P-007"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={255.60155}
-      y={840.99451}
+      x={255.77}
+      y={1111.348}
       id="text43-0"
     >
       <tspan
         id="tspan43-0"
-        x={255.60155}
-        y={840.99451}
+        x={255.77}
+        y={1111.348}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
           InkscapeFontSpecification: "Calibri",
         }}
       >
-        {"P-002"}
+        {"BOMBA "}
       </tspan>
     </text>
     <text
@@ -2573,11 +1696,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2586,7 +1709,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2596,18 +1719,67 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={489.43726}
-      y={888.61029}
+      x={258.725}
+      y={1125.478}
+      id="text43-0-4"
+    >
+      <tspan
+        id="tspan43-0-9"
+        x={258.725}
+        y={1125.478}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"RETROLAVADO"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={500.048}
+      y={1114.408}
       id="text44"
     >
       <tspan
         id="tspan44"
-        x={489.43726}
-        y={888.61029}
+        x={500.048}
+        y={1114.408}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2617,17 +1789,17 @@ const SVGComponent1 = (props) => (
         {"AGUA DE"}
       </tspan>
     </text>
-    <g id="Capa_1-5" transform="translate(-960.63523,-204.77253)">
+    <g id="Capa_1-5" transform="translate(-958.86 -11.164)">
       <text
         xmlSpace="preserve"
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          InkscapeFontSpecification: "&quot",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -2636,7 +1808,7 @@ const SVGComponent1 = (props) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000000",
+          fill: "#000",
           fillOpacity: 1,
           stroke: "#030303",
           strokeWidth: 0,
@@ -2646,67 +1818,18 @@ const SVGComponent1 = (props) => (
           strokeOpacity: 1,
           paintOrder: "fill markers stroke",
         }}
-        x={1279.127}
-        y={813.51355}
-        id="text43-3"
-      >
-        <tspan
-          id="tspan43-1"
-          x={1279.127}
-          y={813.51355}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 16,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        >
-          {"P-006"}
-        </tspan>
-      </text>
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={1093.5457}
-        y={1016.8652}
+        x={1093.546}
+        y={1016.865}
         id="text46"
       >
         <tspan
           id="tspan46"
-          x={1093.5457}
-          y={1016.8652}
+          x={1093.546}
+          y={1016.865}
           style={{
             fontStyle: "normal",
             fontVariant: "normal",
-            fontWeight: "normal",
+            fontWeight: 400,
             fontStretch: "normal",
             fontSize: 16,
             fontFamily: "Calibri",
@@ -2721,58 +1844,11 @@ const SVGComponent1 = (props) => (
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 10,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={1019.7128}
-        y={719.78912}
-        id="text46-6-5"
-      >
-        <tspan
-          id="tspan46-7-5"
-          x={1019.7128}
-          y={719.78912}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 10,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        />
-      </text>
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          InkscapeFontSpecification: "&quot",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -2781,7 +1857,7 @@ const SVGComponent1 = (props) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000000",
+          fill: "#000",
           fillOpacity: 1,
           stroke: "#008ae5",
           strokeWidth: 0,
@@ -2791,18 +1867,18 @@ const SVGComponent1 = (props) => (
           strokeOpacity: 1,
           paintOrder: "stroke markers fill",
         }}
-        x={1009.0504}
-        y={711.02075}
+        x={1009.05}
+        y={711.021}
         id="text49-4"
       >
         <tspan
-          x={1009.0504}
-          y={711.02075}
+          x={1009.05}
+          y={711.021}
           id="tspan50-8"
           style={{
             fontStyle: "normal",
             fontVariant: "normal",
-            fontWeight: "normal",
+            fontWeight: 400,
             fontStretch: "normal",
             fontSize: 16,
             fontFamily: "Calibri",
@@ -2817,11 +1893,11 @@ const SVGComponent1 = (props) => (
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+          InkscapeFontSpecification: "&quot",
           fontVariantLigatures: "normal",
           fontVariantCaps: "normal",
           fontVariantNumeric: "normal",
@@ -2830,7 +1906,7 @@ const SVGComponent1 = (props) => (
           writingMode: "lr-tb",
           direction: "ltr",
           textAnchor: "middle",
-          fill: "#000000",
+          fill: "#000",
           fillOpacity: 1,
           stroke: "#008ae5",
           strokeWidth: 0,
@@ -2840,18 +1916,18 @@ const SVGComponent1 = (props) => (
           strokeOpacity: 1,
           paintOrder: "stroke markers fill",
         }}
-        x={1008.1731}
-        y={729.03448}
+        x={1008.173}
+        y={729.034}
         id="text49-4-4"
       >
         <tspan
-          x={1008.1731}
-          y={729.03448}
+          x={1008.173}
+          y={729.034}
           id="tspan50-8-5"
           style={{
             fontStyle: "normal",
             fontVariant: "normal",
-            fontWeight: "normal",
+            fontWeight: 400,
             fontStretch: "normal",
             fontSize: 16,
             fontFamily: "Calibri",
@@ -2867,11 +1943,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2880,7 +1956,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2890,18 +1966,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={471.95245}
-      y={421.15936}
+      x={454.184}
+      y={610.208}
       id="text37-0"
     >
       <tspan
         id="tspan37-4"
-        x={471.95245}
-        y={421.15936}
+        x={454.184}
+        y={610.208}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2916,11 +1992,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2929,7 +2005,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2939,18 +2015,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1136.2341}
-      y={133.45395}
+      x={1067.578}
+      y={288.474}
       id="text37-9"
     >
       <tspan
         id="tspan37-56"
-        x={1136.2341}
-        y={133.45395}
+        x={1067.578}
+        y={288.474}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -2965,11 +2041,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -2978,7 +2054,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -2988,18 +2064,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1164.0186}
-      y={502.35797}
+      x={1125.636}
+      y={693.083}
       id="text37-9-8"
     >
       <tspan
         id="tspan37-56-2"
-        x={1164.0186}
-        y={502.35797}
+        x={1125.636}
+        y={693.083}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3014,11 +2090,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3027,7 +2103,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3037,18 +2113,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={568.03839}
-      y={664.84528}
+      x={584.46}
+      y={968.165}
       id="text37-9-8-6"
     >
       <tspan
         id="tspan37-56-2-8"
-        x={568.03839}
-        y={664.84528}
+        x={584.46}
+        y={968.165}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3058,368 +2134,16 @@ const SVGComponent1 = (props) => (
         {"WM-001"}
       </tspan>
     </text>
-    <path
-      d="m 477.31657,779.05926 v 58.7636"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-6"
-    />
-    <path
-      d="m 473.03927,778.63616 4.3666,-13.4953 4.5942,13.7316 z"
-      id="path1-1-6-1"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 0.999999,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 444.47429,641.37644 v 55.91543"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1"
-    />
-    <path
-      d="m 440.19699,640.97382 4.3666,-12.84116 4.5942,13.06603 z"
-      id="path1-1-6-7"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 0.999999,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 366.8259,514.01483 V 548.4871"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-0"
-    />
-    <path
-      d="m 362.5486,513.76661 4.3666,-7.91667 4.5942,8.0553 z"
-      id="path1-1-6-7-0"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 0.999997,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 421.35931,321.11799 v 73.87114"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8"
-    />
-    <path
-      d="m 417.08201,320.58608 4.3666,-16.96475 4.5942,17.26183 z"
-      id="path1-1-6-7-3"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 506.40337,248.16181 v 73.87114"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-1"
-    />
-    <path
-      d="m 502.12607,247.6299 4.3666,-16.96475 4.5942,17.26183 z"
-      id="path1-1-6-7-3-2"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 698.23506,197.27123 H 662.33323"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0"
-    />
-    <path
-      d="m 698.49357,192.99393 8.24497,4.3666 -8.38935,4.5942 z"
-      id="path1-1-6-7-3-3"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 893.53274,195.30966 H 857.63091"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-8"
-    />
-    <path
-      d="m 893.79125,191.03236 8.24497,4.3666 -8.38935,4.5942 z"
-      id="path1-1-6-7-3-3-5"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 834.71857,159.88436 H 798.81674"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-7"
-    />
-    <path
-      d="m 834.97708,155.60706 8.24497,4.3666 -8.38935,4.5942 z"
-      id="path1-1-6-7-3-3-0"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 1192.6623,175.11809 h -35.9018"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-9"
-    />
-    <path
-      d="m 1192.9208,170.84079 8.245,4.3666 -8.3893,4.5942 z"
-      id="path1-1-6-7-3-3-3"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 727.50556,319.54214 V 283.64031"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74"
-    />
-    <path
-      d="m 731.78286,319.80065 -4.3666,8.24497 -4.5942,-8.38935 z"
-      id="path1-1-6-7-3-3-7"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 913.84038,315.9541 V 280.05227"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-3"
-    />
-    <path
-      d="m 918.11768,316.21261 -4.3666,8.24497 -4.5942,-8.38935 z"
-      id="path1-1-6-7-3-3-7-7"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 1085.8885,348.96859 V 313.06676"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-0"
-    />
-    <path
-      d="m 1090.1658,349.2271 -4.3666,8.24497 -4.5942,-8.38935 z"
-      id="path1-1-6-7-3-3-7-0"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 1205.1899,254.89391 V 218.99208"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-0-5"
-    />
-    <path
-      d="m 1209.4672,255.15242 -4.3666,8.24497 -4.5942,-8.38935 z"
-      id="path1-1-6-7-3-3-7-0-6"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 815.7783,572.60727 h 80.6119"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-34"
-    />
-    <path
-      d="m 815.80919,576.88457 -8.24497,-4.3666 8.38935,-4.5942 z"
-      id="path1-1-6-7-3-3-7-5"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="M 1011.3756,540.418 H 930.76376"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-34-1"
-    />
-    <path
-      d="m 1011.3447,536.1407 8.245,4.3666 -8.3894,4.5942 z"
-      id="path1-1-6-7-3-3-7-5-4"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
-    <path
-      d="m 1200.8277,669.17026 v -80.6119"
-      style={{
-        fill: "none",
-        stroke: "#008ae5",
-        strokeWidth: 4.00001,
-        strokeMiterlimit: 10,
-        strokeOpacity: 1,
-      }}
-      id="path1-3-4-7-0-1-8-0-74-34-2"
-    />
-    <path
-      d="m 1205.105,669.13936 -4.3666,8.245 -4.5942,-8.3894 z"
-      id="path1-1-6-7-3-3-7-5-0"
-      style={{
-        fill: "#101820",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 1,
-        strokeOpacity: 1,
-      }}
-    />
     <text
       xmlSpace="preserve"
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3428,7 +2152,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#008ae5",
         strokeWidth: 0,
@@ -3438,18 +2162,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "stroke markers fill",
       }}
-      x={634.11395}
-      y={498.95999}
+      x={589.825}
+      y={697.221}
       id="text49"
     >
       <tspan
-        x={634.11395}
-        y={498.95999}
+        x={589.825}
+        y={697.221}
         id="tspan50"
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3461,214 +2185,207 @@ const SVGComponent1 = (props) => (
     </text>
     <g
       id="Group_12-6-4-7-8"
-      transform="matrix(1.769273,0,0,1.5723018,-626.55435,-595.71115)"
+      transform="matrix(1.76927 0 0 1.5723 -624.669 -402.103)"
+      style={{
+        strokeWidth: 1.41976451,
+        strokeDasharray: "none",
+      }}
     >
-      <g id="Group_15-0-9-6-6">
-        <g id="Group_16-6-6-1-0">
+      <g
+        id="Group_15-0-9-6-6"
+        style={{
+          strokeWidth: 1.41976451,
+          strokeDasharray: "none",
+        }}
+      >
+        <g
+          id="Group_16-6-6-1-0"
+          style={{
+            strokeWidth: 1.41976451,
+            strokeDasharray: "none",
+          }}
+        >
           <path
             id="Vector_29-6-3-4-2"
-            d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
+            d="M395.197 549.87v52.091c0 .807-.398 1.498-.796 1.498h-36.914c-.497 0-.79-.691-.796-1.498l-.418-52.012"
             stroke="#2f3e49"
-            strokeWidth={4.28328}
+            strokeWidth={4.283}
             strokeMiterlimit={10}
             style={{
               fill: "#00a39b",
               fillOpacity: 1,
+              strokeWidth: 1.41976451,
+              strokeDasharray: "none",
             }}
           />
           <g
             id="Group_17-1-7-2-4"
-            transform="translate(-7.5025782,-12.630209)"
+            transform="translate(-7.503 -12.63)"
+            style={{
+              strokeWidth: 1.41976451,
+              strokeDasharray: "none",
+            }}
           />
         </g>
       </g>
     </g>
-    <path
-      id="Vector_185-8"
-      d="m 52.375057,247.3186 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
-      fill="#2f3e49"
-    />
-    <path
-      d="m 1286.0555,170.21757 -27.4418,0.23321"
+    <g
+      id="Group_32-5-67-9"
+      transform="matrix(1.20095 0 0 1.13377 -269.995 -307.517)"
       style={{
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeLinecap: "round",
-        strokeMiterlimit: 10,
+        strokeWidth: 1.58724,
+        strokeDasharray: "none",
       }}
-      id="path1-36-2-2-7"
-      sodipodi:nodetypes="cc"
-    />
-    <path
-      id="Vector_185-8-1"
-      d="m 1276.7638,180.41099 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
-      fill="#2f3e49"
-    />
-    <g id="Group_32-5-67-9" transform="translate(-112.44233,-411.04762)">
+    >
       <path
         id="Vector_65-4-6-9"
-        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        d="M596.6 586h-14.8c-.9 0-1.6-.7-1.6-1.6v-14.8c0-.9.7-1.6 1.6-1.6h14.8c.9 0 1.6.7 1.6 1.6v14.8c0 .9-.7 1.6-1.6 1.6"
+        fill={VE288Color}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
-      <g id="Group_33-3-7-5">
+      <g
+        id="Group_33-3-7-5"
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      >
         <path
           id="Vector_66-1-7-9"
-          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          d="m581.4 589.9 7.9 4.6c.5.3.5 1 0 1.3l-7.9 4.6c-.5.3-1.2-.1-1.2-.7v-9.2c0-.5.7-.9 1.2-.6"
+          fill={VE288Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
         />
         <path
           id="Vector_67-2-19-2"
-          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          d="m597 600.5-7.9-4.6c-.5-.3-.5-1 0-1.3l7.9-4.6c.5-.3 1.2.1 1.2.7v9.2c0 .5-.7.9-1.2.6"
+          fill={VE288Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
         />
       </g>
       <path
         id="Vector_68-3-16-6"
-        d="m 589.2,585 v 10"
-        stroke="#323e48"
+        d="M589.2 585v10"
+        stroke={VE288Color}
         strokeWidth={4}
         strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
       <path
         id="Vector_69-3-2-5"
-        d="m 580.2,577 h 18"
-        stroke="#ffffff"
+        d="M580.2 577h18"
+        stroke="#fff"
         strokeWidth={2}
         strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
       <path
         id="Vector_70-4-7-3"
-        d="m 589.2,578 v 8"
-        stroke="#ffffff"
+        d="M589.2 578v8"
+        stroke="#fff"
         strokeWidth={2}
         strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
     </g>
-    <g id="Group_32-5-67-9-8" transform="translate(-119.02979,-141.24639)">
+    <g
+      id="Group_32-5-67-9-8"
+      transform="matrix(1.20095 0 0 1.13377 -253.676 -25.57)"
+      style={{
+        strokeWidth: 1.58724,
+        strokeDasharray: "none",
+      }}
+    >
       <path
-        id="Vector_65-4-6-9-2"
-        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
+        id="Vector_65-4-6-9-7"
+        d="M596.6 586h-14.8c-.9 0-1.6-.7-1.6-1.6v-14.8c0-.9.7-1.6 1.6-1.6h14.8c.9 0 1.6.7 1.6 1.6v14.8c0 .9-.7 1.6-1.6 1.6"
+        fill={VE322Color}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
-      <g id="Group_33-3-7-5-4">
+      <g
+        id="Group_33-3-7-5-4"
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      >
         <path
-          id="Vector_66-1-7-9-5"
-          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
+          id="Vector_66-1-7-9-2"
+          d="m581.4 589.9 7.9 4.6c.5.3.5 1 0 1.3l-7.9 4.6c-.5.3-1.2-.1-1.2-.7v-9.2c0-.5.7-.9 1.2-.6"
+          fill={VE322Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
         />
         <path
-          id="Vector_67-2-19-2-5"
-          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
+          id="Vector_67-2-19-2-7"
+          d="m597 600.5-7.9-4.6c-.5-.3-.5-1 0-1.3l7.9-4.6c.5-.3 1.2.1 1.2.7v9.2c0 .5-.7.9-1.2.6"
+          fill={VE322Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
         />
       </g>
       <path
-        id="Vector_68-3-16-6-1"
-        d="m 589.2,585 v 10"
-        stroke="#323e48"
+        id="Vector_68-3-16-6-7"
+        d="M589.2 585v10"
+        stroke={VE322Color}
         strokeWidth={4}
         strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
       <path
-        id="Vector_69-3-2-5-7"
-        d="m 580.2,577 h 18"
-        stroke="#ffffff"
+        id="Vector_69-3-2-5-9"
+        d="M580.2 577h18"
+        stroke="#fff"
         strokeWidth={2}
         strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
       <path
-        id="Vector_70-4-7-3-1"
-        d="m 589.2,578 v 8"
-        stroke="#ffffff"
+        id="Vector_70-4-7-3-3"
+        d="M589.2 578v8"
+        stroke="#fff"
         strokeWidth={2}
         strokeMiterlimit={10}
-      />
-    </g>
-    <g id="Group_32-5-67-9-8-5" transform="translate(575.06469,-60.233461)">
-      <path
-        id="Vector_65-4-6-9-2-2"
-        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
-      />
-      <g id="Group_33-3-7-5-4-7">
-        <path
-          id="Vector_66-1-7-9-5-6"
-          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
-        />
-        <path
-          id="Vector_67-2-19-2-5-1"
-          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
-        />
-      </g>
-      <path
-        id="Vector_68-3-16-6-1-4"
-        d="m 589.2,585 v 10"
-        stroke="#323e48"
-        strokeWidth={4}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_69-3-2-5-7-2"
-        d="m 580.2,577 h 18"
-        stroke="#ffffff"
-        strokeWidth={2}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_70-4-7-3-1-3"
-        d="m 589.2,578 v 8"
-        stroke="#ffffff"
-        strokeWidth={2}
-        strokeMiterlimit={10}
-      />
-    </g>
-    <g id="Group_32-5-67-9-8-2" transform="translate(545.10858,-428.70698)">
-      <path
-        id="Vector_65-4-6-9-2-1"
-        d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
-      />
-      <g id="Group_33-3-7-5-4-6">
-        <path
-          id="Vector_66-1-7-9-5-8"
-          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
-        />
-        <path
-          id="Vector_67-2-19-2-5-5"
-          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
-        />
-      </g>
-      <path
-        id="Vector_68-3-16-6-1-7"
-        d="m 589.2,585 v 10"
-        stroke="#323e48"
-        strokeWidth={4}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_69-3-2-5-7-6"
-        d="m 580.2,577 h 18"
-        stroke="#ffffff"
-        strokeWidth={2}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_70-4-7-3-1-1"
-        d="m 589.2,578 v 8"
-        stroke="#ffffff"
-        strokeWidth={2}
-        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
       />
     </g>
     <g
       id="pt-card-87-9"
-      transform="matrix(0.76732418,0,0,0.6847561,281.37764,234.03781)"
+      transform="matrix(.76732 0 0 .68476 239.23 427.96)"
       style={{
         strokeWidth: 1.26048,
       }}
@@ -3678,22 +2395,14 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={2.52096}
+        strokeWidth={2.521}
         id="rect1-2-7-3"
       />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1"
-      />
+      <path stroke="#8a94a6" strokeWidth={1.891} id="line1-8-1" d="M6 34h128" />
     </g>
     <text
       xmlSpace="preserve"
@@ -3701,11 +2410,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3716,7 +2425,7 @@ const SVGComponent1 = (props) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect38-8-0)",
         display: "inline",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3726,33 +2435,23 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      transform="translate(-238.62749,-101.97701)"
+      transform="translate(-281.088 93.2)"
     >
-      <tspan x={551.28027} y={354.45666} id="tspan14">
+      <tspan x={551.28} y={354.457} id="tspan18">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan13"
+          id="tspan17"
         >
           {"PT-117"}
         </tspan>
       </tspan>
     </text>
-    <path
-      d="M 206.37741,293.77716 V 488.78329"
-      style={{
-        fill: "none",
-        stroke: "#00aeed",
-        strokeWidth: 5.93113,
-        strokeMiterlimit: 10,
-      }}
-      id="path1-3-8"
-    />
     <g
       id="pt-card-87-9-5"
-      transform="matrix(0.76732418,0,0,0.6847561,767.14377,457.45935)"
+      transform="matrix(.76732 0 0 .68476 728.914 637.238)"
       style={{
         strokeWidth: 1.26048,
       }}
@@ -3762,21 +2461,18 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={2.52096}
+        strokeWidth={2.521}
         id="rect1-2-7-3-0"
       />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
+      <path
         stroke="#8a94a6"
-        strokeWidth={1.89072}
+        strokeWidth={1.891}
         id="line1-8-1-2"
+        d="M6 34h128"
       />
     </g>
     <text
@@ -3784,11 +2480,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3797,7 +2493,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3807,18 +2503,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={820.08051}
-      y={475.05957}
+      x={781.851}
+      y={654.838}
       id="text37-7"
     >
       <tspan
         id="tspan37-5"
-        x={820.08051}
-        y={475.05957}
+        x={781.851}
+        y={654.838}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3828,9 +2524,29 @@ const SVGComponent1 = (props) => (
         {"PT-141"}
       </tspan>
     </text>
+    <path
+      d="m879.125 660.605 40.853-.204"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3.82716,
+        strokeMiterlimit: 10,
+      }}
+      id="path1-38-1-8"
+    />
+    <path
+      d="m1064.146 625.295 32.976-.205"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 3.44623,
+        strokeMiterlimit: 10,
+      }}
+      id="path1-38-1-8-3"
+    />
     <g
-      id="pt-card-87-9-5-0"
-      transform="matrix(0.76732418,0,0,0.6847561,933.65645,456.59801)"
+      id="pt-card-87-9-5-65"
+      transform="matrix(.76732 0 0 .68476 920.015 637.238)"
       style={{
         strokeWidth: 1.26048,
       }}
@@ -3840,21 +2556,18 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3-0-2"
+        strokeWidth={2.521}
+        id="rect1-2-7-3-0-0"
       />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
+      <path
         stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1-2-4"
+        strokeWidth={1.891}
+        id="line1-8-1-2-9"
+        d="M6 34h128"
       />
     </g>
     <text
@@ -3862,11 +2575,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3875,7 +2588,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3885,18 +2598,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={987.99054}
-      y={475.22424}
-      id="text37-7-1"
+      x={970.289}
+      y={655.089}
+      id="text37-7-0"
     >
       <tspan
-        id="tspan37-5-1"
-        x={987.99054}
-        y={475.22424}
+        id="tspan37-5-0"
+        x={970.289}
+        y={655.089}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3908,7 +2621,7 @@ const SVGComponent1 = (props) => (
     </text>
     <g
       id="pt-card-87-9-5-0-5"
-      transform="matrix(0.76732418,0,0,0.6847561,1093.1403,370.87236)"
+      transform="matrix(.68894 0 0 .64115 1097.006 603.181)"
       style={{
         strokeWidth: 1.26048,
       }}
@@ -3918,21 +2631,18 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={2.52096}
+        strokeWidth={2.521}
         id="rect1-2-7-3-0-2-0"
       />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
+      <path
         stroke="#8a94a6"
-        strokeWidth={1.89072}
+        strokeWidth={1.891}
         id="line1-8-1-2-4-9"
+        d="M6 34h128"
       />
     </g>
     <text
@@ -3940,11 +2650,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -3953,7 +2663,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -3963,18 +2673,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={1147.6833}
-      y={388.93915}
+      x={1142.226}
+      y={621.474}
       id="text37-7-1-2"
     >
       <tspan
         id="tspan37-5-1-5"
-        x={1147.6833}
-        y={388.93915}
+        x={1142.226}
+        y={621.474}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -3986,7 +2696,7 @@ const SVGComponent1 = (props) => (
     </text>
     <g
       id="pt-card-87-9-5-6"
-      transform="matrix(0.76732418,0,0,0.6847561,492.77457,86.804115)"
+      transform="matrix(.76732 0 0 .68476 458.202 248.44)"
       style={{
         strokeWidth: 1.26048,
       }}
@@ -3996,21 +2706,18 @@ const SVGComponent1 = (props) => (
         y={1}
         width={138}
         height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
+        rx={4.894}
+        ry={6.063}
+        fill="#fff"
         stroke="#8a94a6"
-        strokeWidth={2.52096}
+        strokeWidth={2.521}
         id="rect1-2-7-3-0-1"
       />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
+      <path
         stroke="#8a94a6"
-        strokeWidth={1.89072}
+        strokeWidth={1.891}
         id="line1-8-1-2-3"
+        d="M6 34h128"
       />
     </g>
     <text
@@ -4019,11 +2726,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -4034,7 +2741,7 @@ const SVGComponent1 = (props) => (
         whiteSpace: "pre",
         shapeInside: "url(#rect38-8)",
         display: "inline",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -4044,15 +2751,15 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      transform="translate(-27.976787,-249.39283)"
+      transform="translate(-65.97 -88.843)"
     >
-      <tspan x={551.28027} y={354.45666} id="tspan16">
+      <tspan x={551.28} y={354.457} id="tspan20">
         <tspan
           style={{
             fontFamily: "Calibri",
             InkscapeFontSpecification: "Calibri",
           }}
-          id="tspan15"
+          id="tspan19"
         >
           {"PT-148"}
         </tspan>
@@ -4063,11 +2770,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -4076,7 +2783,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#030303",
         strokeWidth: 0,
@@ -4086,18 +2793,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "fill markers stroke",
       }}
-      x={489.00314}
-      y={903.26038}
+      x={499.614}
+      y={1129.058}
       id="text44-7"
     >
       <tspan
         id="tspan44-6"
-        x={489.00314}
-        y={903.26038}
+        x={499.614}
+        y={1129.058}
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -4112,11 +2819,11 @@ const SVGComponent1 = (props) => (
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
-        fontWeight: "normal",
+        fontWeight: 400,
         fontStretch: "normal",
         fontSize: 16,
         fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
+        InkscapeFontSpecification: "&quot",
         fontVariantLigatures: "normal",
         fontVariantCaps: "normal",
         fontVariantNumeric: "normal",
@@ -4125,7 +2832,7 @@ const SVGComponent1 = (props) => (
         writingMode: "lr-tb",
         direction: "ltr",
         textAnchor: "middle",
-        fill: "#000000",
+        fill: "#000",
         fillOpacity: 1,
         stroke: "#008ae5",
         strokeWidth: 0,
@@ -4135,18 +2842,18 @@ const SVGComponent1 = (props) => (
         strokeOpacity: 1,
         paintOrder: "stroke markers fill",
       }}
-      x={634.40198}
-      y={516.39124}
+      x={588.858}
+      y={714.652}
       id="text49-2"
     >
       <tspan
-        x={634.40198}
-        y={516.39124}
+        x={588.858}
+        y={714.652}
         id="tspan50-3"
         style={{
           fontStyle: "normal",
           fontVariant: "normal",
-          fontWeight: "normal",
+          fontWeight: 400,
           fontStretch: "normal",
           fontSize: 16,
           fontFamily: "Calibri",
@@ -4156,24 +2863,1800 @@ const SVGComponent1 = (props) => (
         {"PRESI\xD3N"}
       </tspan>
     </text>
-    <path
-      d="m 1379.7938,171.79965 -27.4418,0.23321"
+    <g
+      id="Group_32-5-67-9-6"
+      transform="matrix(1.20095 0 0 1.13377 361.056 -334.605)"
       style={{
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#2f3e49",
-        strokeWidth: 3,
-        strokeLinecap: "round",
-        strokeMiterlimit: 10,
+        strokeWidth: 1.58724,
+        strokeDasharray: "none",
       }}
-      id="path1-36-2-2-7-6"
-      sodipodi:nodetypes="cc"
+    >
+      <path
+        id="Vector_65-4-6-9-1"
+        d="M596.73 571.888h-14.8c-.9 0-1.6-.7-1.6-1.6v-14.8c0-.9.7-1.6 1.6-1.6h14.8c.9 0 1.6.7 1.6 1.6v14.8c0 .9-.7 1.6-1.6 1.6"
+        fill={VE320Color}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <g
+        id="Group_33-3-7-5-42"
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+        transform="translate(.13 -14.112)"
+      >
+        <path
+          id="Vector_66-1-7-9-3"
+          d="m581.4 589.9 7.9 4.6c.5.3.5 1 0 1.3l-7.9 4.6c-.5.3-1.2-.1-1.2-.7v-9.2c0-.5.7-.9 1.2-.6"
+          fill={VE320Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
+        />
+        <path
+          id="Vector_67-2-19-2-2"
+          d="m597 600.5-7.9-4.6c-.5-.3-.5-1 0-1.3l7.9-4.6c.5-.3 1.2.1 1.2.7v9.2c0 .5-.7.9-1.2.6"
+          fill={VE320Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
+        />
+      </g>
+      <path
+        id="Vector_68-3-16-6-2"
+        d="M589.33 570.888v10"
+        stroke={VE320Color}
+        strokeWidth={4}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        id="Vector_69-3-2-5-1"
+        d="M580.33 562.888h18"
+        stroke="#fff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        id="Vector_70-4-7-3-6"
+        d="M589.33 563.888v8"
+        stroke="#fff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+    </g>
+    <path
+      style={{
+        fill: "#272727",
+        fillOpacity: 0,
+        stroke: "#4a4a4a",
+        strokeWidth: 4.34973,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeDashoffset: 0,
+        strokeOpacity: 1,
+        paintOrder: "markers stroke fill",
+      }}
+      d="m1141.333 129.882 89.098.314-.627 265.412h31.372"
+      id="path14"
+      transform="matrix(1.11232 0 0 .76026 -186.782 225.4)"
     />
     <path
-      id="Vector_185-8-1-1"
-      d="m 1370.5021,181.99307 h 14 c 0.8,0 1.5,-0.7 1.5,-1.5 v -14 c 0,-0.8 -0.7,-1.5 -1.5,-1.5 h -14 c -0.8,0 -1.5,0.7 -1.5,1.5 v 14 c 0,0.8 0.7,1.5 1.5,1.5 z"
-      fill="#2f3e49"
+      id="Vector_324"
+      d="M1142.204 331.216c-1.261-.002-2.407-.929-2.405-2.163l.018-10.178c0-1.131 1.036-2.158 2.412-2.156.631 0 1.261.207 1.662.568l5.668 5.097c.859.772.857 2.057.11 2.93l-.115.103-5.685 5.081c-.517.617-1.034.719-1.664.718z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
     />
+    <path
+      id="Vector_324-6"
+      d="M1174.17 448.302c0-1.262.923-2.41 2.156-2.411l10.18-.012c1.13-.003 2.16 1.03 2.162 2.405 0 .631-.204 1.262-.563 1.664l-5.08 5.683c-.77.86-2.055.862-2.93.118l-.104-.115-5.098-5.67c-.617-.515-.721-1.031-.722-1.662z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_185-8-1-9"
+      d="M1327.38 345.096h18.913c1.08 0 2.026-.914 2.026-1.958v-18.276c0-1.044-.945-1.958-2.026-1.958h-18.913c-1.08 0-2.026.914-2.026 1.958v18.276c0 1.044.946 1.958 2.026 1.958"
+      fill={P016Color}
+      style={{
+        strokeWidth: 1.32796,
+        strokeLinecap: "square",
+      }}
+    />
+    <g id="g6" transform="translate(460.977 226.867)">
+      <rect
+        x={99.899}
+        y={176.744}
+        width={58.174}
+        height={21.577}
+        rx={10}
+        fill="#0b0b0b"
+        id="rect1-7"
+        ry={10}
+      />
+    </g>
+    <path
+      style={{
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "#2a8b8b",
+        strokeWidth: 3.9853,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m171.634 484.534 30.602.029V670"
+      id="path30"
+    />
+    <path
+      id="Vector_324-1-4"
+      d="M196.184 672.83c.013-.862.744-1.636 1.704-1.625l7.92.09c.88.008 1.669.722 1.656 1.661-.01.43-.173.86-.457 1.13l-4.015 3.828c-.608.58-1.608.569-2.28.053l-.08-.08-3.904-3.917c-.475-.357-.55-.71-.544-1.14z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#2a8b8b",
+        fillOpacity: 1,
+        stroke: "#2a8b8b",
+        strokeWidth: 0,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <g id="layer1-2" transform="matrix(1.00222 0 0 1 118.422 164.8)">
+      <path
+        className="st16"
+        d="M728.973 304.833c0-24.199-23.787-43.998-67.298-43.998-43.51 0-67.551 19.8-67.551 43.998v117.649c0 12.672 15.152 23.231 34.114 24.727v12.847h14.814v-12.583h35.13v12.583h14.814V447.21c19.978-.704 35.977-11.527 35.977-24.727V308.705z"
+        id="path16-4-7-3"
+        style={{
+          opacity: 0.578838,
+          fill: "#252d34",
+          fillOpacity: 1,
+          strokeWidth: 0.996673,
+        }}
+      />
+      <text
+        xmlSpace="preserve"
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 24,
+          fontFamily: "Arial-BoldMT",
+          InkscapeFontSpecification: "&quot",
+          fontVariantLigatures: "normal",
+          fontVariantCaps: "normal",
+          fontVariantNumeric: "normal",
+          fontVariantEastAsian: "normal",
+          textAlign: "center",
+          writingMode: "lr-tb",
+          direction: "ltr",
+          textAnchor: "middle",
+          fill: "#efefef",
+          fillOpacity: 1,
+          stroke: "#030303",
+          strokeWidth: 0,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+          paintOrder: "fill markers stroke",
+        }}
+        x={662.282}
+        y={321.593}
+        id="text32-2"
+      >
+        <tspan
+          id="tspan32-1"
+          x={662.282}
+          y={321.593}
+          style={{
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: 400,
+            fontStretch: "normal",
+            fontSize: 24,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+            fill: "#efefef",
+            fillOpacity: 1,
+          }}
+        >
+          {"FIS - 002"}
+        </tspan>
+      </text>
+      <rect
+        x={613.486}
+        y={345.647}
+        width={94.616}
+        height={23.2}
+        rx={8.396}
+        fill="#26e000"
+        id="rect2-7-6-6"
+        style={{
+          fill: "#e6e6e6",
+          fillOpacity: 1,
+          strokeWidth: 1,
+        }}
+        ry={8.396}
+      />
+    </g>
+    <g
+      id="g5-1"
+      transform="matrix(.32847 0 0 .26511 731.04 544.824)"
+      style={{
+        strokeWidth: 1.19501,
+      }}
+    >
+      <path
+        className="st0"
+        d="M61.2 44.4c-10.5 9.4-8.2 21.2.5 26.3 9.3 5.3 19.5 1.2 26.4-8 11.5-15.4 6.1-48-25.1-59.2 7.8 6.2 13.1 27.4-1.8 40.9"
+        id="path1-24-4"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M43.7 61C40.1 47.4 28.5 44.1 20 49.5c-8.9 5.9-9.9 16.8-4.8 27.1 8.5 17.2 40 27.2 64.1 4.5-9 4.3-30.3-.6-35.6-20.1"
+        id="path2-8-2"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M39.9 37.4c13.6 3.5 22.2-5 21.5-15.1-.8-10.6-9.8-16.8-21.3-17.4C20.8 4-4.2 23.5 2.5 59.3c.8-9.9 17.9-26.7 37.4-21.9"
+        id="path3-5-3"
+        style={{
+          fill: "#004b84",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        d="M306 87.7h-6.2l-9 35.5h-.2L282 87.7h-8.5l-8.7 35.5h-.2l-9-35.5h-6.1l10.7 39.6h8.8l8.5-35.5h.2l8.5 35.5h8.7zm-89.6 19.8c0-13.8.8-15.5 11.4-15.5s11.4 1.7 11.4 15.5c0 13.7-.8 15.4-11.4 15.4-10.7 0-11.4-1.6-11.4-15.4m-6.2 0c0 16.7 2.9 20.2 17.6 20.2s17.6-3.5 17.6-20.2c0-16.8-2.9-20.3-17.6-20.3s-17.6 3.6-17.6 20.3M201.1 82h-6v45.3h6zm-23 15.4v-6.1c0-4.2 3.2-4.6 6.2-4.7 1.2 0 3.1 0 4.3.1v-5c-1.2-.1-2.5-.1-3.7-.1-9.7 0-12.8 2.4-12.8 10.1v5.6h-6v4.8h6v25.1h6v-25.1h10.5v-4.8h-10.5z"
+        id="path4-6-2"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="polyline4-2"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m248 75.4 20.3-68.1h17.4L306 75.2h-11.5l-4.3-12.6h-17.1l-1.6-10.1h16L277 16.6l-17 58.6h-12.3"
+      />
+      <path
+        className="st3"
+        d="M228.1 8c-3.2-.3-7-.2-10.7-.2-18.9 0-26.9 4-26.9 26.6V50c0 23 7.3 26.8 26.9 26.8 21.8 0 26.3-4.2 26.3-24.3V40.2h-27.1v9.9H232v2.4c0 12.9-3.4 13.1-14.6 13.1-13 0-15-1.4-15.2-15.7V34.4c.2-13.1 1.5-15.5 15.2-15.5 3.3 0 6-.1 8.2.2"
+        id="path5-1-1"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="rect5-6"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="M167.8 8.2h11.7v67.9h-11.7z"
+      />
+      <path
+        className="st3"
+        id="polygon5-8"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m140 76.1 19.7-67.9h-12.2l-16.3 57h-.2l-16.3-57h-12l19.6 67.9z"
+      />
+    </g>
+    <g id="layer1-2-8" transform="matrix(1.00222 0 0 1 302.879 164.8)">
+      <path
+        className="st16"
+        d="M726.938 304.99c0-24.199-23.787-43.998-67.297-43.998s-67.552 19.8-67.552 43.998v117.649c0 12.672 15.153 23.231 34.115 24.727v12.847h14.814V447.63h35.13v12.583h14.814v-12.847c19.977-.704 35.976-11.527 35.976-24.727V308.862z"
+        id="path16-4-7-3-9"
+        style={{
+          opacity: 0.578838,
+          fill: "#252d34",
+          fillOpacity: 1,
+          strokeWidth: 0.996673,
+        }}
+      />
+      <text
+        xmlSpace="preserve"
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 24,
+          fontFamily: "Arial-BoldMT",
+          InkscapeFontSpecification: "&quot",
+          fontVariantLigatures: "normal",
+          fontVariantCaps: "normal",
+          fontVariantNumeric: "normal",
+          fontVariantEastAsian: "normal",
+          textAlign: "center",
+          writingMode: "lr-tb",
+          direction: "ltr",
+          textAnchor: "middle",
+          fill: "#efefef",
+          fillOpacity: 1,
+          stroke: "#030303",
+          strokeWidth: 0,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+          paintOrder: "fill markers stroke",
+        }}
+        x={662.282}
+        y={321.593}
+        id="text32-2-7"
+      >
+        <tspan
+          id="tspan32-1-9"
+          x={662.282}
+          y={321.593}
+          style={{
+            fontStyle: "normal",
+            fontVariant: "normal",
+            fontWeight: 400,
+            fontStretch: "normal",
+            fontSize: 24,
+            fontFamily: "Calibri",
+            InkscapeFontSpecification: "Calibri",
+            fill: "#efefef",
+            fillOpacity: 1,
+          }}
+        >
+          {"FIS - 003"}
+        </tspan>
+      </text>
+      <rect
+        x={613.486}
+        y={345.647}
+        width={94.616}
+        height={23.2}
+        rx={8.396}
+        fill="#26e000"
+        id="rect2-7-6-6-5"
+        style={{
+          fill: "#e6e6e6",
+          fillOpacity: 1,
+          strokeWidth: 1,
+        }}
+        ry={8.396}
+      />
+    </g>
+    <g
+      id="g5-6"
+      transform="matrix(.32847 0 0 .26511 911.683 544.824)"
+      style={{
+        strokeWidth: 1.19501,
+      }}
+    >
+      <path
+        className="st0"
+        d="M61.2 44.4c-10.5 9.4-8.2 21.2.5 26.3 9.3 5.3 19.5 1.2 26.4-8 11.5-15.4 6.1-48-25.1-59.2 7.8 6.2 13.1 27.4-1.8 40.9"
+        id="path1-24-1"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M43.7 61C40.1 47.4 28.5 44.1 20 49.5c-8.9 5.9-9.9 16.8-4.8 27.1 8.5 17.2 40 27.2 64.1 4.5-9 4.3-30.3-.6-35.6-20.1"
+        id="path2-8-8"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4.78005,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M39.9 37.4c13.6 3.5 22.2-5 21.5-15.1-.8-10.6-9.8-16.8-21.3-17.4C20.8 4-4.2 23.5 2.5 59.3c.8-9.9 17.9-26.7 37.4-21.9"
+        id="path3-5-9"
+        style={{
+          fill: "#004b84",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        d="M306 87.7h-6.2l-9 35.5h-.2L282 87.7h-8.5l-8.7 35.5h-.2l-9-35.5h-6.1l10.7 39.6h8.8l8.5-35.5h.2l8.5 35.5h8.7zm-89.6 19.8c0-13.8.8-15.5 11.4-15.5s11.4 1.7 11.4 15.5c0 13.7-.8 15.4-11.4 15.4-10.7 0-11.4-1.6-11.4-15.4m-6.2 0c0 16.7 2.9 20.2 17.6 20.2s17.6-3.5 17.6-20.2c0-16.8-2.9-20.3-17.6-20.3s-17.6 3.6-17.6 20.3M201.1 82h-6v45.3h6zm-23 15.4v-6.1c0-4.2 3.2-4.6 6.2-4.7 1.2 0 3.1 0 4.3.1v-5c-1.2-.1-2.5-.1-3.7-.1-9.7 0-12.8 2.4-12.8 10.1v5.6h-6v4.8h6v25.1h6v-25.1h10.5v-4.8h-10.5z"
+        id="path4-6-27"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="polyline4-9"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m248 75.4 20.3-68.1h17.4L306 75.2h-11.5l-4.3-12.6h-17.1l-1.6-10.1h16L277 16.6l-17 58.6h-12.3"
+      />
+      <path
+        className="st3"
+        d="M228.1 8c-3.2-.3-7-.2-10.7-.2-18.9 0-26.9 4-26.9 26.6V50c0 23 7.3 26.8 26.9 26.8 21.8 0 26.3-4.2 26.3-24.3V40.2h-27.1v9.9H232v2.4c0 12.9-3.4 13.1-14.6 13.1-13 0-15-1.4-15.2-15.7V34.4c.2-13.1 1.5-15.5 15.2-15.5 3.3 0 6-.1 8.2.2"
+        id="path5-1-5"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+      />
+      <path
+        className="st3"
+        id="rect5-4"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="M167.8 8.2h11.7v67.9h-11.7z"
+      />
+      <path
+        className="st3"
+        id="polygon5-3"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.19501,
+        }}
+        d="m147.5 8.2-16.3 57h-.2l-16.3-57h-12l19.6 67.9H140l19.7-67.9z"
+      />
+    </g>
+    <path
+      style={{
+        opacity: 1,
+        fill: "#4a4a4a",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#4a4a4a",
+        strokeWidth: 3.99679,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m780.005 359.858-.168-31.987"
+      id="path55"
+    />
+    <path
+      style={{
+        fill: "#4a4a4a",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#4a4a4a",
+        strokeWidth: 3.99679,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m780.08 400.927-.16-22.89"
+      id="path55-4"
+    />
+    <path
+      style={{
+        fill: "#fff",
+        fillOpacity: 0,
+        stroke: "#35aee9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M931.88 416.108h-46.69V369.93l-434.54-1.957v0"
+      id="path28"
+    />
+    <path
+      className="st37"
+      id="circle448-3"
+      style={{
+        fill: "#0bffff",
+        fillOpacity: 0,
+        stroke: "#4a4a4a",
+        strokeWidth: 4,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M-367.259-777.697a8.956 8.842 0 0 1-8.86 8.841 8.956 8.842 0 0 1-9.05-8.65"
+      transform="rotate(89.45)scale(-1 1)skewY(.123)"
+    />
+    <path
+      id="Vector_324-6-6-4-8-4"
+      d="M835.416 377.25c-1.262.022-2.426-.88-2.449-2.113l-.191-10.177c-.023-1.13.99-2.179 2.367-2.205.63-.011 1.265.181 1.673.533l5.771 4.98c.875.754.899 2.04.17 2.927l-.112.105-5.58 5.198c-.504.627-1.018.74-1.649.751z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m231.721 1061.986-160.598-.484.623-70.12v0"
+      id="path51"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fffffb",
+        fillOpacity: 1,
+        stroke: "#35ade9",
+        strokeWidth: 4.01089,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m350.195 871.405 10.073.128 1.775-503.273h62.104v0"
+      id="path9"
+    />
+    <path
+      className="st37"
+      id="circle448-3-2"
+      style={{
+        fill: "#0bffff",
+        fillOpacity: 0,
+        stroke: "#4b4b4b",
+        strokeWidth: 4,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M-364.606-585.483a8.956 8.842 0 0 1-8.86 8.842 8.956 8.842 0 0 1-9.05-8.651"
+      transform="rotate(89.45)scale(-1 1)skewY(.123)"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 3.98284,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m438.057 649.242-36.995-.223.283 401.903H286.718v0"
+      id="path52"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 5.10109,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m294.27 882.547-122.237-1.106V744.314"
+      id="path53"
+    />
+    <path
+      className="st37"
+      id="circle448-2"
+      style={{
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "#35ace8",
+        strokeWidth: 4,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      d="M-794.459-353.392a9.272 8.842 0 0 1-9.172 8.842 9.272 8.842 0 0 1-9.37-8.651"
+      transform="rotate(89.43)scale(-1 1)skewY(.08)"
+    />
+    <path
+      className="st37"
+      id="circle448-0"
+      style={{
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "#35ace8",
+        strokeWidth: 4,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      d="M-794.284-394.165a9.272 8.842 0 0 1-9.172 8.842 9.272 8.842 0 0 1-9.37-8.651"
+      transform="rotate(89.43)scale(-1 1)skewY(.08)"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 4.00311,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m466.88 649.764 26.363.287-.465-279.443v0"
+      id="path54"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m1112.217 729.487-427.159.447.441-316.337h-64.426"
+      id="path57"
+    />
+    <path
+      id="Vector_324-6-6-5-1"
+      d="M967.37 736.744c-1.262-.014-2.4-.948-2.388-2.181l.1-10.179c.01-1.13 1.052-2.15 2.428-2.136.63.007 1.26.217 1.658.58l5.627 5.143c.852.78.84 2.064.087 2.931l-.116.102-5.726 5.036c-.522.612-1.039.71-1.67.704z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      style={{
+        fill: "#27a046",
+        fillOpacity: 0,
+        stroke: "#4a4a4a",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M1055.537 324.881h-467.71V358"
+      id="path7"
+    />
+    <path
+      id="Vector_324-6-6-5-1-0"
+      d="M778.338 736.752c-1.26-.013-2.399-.948-2.387-2.181l.1-10.179c.01-1.13 1.052-2.15 2.428-2.136.63.007 1.26.217 1.657.58l5.627 5.143c.853.78.84 2.064.087 2.931l-.115.102-5.726 5.036c-.522.612-1.039.71-1.67.704z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 3.96505,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m877.533 727.29-1.297-315.487h-64.402"
+      id="path58"
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 4.01222,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m1064.205 727.751-.518-314.089-69.912.628"
+      id="path59"
+    />
+    <path
+      id="Vector_324-6-6"
+      d="M1056.657 540.874c0-1.261.922-2.41 2.156-2.41l10.178-.012c1.131-.003 2.161 1.029 2.163 2.405 0 .63-.203 1.262-.563 1.664l-5.08 5.682c-.77.861-2.055.863-2.93.119l-.103-.115-5.098-5.67c-.618-.515-.722-1.031-.723-1.662z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-20"
+      d="M892.317 332.277c-1.26-.017-2.396-.954-2.38-2.188l.127-10.178c.012-1.131 1.059-2.147 2.435-2.13.63.01 1.258.221 1.655.586l5.613 5.158c.85.781.834 2.066.078 2.931l-.116.102-5.74 5.02c-.523.61-1.04.707-1.671.7z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-4"
+      d="M688.304 332.436c-1.261.022-2.425-.879-2.448-2.112l-.192-10.177c-.023-1.131.991-2.18 2.367-2.205.63-.012 1.265.18 1.673.533l5.772 4.98c.874.754.898 2.039.17 2.927l-.113.105-5.58 5.198c-.504.626-1.018.739-1.648.751z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-4-8"
+      d="M689.116 376.321c-1.262.023-2.426-.879-2.449-2.112l-.191-10.177c-.023-1.131.99-2.179 2.367-2.205.63-.011 1.265.181 1.673.533l5.771 4.98c.875.754.899 2.04.17 2.927l-.112.105-5.58 5.198c-.504.627-1.018.74-1.649.751z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5"
+      d="M869.422 540.874c0-1.261.922-2.41 2.155-2.41l10.18-.012c1.13-.003 2.16 1.029 2.162 2.405 0 .63-.204 1.262-.563 1.664l-5.08 5.682c-.77.861-2.055.863-2.93.119l-.104-.115-5.098-5.67c-.617-.515-.721-1.031-.722-1.662z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <g id="g6-9-3" transform="translate(833.566 227.512)">
+      <rect
+        x={99.977}
+        y={175.725}
+        width={58.174}
+        height={21.577}
+        rx={10}
+        fill="#0b0b0b"
+        id="rect1-7-8-3"
+        ry={10}
+      />
+    </g>
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fff",
+        fillOpacity: 1,
+        fillRule: "nonzero",
+        stroke: "#35aae9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M1336.718 564.106v246.38l-29.146.433"
+      id="path61"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8"
+      d="M500.417 485.295c-.007 1.262-.935 2.405-2.168 2.4l-10.18-.042c-1.13-.002-2.154-1.041-2.15-2.417.005-.63.211-1.26.573-1.66l5.11-5.656c.775-.857 2.06-.852 2.931-.104l.103.116 5.067 5.697c.615.519.716 1.035.714 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8-0"
+      d="M368.95 504.817c-.007 1.262-.935 2.404-2.168 2.4l-10.18-.043c-1.13-.002-2.154-1.04-2.15-2.416.005-.631.211-1.261.573-1.66l5.11-5.657c.775-.856 2.06-.851 2.931-.103l.103.115 5.067 5.698c.615.518.716 1.035.714 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8-0-0"
+      d="M368.272 717.4c-.007 1.262-.935 2.405-2.168 2.4l-10.18-.042c-1.13-.002-2.155-1.041-2.15-2.417.005-.63.211-1.26.573-1.66l5.11-5.656c.775-.857 2.06-.852 2.931-.103l.102.115 5.068 5.697c.615.519.716 1.035.714 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fff",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#35aae9",
+        strokeWidth: 3.66765,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 0.853007,
+      }}
+      d="m455.604 1098.972.424-89.012 102.419.692"
+      id="path63"
+    />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={319.333}
+      y={930.455}
+      id="text43-0-7"
+    >
+      <tspan
+        id="tspan43-0-8"
+        x={319.333}
+        y={930.455}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"BOMBA  "}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={318.524}
+      y={944.585}
+      id="text43-0-4-8"
+    >
+      <tspan
+        id="tspan43-0-9-2"
+        x={318.524}
+        y={944.585}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"FILTRACION"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={1288.494}
+      y={860.01}
+      id="text43-0-7-2"
+    >
+      <tspan
+        id="tspan43-0-8-0"
+        x={1288.494}
+        y={860.01}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"BOMBA  "}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={1288.626}
+      y={873.513}
+      id="text43-0-4-8-9"
+    >
+      <tspan
+        id="tspan43-0-9-2-7"
+        x={1288.626}
+        y={873.513}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"RETORNO"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontStyle: "normal",
+        fontVariant: "normal",
+        fontWeight: 400,
+        fontStretch: "normal",
+        fontSize: 16,
+        fontFamily: "Arial-BoldMT",
+        InkscapeFontSpecification: "&quot",
+        fontVariantLigatures: "normal",
+        fontVariantCaps: "normal",
+        fontVariantNumeric: "normal",
+        fontVariantEastAsian: "normal",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000",
+        fillOpacity: 1,
+        stroke: "#030303",
+        strokeWidth: 0,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+        paintOrder: "fill markers stroke",
+      }}
+      x={1289.979}
+      y={889.206}
+      id="text43-0-4-8-9-2"
+    >
+      <tspan
+        id="tspan43-0-9-2-7-6"
+        x={1289.979}
+        y={889.206}
+        style={{
+          fontStyle: "normal",
+          fontVariant: "normal",
+          fontWeight: 400,
+          fontStretch: "normal",
+          fontSize: 16,
+          fontFamily: "Calibri",
+          InkscapeFontSpecification: "Calibri",
+        }}
+      >
+        {"CLARIFICADO"}
+      </tspan>
+    </text>
+    <path
+      id="Vector_324-6-6-2"
+      d="M678.05 540.874c0-1.26.921-2.409 2.155-2.41l10.179-.012c1.13-.003 2.16 1.03 2.163 2.405 0 .63-.204 1.262-.563 1.664l-5.081 5.683c-.77.86-2.055.862-2.93.118l-.103-.115-5.098-5.67c-.618-.515-.722-1.031-.723-1.662z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8-0-4"
+      d="M408.446 919.05c-.007 1.262-.935 2.404-2.168 2.4l-10.179-.042c-1.131-.002-2.155-1.041-2.15-2.417.004-.631.21-1.261.572-1.66l5.11-5.656c.775-.857 2.06-.852 2.931-.104l.103.115 5.067 5.698c.615.518.716 1.035.714 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8-0-4-3"
+      d="M463.272 1041.28c-.007 1.262-.934 2.405-2.168 2.4l-10.179-.042c-1.13 0-2.155-1.04-2.15-2.417.004-.63.21-1.26.572-1.66l5.11-5.656c.775-.857 2.06-.851 2.932-.103l.102.115 5.068 5.697c.615.519.716 1.036.713 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <g
+      id="Group_32-5-67-9-8-4"
+      transform="matrix(1.20095 0 0 1.13377 418.05 53.728)"
+      style={{
+        strokeWidth: 1.58724,
+        strokeDasharray: "none",
+      }}
+    >
+      <path
+        id="Vector_65-4-6-9-7-8"
+        d="M596.6 586h-14.8c-.9 0-1.6-.7-1.6-1.6v-14.8c0-.9.7-1.6 1.6-1.6h14.8c.9 0 1.6.7 1.6 1.6v14.8c0 .9-.7 1.6-1.6 1.6"
+        fill={VE318Color}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <g
+        id="Group_33-3-7-5-4-8"
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      >
+        <path
+          id="Vector_66-1-7-9-2-2"
+          d="m581.4 589.9 7.9 4.6c.5.3.5 1 0 1.3l-7.9 4.6c-.5.3-1.2-.1-1.2-.7v-9.2c0-.5.7-.9 1.2-.6"
+          fill={VE318Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
+        />
+        <path
+          id="Vector_67-2-19-2-7-4"
+          d="m597 600.5-7.9-4.6c-.5-.3-.5-1 0-1.3l7.9-4.6c.5-.3 1.2.1 1.2.7v9.2c0 .5-.7.9-1.2.6"
+          fill={VE318Color}
+          style={{
+            strokeWidth: 1.58724,
+            strokeDasharray: "none",
+          }}
+        />
+      </g>
+      <path
+        id="Vector_68-3-16-6-7-5"
+        d="M589.2 585v10"
+        stroke={VE318Color}
+        strokeWidth={4}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        id="Vector_69-3-2-5-9-5"
+        d="M580.2 577h18"
+        stroke="#fff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        id="Vector_70-4-7-3-3-1"
+        d="M589.2 578v8"
+        stroke="#fff"
+        strokeWidth={2}
+        strokeMiterlimit={10}
+        style={{
+          strokeWidth: 1.58724,
+          strokeDasharray: "none",
+        }}
+      />
+    </g>
+    <path
+      style={{
+        opacity: 0.994302,
+        fill: "#71a5ff",
+        fillOpacity: 0,
+        stroke: "#2a8b8b",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M1255.075 336.53v-52.41l-83.365-.275.258 29.223"
+      id="path1"
+    />
+    <path
+      id="Vector_324-1"
+      d="M1166.656 316.505c.013-.86.744-1.635 1.704-1.624l7.92.09c.88.008 1.67.722 1.656 1.661-.01.43-.172.86-.456 1.13l-4.015 3.828c-.609.58-1.609.569-2.281.053l-.08-.08-3.904-3.917c-.475-.357-.55-.71-.544-1.14z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#2a8b8b",
+        fillOpacity: 1,
+        stroke: "#2a8b8b",
+        strokeWidth: 0,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-1-7"
+      d="M1107.221 316.819c.013-.86.744-1.635 1.703-1.624l7.92.09c.88.008 1.67.722 1.657 1.661-.01.43-.173.859-.456 1.13l-4.016 3.828c-.608.58-1.608.569-2.28.053l-.08-.08-3.904-3.917c-.475-.357-.55-.71-.544-1.14z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#2a8b8b",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 0,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fffffb",
+        fillOpacity: 0.0344828,
+        stroke: "#35ade9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m1138.716 728.824 33.882-.627-1.255 286.745v0h-82.196"
+      id="path10"
+    />
+    <path
+      className="st37"
+      id="circle448-0-6"
+      style={{
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "#35ace8",
+        strokeWidth: 4,
+        strokeMiterlimit: 10,
+        strokeDasharray: "none",
+      }}
+      d="M-803.072-1165.211a9.272 8.842 0 0 1-9.172 8.841 9.272 8.842 0 0 1-9.37-8.651"
+      transform="rotate(89.43)scale(-1 1)skewY(.08)"
+    />
+    <path
+      id="Vector_185-8-1"
+      d="M1246.06 345.096h18.914c1.08 0 2.026-.914 2.026-1.958v-18.276c0-1.044-.946-1.958-2.026-1.958h-18.913c-1.08 0-2.026.914-2.026 1.958v18.276c0 1.044.945 1.958 2.026 1.958"
+      fill={P015Color}
+      style={{
+        strokeWidth: 1.32796,
+      }}
+    />
+    <path
+      style={{
+        opacity: 1,
+        fill: "#fffffb",
+        fillOpacity: 0.0344828,
+        stroke: "#35ade9",
+        strokeWidth: 3.99874,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m228.492 724.243 78.923.887-.443 74.095 949.354 1.757"
+      id="path11"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7"
+      d="M962.555 792.825c1.262-.007 2.414.908 2.423 2.142l.068 10.179c.01 1.13-1.018 2.166-2.394 2.176-.63.003-1.262-.197-1.666-.554l-5.71-5.05c-.866-.765-.874-2.05-.136-2.929l.114-.104 5.642-5.129c.512-.62 1.028-.727 1.659-.731z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-5-8-0-0-1"
+      d="M314.603 760.295c-.007 1.261-.935 2.404-2.168 2.399l-10.18-.042c-1.13-.002-2.155-1.041-2.15-2.417.005-.63.211-1.26.573-1.66l5.11-5.656c.775-.857 2.06-.852 2.931-.103l.102.115 5.068 5.697c.615.519.716 1.035.714 1.666z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-77"
+      d="M566.241 792.178c1.262-.007 2.415.908 2.423 2.142l.068 10.178c.01 1.131-1.017 2.167-2.393 2.176-.631.003-1.263-.196-1.667-.553l-5.71-5.05c-.866-.765-.874-2.05-.135-2.929l.114-.104 5.642-5.129c.512-.62 1.027-.727 1.658-.731z"
+      fill="#00aeed"
+      stroke="#fff"
+      strokeWidth={2.172}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#fff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick={12}
+    />
+    <rect
+      style={{
+        opacity: 1,
+        mixBlendMode: "hard-light",
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "url(#linearGradient12)",
+        strokeWidth: 1.5,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      id="rect1"
+      width={260.284}
+      height={163.175}
+      x={1092.085}
+      y={13.428}
+      rx={1.8}
+      ry={0}
+    />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 16,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={1164.581}
+      y={97.879}
+      id="text12-1"
+    >
+      <tspan
+        id="tspan12-5"
+        x={1164.581}
+        y={97.879}
+        style={{
+          fontSize: 16,
+        }}
+      >
+        {"Moviendose"}
+      </tspan>
+    </text>
+    <path
+      style={{
+        fill: "#fafc00",
+        fillOpacity: 1,
+        stroke: "#fafcff",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      id="path3-2"
+      d="M1100.217 120.059a9.76 9.539 0 0 1 9.584-9.697 9.76 9.539 0 0 1 9.934 9.355 9.76 9.539 0 0 1-9.56 9.72 9.76 9.539 0 0 1-9.958-9.332l9.759-.206z"
+    />
+    <path
+      style={{
+        fill: "#f30303",
+        fillOpacity: 1,
+        stroke: "#f30303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      id="path3-1"
+      d="M1100.445 146.956a9.76 9.539 0 0 1 9.585-9.696 9.76 9.539 0 0 1 9.934 9.355 9.76 9.539 0 0 1-9.561 9.72 9.76 9.539 0 0 1-9.957-9.333l9.759-.205z"
+    />
+    <path
+      style={{
+        fill: "#0443fb",
+        fillOpacity: 1,
+        stroke: "#0443fb",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      id="path3-4"
+      d="M1100.217 93.07a9.76 9.539 0 0 1 9.584-9.698 9.76 9.539 0 0 1 9.934 9.356 9.76 9.539 0 0 1-9.56 9.719 9.76 9.539 0 0 1-9.958-9.332l9.759-.205z"
+    />
+    <text
+      xmlSpace="preserve"
+      id="text1"
+      style={{
+        fontSize: 20,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        whiteSpace: "pre",
+        shapeInside: "url(#rect2)",
+        display: "inline",
+        fill: "#fff",
+        fillOpacity: 1,
+        stroke: "#113c54",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      transform="translate(-38.657 -11.636)"
+    >
+      <tspan x={1136.993} y={49} id="tspan22">
+        <tspan
+          style={{
+            fill: "#2c2c2c",
+          }}
+          id="tspan21"
+        >
+          {"Funcionamiento de Equipos"}
+        </tspan>
+      </tspan>
+    </text>
+    <path
+      style={{
+        opacity: 1,
+        fill: "#03f903",
+        fillOpacity: 1,
+        stroke: "#03f903",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      id="path3"
+      d="M1100.194 65.335a9.776 9.539 0 0 1 9.608-9.697 9.776 9.539 0 0 1 9.942 9.37 9.776 9.539 0 0 1-9.6 9.705 9.776 9.539 0 0 1-9.95-9.363l9.775-.175z"
+    />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 16,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        opacity: 1,
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={1165.886}
+      y={70.902}
+      id="text12"
+    >
+      <tspan
+        id="tspan12"
+        x={1165.886}
+        y={70.902}
+        style={{
+          fontSize: 16,
+        }}
+      >
+        {"Funcionando"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 16,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        opacity: 1,
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={1139.016}
+      y={125.702}
+      id="text13"
+    >
+      <tspan id="tspan13" x={1139.016} y={125.702}>
+        {"Falla"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 16,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={1153.426}
+      y={151.264}
+      id="text13-6"
+    >
+      <tspan id="tspan13-1" x={1153.426} y={151.264}>
+        {"Detenida"}
+      </tspan>
+    </text>
+    <path
+      style={{
+        fill: "#4a4a4a",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#4a4a4a",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m587.997 401.6-.159-24.588"
+      id="path55-4-1"
+    />
+    <path
+      style={{
+        fill: "#0bffff",
+        fillOpacity: 0,
+        stroke: "#4b4b4b",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M962 325.308v75.996"
+      id="path4"
+    />
+    <g
+      id="pt-card-0-0"
+      transform="matrix(.84984 0 0 .62558 525.511 1034.374)"
+      style={{
+        strokeWidth: 1.37149,
+      }}
+    >
+      <rect
+        x={1}
+        y={1}
+        width={138}
+        height={68}
+        rx={4.113}
+        ry={5.354}
+        fill="#fff"
+        stroke="#8a94a6"
+        strokeWidth={2.743}
+        id="rect1-2-6-3"
+      />
+    </g>
   </svg>
-);
-export default SVGComponent1;
+  );
+};
+export default SVGComponent;

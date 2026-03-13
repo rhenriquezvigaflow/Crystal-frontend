@@ -26,4 +26,8 @@ export const svgRegistry: Record<string, SvgRegistryEntry> = {
     component: SVGComponent3,
     aspectRatio: "1393.0437 / 960.00002",
   },
+  layout_small: {
+    component: SVGComponent3,
+    aspectRatio: "1393.0437 / 960.00002",
+  },
 };

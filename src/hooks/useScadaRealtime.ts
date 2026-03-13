@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API_WS } from "../config/api";
 
-export function useScadaRealtime(lagoonId: string) {
+export function useScadaRealtime(lagoonId: string, accessToken?: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
 
   const [tags, setTags] = useState<Record<string, any>>({});
@@ -14,9 +14,11 @@ export function useScadaRealtime(lagoonId: string) {
   const [timezone, setTimezone] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!lagoonId || lagoonId === "undefined") return;
+    if (!lagoonId || lagoonId === "undefined" || !accessToken) return;
 
-    const ws = new WebSocket(`${API_WS}/ws/scada?lagoon_id=${lagoonId}`);
+    const ws = new WebSocket(
+      `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}?token=${encodeURIComponent(accessToken)}`,
+    );
     wsRef.current = ws;
 
     ws.onmessage = (ev) => {
@@ -44,7 +46,7 @@ export function useScadaRealtime(lagoonId: string) {
     return () => {
       ws.close();
     };
-  }, [lagoonId]);
+  }, [lagoonId, accessToken]);
 
   return {
     tags,

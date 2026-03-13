@@ -1,3 +1,5 @@
+import { API_HTTP } from "../config/api";
+
 export type LoginPayload = {
   email: string;
   password: string;
@@ -16,10 +18,7 @@ export type LoginResponse = {
   user: LoginUser;
 };
 
-const API_BASE =
-  import.meta.env.VITE_API_HTTP ??
-  import.meta.env.VITE_API_BASE_URL ??
-  "";
+const API_BASE = API_HTTP;
 
 export class ApiError extends Error {
   status: number;

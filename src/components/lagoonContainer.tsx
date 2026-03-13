@@ -21,12 +21,13 @@ import ScadaMapPanel from "./lagoon/ScadaMapPanel";
 import { useScadaRealtime } from "../hooks/useScadaRealtime";
 import { useHistory } from "../hooks/useHistory";
 import { usePumpEventsLast3 } from "../hooks/usePumpEventsLast3";
+import { useAuth } from "../auth/AuthContext";
+import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
-import { lagoons } from "../data/lagoons";
 import { svgRegistry } from "../scada/svgRegistry";
 
 interface Props {
-  lagoonId: string;
+  lagoon: LagoonAccess;
 }
 
 function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
@@ -79,6 +80,15 @@ const quickRanges = [
   { label: "185D", days: 185 },
   { label: "365D", days: 365 },
 ];
+
+const LAYOUT_ALIASES: Record<string, string> = {
+  layout_small: "layout3",
+};
+
+function resolveLayoutName(layoutName: string) {
+  const resolved = LAYOUT_ALIASES[layoutName] ?? layoutName;
+  return resolved;
+}
 
 function extractEventTimestamp(value: unknown): string | null {
   if (typeof value === "string" && value.trim()) return value;
@@ -472,39 +482,39 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
   );
 }
 
-export default function LagoonContainer({
-  lagoonId,
-}: Props) {
-  const lagoonConfig = lagoons.find((lagoon) => lagoon.id === lagoonId);
-  const lagoonName = lagoonConfig?.name ?? lagoonId;
-  const lagoonCountry = lagoonConfig?.country ?? "Laguna";
+export default function LagoonContainer({ lagoon }: Props) {
+  const { accessToken } = useAuth();
+  const lagoonId = lagoon.lagoon_id;
+  const lagoonName = lagoon.lagoon_name;
+  const lagoonHeading = lagoon.timezone ?? "SCADA";
+  const resolvedLayoutName = resolveLayoutName(lagoon.scada_layout);
   const [layout, setLayout] = useState<any>(null);
 
   useEffect(() => {
-    if (!lagoonConfig?.layout) {
+    if (!resolvedLayoutName) {
       setLayout(null);
       return;
     }
 
-    import(`../layouts/crystal-${lagoonConfig.layout}.layout.json`)
+    import(`../layouts/crystal-${resolvedLayoutName}.layout.json`)
       .then((module) => setLayout(module.default))
       .catch(() => setLayout(null));
-  }, [lagoonConfig]);
+  }, [resolvedLayoutName]);
 
   const svgEntry =
-    lagoonConfig?.layout && svgRegistry[lagoonConfig.layout]
-      ? svgRegistry[lagoonConfig.layout]
+    resolvedLayoutName && svgRegistry[resolvedLayoutName]
+      ? svgRegistry[resolvedLayoutName]
       : null;
 
   const SvgComponent = svgEntry?.component ?? null;
   const aspectRatio = svgEntry?.aspectRatio ?? "1429.5 / 960";
 
   const { tags, pumpLastOn, plc_status, local_time, timezone } =
-    useScadaRealtime(lagoonId);
+    useScadaRealtime(lagoonId, accessToken);
 
   const mapPanel = (
     <ScadaMapPanel
-      heading={lagoonCountry}
+      heading={lagoonHeading}
       title={lagoonName}
       layout={layout}
       tags={tags}
@@ -513,13 +523,19 @@ export default function LagoonContainer({
       timezone={timezone}
       SvgComponent={SvgComponent}
       aspectRatio={aspectRatio}
+      canControl={lagoon.can_control}
     />
   );
 
   return (
     <main className="h-full">
-      <div className="space-y-6 p-1 sm:p-2">
+      <div className="space-y-6 px-0 py-1 sm:py-1.5">
         {mapPanel}
+        {!lagoon.can_control && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            Controles de bombas ocultos por permisos RBAC.
+          </div>
+        )}
 
         <div className="mt-6 space-y-6">
           {layout && (

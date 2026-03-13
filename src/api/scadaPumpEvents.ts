@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_HTTP } from "../config/api";
+import { httpClient } from "./httpClient";
 
 export interface PumpEvent {
   lagoon_id: string;
@@ -13,15 +12,10 @@ export interface PumpEventsLast3Response {
   events: PumpEvent[];
 }
 
-const api = axios.create({
-  baseURL: API_HTTP,
-  timeout: 30_000,
-});
-
 export async function fetchPumpEventsLast3(
   lagoonId: string,
 ): Promise<PumpEventsLast3Response> {
-  const { data } = await api.get<PumpEventsLast3Response>(
+  const { data } = await httpClient.get<PumpEventsLast3Response>(
     `/scada/${encodeURIComponent(lagoonId)}/pump-events/last-3`,
   );
 

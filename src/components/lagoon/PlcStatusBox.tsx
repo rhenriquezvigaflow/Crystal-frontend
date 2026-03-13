@@ -29,7 +29,7 @@ export default function PlcStatusBox({
         px-6
         py-4
         w-[18%]
-        min-w-55
+        min-w-64
         text-center
       "
       style={{ top, left }}
@@ -60,6 +60,7 @@ export default function PlcStatusBox({
       <div className="mt-1 text-xs text-slate-500">
         {timezone ?? ""}
       </div>
+  
     </div>
   );
 }

@@ -119,6 +119,10 @@ body {
   height: 100%;
 }
 
+.scada-stage-no-control svg [id^="Vector_324"] {
+  display: none !important;
+}
+
 @keyframes kpi-breath {
   0% {
     transform: translate(-50%, -50%) scale(1);

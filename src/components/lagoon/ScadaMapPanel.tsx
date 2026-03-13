@@ -13,6 +13,7 @@ interface Props {
   timezone?: string | null;
   SvgComponent: ComponentType<ScadaSvgProps> | null;
   aspectRatio: string;
+  canControl?: boolean;
 }
 
 export default function ScadaMapPanel({
@@ -25,33 +26,41 @@ export default function ScadaMapPanel({
   timezone,
   SvgComponent,
   aspectRatio,
+  canControl = true,
 }: Props) {
   return (
-    <section className="lagoon-map-shell rounded-[18px] p-3 sm:p-4">
+    <section className="lagoon-map-shell rounded-[18px] p-2 sm:p-3">
       <div className="lagoon-glow left-6 top-6 h-20 w-20 bg-sky-200/55" />
       <div className="lagoon-glow bottom-6 right-8 h-24 w-24 bg-cyan-200/45" />
 
-      <div className="relative mb-4 px-2 py-1 sm:px-3">
+      <div className="relative mb-3 px-1.5 py-1 sm:px-2">
         <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">
-          {heading}
+          {heading} 
         </div>
         <div className="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">
           {title}
         </div>
       </div>
 
-      <div className="mb-4 h-px w-full bg-slate-200" />
+      <div className="mb-3 h-px w-full bg-slate-200" />
 
-      <div className="overflow-x-auto overflow-y-hidden">
+      <div className="-mx-2 overflow-x-auto overflow-y-hidden px-2 sm:mx-0 sm:px-0">
         <div
-          className="lagoon-map-frame relative mx-auto w-full min-w-[760px] rounded-[14px] md:min-w-0"
+          className="lagoon-map-frame relative w-full min-w-[820px] rounded-[14px] sm:min-w-[900px] md:min-w-0"
           style={{
             aspectRatio,
             maxWidth: "100%",
           }}
           >
           {SvgComponent ? (
-            <div className="scada-stage absolute inset-0">
+            <div
+              className={[
+                "scada-stage",
+                canControl ? "" : "scada-stage-no-control",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
               <SvgComponent className="h-full w-full" tags={tags} />
             </div>
           ) : (

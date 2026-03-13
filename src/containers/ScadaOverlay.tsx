@@ -84,7 +84,7 @@ export default function ScadaOverlay({
                       isOnline ? "text-emerald-700" : "text-red-700"
                     }`}
                   >
-                    {isOnline ? "En linea" : "Desconectado"}
+                    {isOnline ? "En línea" : "Desconectado"}
                   </span>
                 </div>
 
@@ -97,6 +97,9 @@ export default function ScadaOverlay({
 
                 <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">
                   {timezone ?? ""}
+                </div>
+                  <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">
+                  Hora Local
                 </div>
               </div>
             </div>

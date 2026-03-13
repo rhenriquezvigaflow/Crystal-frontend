@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_HTTP } from "../config/api";
+import { httpClient } from "./httpClient";
 import type { HistoryResponse } from "../components/charts/HistoryChart/types";
 
 export type HistoryView = "hourly" | "daily" | "weekly";
@@ -11,14 +10,6 @@ export interface HistoryParams {
   tags: string[];              
   view?: HistoryView;
 }
-
-/**
- * Axios instance centralizada
- */
-const api = axios.create({
-  baseURL: API_HTTP,
-  timeout: 30_000,
-});
 
 export const fetchHistory = async (
   params: HistoryParams
@@ -33,7 +24,7 @@ export const fetchHistory = async (
 
   const endpoint = endpointMap[view] ?? endpointMap.hourly;
 
-  const { data } = await api.get<HistoryResponse>(endpoint, {
+  const { data } = await httpClient.get<HistoryResponse>(endpoint, {
     params: {
       ...rest,
       tags, 

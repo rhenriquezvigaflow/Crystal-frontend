@@ -11,7 +11,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT117_R_SCADA",
-      "position": { "top": "28%", "left": "24.6%" }
+      "position": { "top": "40.3%", "left": "21.3%" }
     },
     {
       "id": "pt148",
@@ -20,7 +20,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT148_R_SCADA",
-      "position": { "top": "12.8%", "left": "39.5%" }
+      "position": { "top": "24.7%", "left": "37%" }
     },
     {
       "id": "pt141",
@@ -29,7 +29,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT141_R_SCADA",
-      "position": { "top": "51.3%", "left": "59.3%" }
+      "position": { "top": "58.5%", "left": "56.5%" }
     },
     {
       "id": "pt145",
@@ -38,7 +38,7 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT145_R_SCADA",
-      "position": { "top": "42.3%", "left": "82.7%" }
+      "position": { "top": "55.3%", "left": "82.3%" }
     },
     {
       "id": "pt143",
@@ -47,7 +47,16 @@
       "unit": "bar",
       "iconType": "pressure",
       "backendTag": "PT143_R_SCADA",
-      "position": { "top": "51.3%", "left": "71.3%" }
+      "position": { "top": "58.5%", "left": "70%" }
+    },
+    {
+      "id": "FIT003_R_SCADA",
+      "type": "kpi",
+      "label": "FIT003_R_SCADA",
+      "unit": "l/s",
+      "iconType": "flow",
+      "backendTag": "FIT003_R_SCADA",
+      "position": { "top": "51.5%", "left": "21.3%" }
     },
 
     {
@@ -57,16 +66,16 @@
       "unit": "m3",
       "iconType": "volume",
       "backendTag": "WM01_TOT_SCADA",
-      "position": { "top": "76.3%", "left": "41%" }
+      "position": { "top": "92%", "left": "42%" }
     },
       {
       "id": "DIF_PRES_SCADA",
       "type": "kpi",
       "label": "DIF_PRES_SCADA",
       "unit": "bar",
-      "iconType": "volume",
+      "iconType": "pressure",
       "backendTag": "DIF_PRES_SCADA",
-      "position": { "top": "48.3%", "left": "45.8%" }
+      "position": { "top": "57.3%", "left": "42.3%" }
     },
     {
       "id": "plc_status",
