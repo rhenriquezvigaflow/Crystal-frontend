@@ -1,116 +1,136 @@
 # Arquitectura Frontend SCADA
 
+Ultima actualizacion: 2026-03-13
+
 ## 1) Panorama general
 
-El frontend se organiza en una arquitectura por capas:
+El frontend esta dividido en capas claras:
 
-1. `pages` y `components` para composicion de UI
-2. `hooks` para orquestar estado remoto
-3. `api` para llamadas HTTP tipadas
-4. `config` para direccionamiento de backend
+1. `pages` y `components` para composicion de UI.
+2. `hooks` para estado remoto y orquestacion de datos.
+3. `api` para acceso HTTP tipado con `axios`.
+4. `auth` y `lagoons` para contexto global de sesion y permisos.
+5. `layouts` + `svg` para desacoplar presentacion SCADA por planta.
 
 ## 2) Diagrama de alto nivel
 
 ```text
-Usuario (Browser)
-  -> Router (App.tsx)
-    -> /lagoon/:lagoonId
-      -> LagoonsView
-        -> LagoonContainer
-          -> useScadaRealtime      (WebSocket)
-          -> useHistory            (HTTP)
-          -> usePumpEventsLast3    (HTTP)
-          -> ScadaOverlay
-          -> PumpStatusKpi
-          -> LagoonLineChart
+Browser
+  -> App.tsx
+    -> BrowserRouter
+      -> AuthProvider
+        -> LagoonsProvider
+          -> Routes
+             /login                -> LoginPage
+             /dashboard            -> ProtectedRoute -> DashboardRedirect
+             /lagoon/:lagoonId     -> ProtectedRoute -> LagoonsView
+                                         -> TopBar + Sidebar + LagoonContainer
 ```
 
-## 3) Flujos de datos
+## 3) Routing y providers
 
-### 3.1 Realtime SCADA
+- `AuthProvider`:
+  - restaura sesion desde `localStorage`.
+  - valida JWT (`isTokenValid`).
+  - expone `login/logout/isAuthenticated`.
+- `LagoonsProvider`:
+  - obtiene lagunas desde `GET /lagoons`.
+  - filtra por `can_view`.
+  - aplica allowlist de nombres visibles en UI.
+- `ProtectedRoute`:
+  - redirige a `/login` si no hay sesion valida.
+- `DashboardRedirect`:
+  - redirige a la primera laguna disponible.
+- `App.tsx`:
+  - aplica auto refresh cada 30 minutos.
+
+## 4) Flujos de datos
+
+### 4.1 Realtime
 
 - Hook: `src/hooks/useScadaRealtime.ts`
-- Endpoint: `ws://.../ws/scada?lagoon_id={id}`
-- Datos principales:
+- Transporte: WebSocket
+- Ruta: `/ws/scada/{lagoonId}?token={accessToken}`
+- Payload consumido:
   - `tags`
+  - `pump_last_on`
+  - `ts`
   - `plc_status`
   - `local_time`
   - `timezone`
-  - `pump_last_on` (fallback legacy)
 
-### 3.2 Historico
+### 4.2 Historico
 
 - Hook: `src/hooks/useHistory.ts`
 - API: `src/api/scadaHistory.ts`
-- Endpoint usado hoy:
-  - `GET /scada/history/hourly`
-- Uso:
-  - Alimenta `LagoonLineChart`
-  - Filtros de rango: 1D, 7D, 30D, 90D, etc.
+- Endpoint usado hoy: `GET /scada/history/hourly`
+- `view` (`hourly|daily|weekly`) se calcula en frontend segun rango visible.
+- `LagoonLineChart`:
+  - alinea series por timeline comun.
+  - formatea fechas en timezone de laguna.
+  - devuelve nuevo rango al hacer zoom.
 
-### 3.3 Eventos de bombas (last 3)
+### 4.3 Eventos de bombas
 
 - Hook: `src/hooks/usePumpEventsLast3.ts`
 - API: `src/api/scadaPumpEvents.ts`
-- Endpoint:
-  - `GET /scada/{lagoon_id}/pump-events/last-3`
-- Uso:
-  - `LagoonContainer` agrupa eventos por `tag_id`
-  - `PumpStatusKpi` renderiza hasta 3 eventos por bomba
-  - Soporta estados UI: `loading`, `error`, `empty`
+- Endpoint: `GET /scada/{lagoon_id}/pump-events/last-3`
+- Integracion:
+  - `LagoonContainer` agrupa por `tag_id`.
+  - `PumpStatusKpi` muestra hasta 3 eventos por bomba.
+  - si falla endpoint, usa fallback con `pump_last_on` realtime.
 
-## 4) Composicion visual
+## 5) Pipeline de layout + SVG
 
-- `src/pages/lagoonsView.tsx`
-  - Estructura shell: `Sidebar + TopBar + LagoonContainer`
+1. El backend entrega `lagoon.scada_layout`.
+2. `LagoonContainer` resuelve alias (`layout_small -> layout3`).
+3. Carga dinamicamente JSON:
+   - `src/layouts/crystal-${layout}.layout.json`
+4. Resuelve SVG desde `src/scada/svgRegistry.ts`:
+   - componente React.
+   - `aspectRatio` para el contenedor.
+5. `ScadaMapPanel` renderiza:
+   - SVG base.
+   - `ScadaOverlay` (KPIs y caja PLC).
 
-- `src/components/lagoonContainer.tsx`
-  - Carga layout dinamico JSON (`src/layouts/crystal-layout*.layout.json`)
-  - Resuelve SVG via `src/scada/svgRegistry.ts`
-  - Conecta datos realtime + historico + eventos
+## 6) Responsabilidades de cada bloque visual
 
-- `src/containers/ScadaOverlay.tsx`
-  - Dibuja KPIs sobre el SVG segun layout
+- `LagoonsView`:
+  - shell responsive.
+  - drawer movil para sidebar.
+- `ScadaMapPanel`:
+  - encabezado de laguna.
+  - marco del plano SCADA.
+  - aplica `canControl` para ocultar controles cuando corresponde.
+- `ScadaOverlay`:
+  - dibuja elementos de `layout.kpis`.
+  - soporta tipos `kpi` y `plc_status`.
+- `PumpStatusKpi`:
+  - estado por bomba.
+  - eventos recientes por tarjeta.
+- `LagoonLineChart`:
+  - historico multi serie por TAG.
 
-- `src/components/lagoon/PumpStatusKpi.tsx`
-  - Estado de bombas
-  - Lista de eventos recientes (hasta 3)
-  - Etiquetas visibles amigables
+## 7) Modelo de permisos (RBAC en UI)
 
-- `src/components/charts/LagoonLineChart.tsx`
-  - Historico multi-serie
-  - Formato en timezone de laguna
-  - Tooltip compartido
+- `can_view`:
+  - controla acceso de laguna en sidebar y routing.
+- `can_edit`:
+  - habilita/deshabilita affordances de edicion en topbar.
+- `can_control`:
+  - si es `false`, se ocultan controles visuales en el SVG.
+  - se muestra mensaje: "Controles de bombas ocultos por permisos RBAC."
 
-## 5) Modelo de estado de bomba
+## 8) Configuracion y errores
 
-La UI acepta estado de bomba tanto numerico como booleano:
+- HTTP y WS base: `src/config/api.ts`.
+- Cliente HTTP: `src/api/httpClient.ts` con interceptor de token.
+- Errores API se envuelven en `ApiError` con `status` y `message`.
+- Mensajes de 403 se tratan de forma explicita en login, lagunas e historico/eventos.
 
-- `1` o `true` -> `FUNCIONANDO`
-- `0` o `false` -> `DETENIDA`
+## 9) Riesgos y deuda tecnica
 
-Esta normalizacion vive en `LagoonContainer` para evitar que tags booleanos (ej. `RETRO_SCADA`) aparezcan como `SIN DATO`.
-
-## 6) Decisiones tecnicas importantes
-
-1. Layout desacoplado por JSON + SVG:
-   - Permite agregar lagunas sin reescribir componentes principales.
-
-2. Hooks como capa de acceso remoto:
-   - Evita mezclar fetch/ws directamente en componentes visuales.
-
-3. Fallback de eventos de bomba:
-   - Si falla `pump-events/last-3`, se puede usar `pump_last_on` realtime como degradacion.
-
-## 7) Riesgos y deuda tecnica actual
-
-1. Configuracion API inconsistente:
-   - `src/config/api.ts` usa host hardcoded
-   - `src/auth/authApi.ts` usa env vars
-   - Recomendado: unificar todo en `.env` por entorno.
-
-2. Tipado laxo en componentes legacy:
-   - Hay uso de `any` en algunos contenedores/hook.
-
-3. Logging en consola en produccion:
-   - Revisar `console.log/console.error` para control centralizado.
+1. Uso de `any` en varios modulos de layout y contenedores.
+2. Inconsistencia entre tipos `crystal-lagoons.types.ts` y layout JSON real (`plc_status`, `pumps` no estan tipados ahi).
+3. Hay texto legacy con encoding irregular en algunos mensajes de UI.
+4. Algunos SVG siguen en formato exportado extenso, con ruido de metadatos.

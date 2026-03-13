@@ -1,131 +1,212 @@
 # Playbook de Troubleshooting (Operacion)
 
+Ultima actualizacion: 2026-03-13
+
 Guia rapida para soporte y desarrollo cuando el dashboard SCADA presenta fallas.
 
-## 1) No carga la vista de laguna
+## 1) No puedo entrar al dashboard (redireccion a login)
 
-- Sintoma:
-  - Pantalla en blanco o sin datos al entrar a `/lagoon/{id}`.
-- Causas probables:
-  - `lagoonId` invalido o no configurado en `src/data/lagoons.ts`.
-  - Layout JSON/SVG no registrado en `src/scada/svgRegistry.ts`.
-- Accion:
-  1. Verificar que el `id` exista en `src/data/lagoons.ts`.
-  2. Confirmar que el layout (`layout1/layout2/layout3`) exista en `src/layouts`.
-  3. Revisar `svgRegistry` y validar que el SVG este mapeado.
+Sintoma:
 
-## 2) SCADA realtime no actualiza
+- al abrir `/dashboard` o `/lagoon/:id`, vuelve a `/login`.
 
-- Sintoma:
-  - KPIs congelados, estado PLC sin cambios.
-- Causas probables:
-  - WebSocket desconectado (`/ws/scada`).
-  - URL WS incorrecta en `src/config/api.ts`.
-- Accion:
-  1. Revisar consola del navegador (`WS disconnected` / `WS parse error`).
-  2. Validar `API_WS` en `src/config/api.ts`.
-  3. Confirmar conectividad a backend (host/puerto).
+Causas probables:
 
-## 3) Hora local incorrecta en grafico o cards
+- token vencido o invalido.
+- sesion local corrupta.
 
-- Sintoma:
-  - Tooltip/eje con hora distinta a la laguna.
-- Causas probables:
-  - `timezone` no llega desde backend.
-  - Formateo cae a timezone local del navegador.
-- Accion:
-  1. Verificar que WS entregue `timezone`.
-  2. Revisar props `timezone` hacia `LagoonLineChart` y `PumpStatusKpi`.
-  3. Confirmar formato de fecha ISO en backend.
+Accion:
 
-## 4) Eventos de bombas vacios
+1. Revisar `localStorage` (`token` y `crystal_auth_v1`).
+2. Verificar expiracion del JWT (`exp`).
+3. Reautenticar y validar respuesta de `/auth/login`.
 
-- Sintoma:
-  - Cards muestran "Sin eventos recientes".
-- Causas probables:
-  - Endpoint `/scada/{lagoon_id}/pump-events/last-3` devuelve arreglo vacio.
-  - Error HTTP al consultar endpoint.
-- Accion:
-  1. Confirmar respuesta del endpoint para la laguna.
-  2. Revisar error en UI (estado `eventsError`).
-  3. Si falla endpoint, confirmar fallback con `pump_last_on` via WS.
+## 2) "Acceso no permitido" al cargar lagunas
 
-## 5) Se ve solo 1 evento de bomba
+Sintoma:
 
-- Sintoma:
-  - En "Eventos recientes" aparece solo una fila.
-- Causas probables:
-  - Backend retorna solo 1 evento real.
-  - Datos repetidos/invalidos tras normalizacion.
-- Accion:
-  1. Verificar payload `events[]` (deberian venir hasta 3).
-  2. Confirmar que `start_local` sea fecha valida.
-  3. Revisar agrupacion por `tag_id` en `LagoonContainer`.
+- pantalla de acceso no permitido en `/dashboard` o `/lagoon/:id`.
 
-## 6) RETRO_SCADA aparece como "SIN DATO"
+Causas probables:
 
-- Sintoma:
-  - Estado de retrolavado no refleja `true/false`.
-- Causas probables:
-  - Tag booleano no normalizado.
-- Accion:
-  1. Verificar que el valor llegue como boolean en `tags`.
-  2. Confirmar `normalizePumpState`:
-     - `true -> 1 (FUNCIONANDO)`
-     - `false -> 0 (DETENIDA)`
+- backend responde `403`.
+- usuario sin `can_view`.
 
-## 7) Tooltip del chart muestra solo una serie
+Accion:
 
-- Sintoma:
-  - Tooltip compartido no lista todas las lineas.
-- Causas probables:
-  - Timestamps de series desalineados.
-- Accion:
-  1. Verificar alineacion de timeline comun en `LagoonLineChart`.
-  2. Confirmar `tooltip.shared = true`.
-  3. Revisar normalizacion por bucket (hourly/daily/weekly).
+1. Revisar respuesta de `GET /lagoons`.
+2. Confirmar permisos RBAC del usuario.
+3. Validar que token corresponda al ambiente correcto.
 
-## 8) En 90D no se dibujan lineas
+## 3) No aparece una laguna que existe en backend
 
-- Sintoma:
-  - Hay datos en tooltip pero grafico "plano" o sin trazo visible.
-- Causas probables:
-  - Buckets fuera de rango visible.
-  - Normalizacion de fechas con offsets incorrectos.
-- Accion:
-  1. Validar normalizacion en UTC para buckets diarios/semanales.
-  2. Confirmar `min/max` de eje X con rango seleccionado.
-  3. Revisar que valores no sean `null` por sobrescritura.
+Sintoma:
 
-## 9) Login falla
+- la laguna viene en backend pero no se lista en sidebar/topbar.
 
-- Sintoma:
-  - No permite iniciar sesion.
-- Causas probables:
-  - Base URL de auth mal configurada.
-  - Token no persistido.
-- Accion:
-  1. Revisar `VITE_API_HTTP` o `VITE_API_BASE_URL`.
-  2. Validar respuesta de `/auth/login`.
-  3. Revisar `localStorage` para token.
+Causas probables:
 
-## 10) Build falla localmente
+- `can_view=false`.
+- nombre fuera de allowlist en `LagoonsContext`.
 
-- Sintoma:
-  - `npm run build` con error.
-- Causas probables:
-  - Dependencias desactualizadas o lock inconsistente.
-  - Error de tipado/sintaxis en cambios recientes.
-- Accion:
-  1. Ejecutar `npm install`.
-  2. Ejecutar `npm run build` y revisar primer error real.
-  3. Validar imports/rutas absolutas y tipos nuevos.
+Accion:
 
-## Checklist rapido antes de escalar
+1. Revisar flags `can_view`, `can_edit`, `can_control`.
+2. Validar nombre de `lagoon_name` y normalizacion (acentos/espacios).
+3. Ajustar allowlist en `src/lagoons/LagoonsContext.tsx` si corresponde.
 
-1. Confirmar laguna afectada (`lagoon_id`) y hora del incidente.
-2. Guardar payload de:
-   - WS `/ws/scada`
-   - HTTP `/scada/{lagoon_id}/pump-events/last-3`
-3. Adjuntar screenshot y error de consola.
-4. Indicar si afecta una sola laguna o todas.
+## 4) Vista de laguna sin plano SCADA
+
+Sintoma:
+
+- mensaje: "No hay layout SCADA disponible para esta laguna."
+
+Causas probables:
+
+- `scada_layout` no registrado en `src/scada/svgRegistry.ts`.
+- no existe JSON `src/layouts/crystal-{layout}.layout.json`.
+
+Accion:
+
+1. Confirmar valor de `scada_layout` que retorna `/lagoons`.
+2. Verificar alias activos (`layout_small -> layout3`).
+3. Registrar componente SVG y `aspectRatio` en `svgRegistry`.
+4. Crear o corregir layout JSON correspondiente.
+
+## 5) Realtime no actualiza (KPIs congelados)
+
+Sintoma:
+
+- tags no cambian, estado PLC no se actualiza.
+
+Causas probables:
+
+- WS desconectado.
+- URL WS incorrecta.
+- token invalido en query param.
+
+Accion:
+
+1. Revisar consola para `WS disconnected` o `WS parse error`.
+2. Verificar construccion de URL:
+   - `/ws/scada/{lagoonId}?token={accessToken}`.
+3. Validar `API_WS` (`VITE_API_WS` o derivado desde `API_HTTP`).
+4. Confirmar que el token siga vigente.
+
+## 6) Hora local o timezone incorrectos
+
+Sintoma:
+
+- tarjeta PLC y chart muestran hora que no coincide con planta.
+
+Causas probables:
+
+- WS no envia `local_time` o `timezone`.
+- timezone invalida cae a fallback del navegador.
+
+Accion:
+
+1. Inspeccionar payload WS para `local_time` y `timezone`.
+2. Verificar props hacia `ScadaOverlay` y `LagoonLineChart`.
+3. Comprobar que timezone sea IANA valida (ej: `America/Santiago`).
+
+## 7) Controles de bombas ocultos
+
+Sintoma:
+
+- no se ven controles dentro del SVG y aparece alerta de RBAC.
+
+Causas probables:
+
+- `can_control=false` para esa laguna/usuario.
+
+Accion:
+
+1. Revisar payload de `/lagoons` (`can_control`).
+2. Confirmar que no sea un bug visual:
+   - CSS `.scada-stage-no-control svg [id^="Vector_324"]`.
+3. Si usuario debe controlar, ajustar permisos en backend.
+
+## 8) Eventos de bombas vacios o incompletos
+
+Sintoma:
+
+- "Sin eventos recientes" o pocos eventos en cards.
+
+Causas probables:
+
+- endpoint `last-3` devuelve vacio.
+- error HTTP en `/pump-events/last-3`.
+- fechas invalidas en `start_local`.
+
+Accion:
+
+1. Validar respuesta de `GET /scada/{lagoon_id}/pump-events/last-3`.
+2. Revisar estado `eventsError` en UI.
+3. Confirmar fallback realtime `pump_last_on` cuando el endpoint falla.
+4. Verificar agrupacion por `tag_id` en `LagoonContainer`.
+
+## 9) Historico sin lineas o con pocas series
+
+Sintoma:
+
+- chart vacio o tooltip incompleto.
+
+Causas probables:
+
+- no hay datos en rango.
+- TAGs no seleccionados.
+- TAGs no ploteables filtrados por regla (`_ST_`, `_STATUS`, `_BOOL`, `RETRO`, etc).
+- timestamps desalineados o fuera de rango visible.
+
+Accion:
+
+1. Probar rango corto (`1D`) y luego ampliar.
+2. Usar "Seleccionar todo" en selector de TAG.
+3. Validar payload de historico (`series[].points[]`).
+4. Confirmar normalizacion temporal (`hourly/daily/weekly`) en `LagoonLineChart`.
+
+## 10) Error general de API
+
+Sintoma:
+
+- mensajes genericos de error en login, historico o eventos.
+
+Causas probables:
+
+- backend caido o host incorrecto.
+- CORS o red interna inaccesible.
+
+Accion:
+
+1. Confirmar `API_HTTP` efectivo (`VITE_API_HTTP` / fallback local).
+2. Probar endpoint base manualmente.
+3. Revisar detalle de error normalizado por `ApiError`.
+
+## 11) Build falla localmente
+
+Sintoma:
+
+- `npm run build` falla.
+
+Causas probables:
+
+- error de tipos o sintaxis en cambios recientes.
+- dependencias no instaladas.
+
+Accion:
+
+1. Ejecutar `npm install`.
+2. Ejecutar `npm run build` y revisar el primer error.
+3. Corregir imports, tipos y rutas.
+
+## Checklist antes de escalar
+
+1. Laguna afectada (`lagoon_id`) y hora exacta del incidente.
+2. Payloads capturados:
+   - `GET /lagoons`
+   - WS `/ws/scada/{lagoonId}?token=...`
+   - `GET /scada/history/hourly`
+   - `GET /scada/{lagoon_id}/pump-events/last-3`
+3. Captura de pantalla de UI + logs de consola.
+4. Confirmar si afecta una laguna o todas.
