@@ -1,183 +1,8 @@
 import * as React from "react";
 
-type DeviceCode =
-  | "P-017"
-  | "BOMBA-FILTRACION"
-  | "BOMBA-RETROLAVADO"
-  | "BOMBA-RETORNO-CLARIFICADO"
-  | "VE-288"
-  | "VE-322"
-  | "VE-320"
-  | "VE-318"
-  | "P-015"
-  | "P-016";
-
-type DeviceState = 0 | 1 | 2 | 3;
-
-const DEVICE_STATE_COLORS: Record<DeviceState, string> = {
-  0: "#ef4444",
-  1: "#22c55e",
-  2: "#3b82f6",
-  3: "#facc15",
-};
-
-const DEFAULT_DEVICE_COLOR = DEVICE_STATE_COLORS[0];
-
-const DEVICE_TAG_ALIASES: Partial<Record<DeviceCode, string[]>> = {
-  "P-017": ["CL-FLO12", "CL-FL012"],
-  "BOMBA-FILTRACION": ["FILTRACION-RETROLAVADO"],
-  "BOMBA-RETROLAVADO": ["FILTRACION-RETROLAVADO"],
-  "BOMBA-RETORNO-CLARIFICADO": ["RETORNO-CLARIFICADO"],
-  "P-015": ["P-008"],
-  "P-016": ["P-007"],
-};
-
-function normalizeTagKey(key: string) {
-  return key.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-}
-
-function buildNormalizedTags(tags: Record<string, unknown>) {
-  return Object.fromEntries(
-    Object.entries(tags ?? {}).map(([key, value]) => [normalizeTagKey(key), value]),
-  );
-}
-
-function getDeviceTagCandidates(deviceCode: DeviceCode) {
-  const aliases = DEVICE_TAG_ALIASES[deviceCode] ?? [];
-  const baseCandidates = [deviceCode, ...aliases].flatMap((code) => {
-    const compactCode = code.replace(/[^a-zA-Z0-9]/g, "");
-    const underscoredCode = code
-      .replace(/[^a-zA-Z0-9]/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .replace(/_+/g, "_");
-    const dashedCode = code
-      .replace(/[^a-zA-Z0-9]/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .replace(/-+/g, "-");
-
-    return [
-      code,
-      code.toUpperCase(),
-      code.toLowerCase(),
-      compactCode,
-      compactCode.toUpperCase(),
-      compactCode.toLowerCase(),
-      underscoredCode,
-      underscoredCode.toUpperCase(),
-      underscoredCode.toLowerCase(),
-      dashedCode,
-      dashedCode.toUpperCase(),
-      dashedCode.toLowerCase(),
-    ];
-  });
-
-  const suffixes = [
-    "",
-    "_SCADA",
-    "_scada",
-    "_STS_SCADA",
-    "_sts_scada",
-    "_STATUS_SCADA",
-    "_status_scada",
-    "_STATE_SCADA",
-    "_state_scada",
-  ];
-
-  return Array.from(
-    new Set(
-      baseCandidates.flatMap((candidate) =>
-        suffixes.map((suffix) => `${candidate}${suffix}`),
-      ),
-    ),
-  );
-}
-
-function coerceDeviceState(value: unknown): DeviceState | null {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    const parsed = Math.trunc(value);
-    return parsed >= 0 && parsed <= 3 ? (parsed as DeviceState) : null;
-  }
-
-  if (typeof value === "boolean") {
-    return value ? 1 : 0;
-  }
-
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-
-    switch (normalized) {
-      case "fault":
-      case "falla":
-      case "error":
-      case "alarm":
-      case "alarma":
-        return 0;
-      case "running":
-      case "funcionando":
-      case "open":
-      case "abierta":
-      case "abierto":
-        return 1;
-      case "moving":
-      case "moviendose":
-        return 2;
-      case "stopped":
-      case "detenida":
-      case "detenido":
-      case "closed":
-      case "cerrada":
-      case "cerrado":
-        return 3;
-      default: {
-        const parsed = Number(normalized);
-        return Number.isFinite(parsed) ? coerceDeviceState(parsed) : null;
-      }
-    }
-  }
-
-  return null;
-}
-
-function getDeviceColor(
-  normalizedTags: Record<string, unknown>,
-  deviceCode: DeviceCode,
-) {
-  for (const candidate of getDeviceTagCandidates(deviceCode)) {
-    const state = coerceDeviceState(normalizedTags[normalizeTagKey(candidate)]);
-    if (state !== null) return DEVICE_STATE_COLORS[state];
-  }
-
-  return DEFAULT_DEVICE_COLOR;
-}
-
-function getDeviceIndicatorStyle(color: string, strokeWidth: number) {
-  return {
-    fill: color,
-    strokeWidth,
-  };
-}
-
-const SVGComponent = ({
-  tags = {},
-  ...props
-}: React.SVGProps<SVGSVGElement> & { tags?: Record<string, unknown> }) => {
-  const normalizedTags = buildNormalizedTags(tags);
-  const P017Color = getDeviceColor(normalizedTags, "P-017");
-  const BombaFiltracionColor = getDeviceColor(normalizedTags, "BOMBA-FILTRACION");
-  const BombaRetrolavadoColor = getDeviceColor(normalizedTags, "BOMBA-RETROLAVADO");
-  const BombaRetornoClarificadoColor = getDeviceColor(
-    normalizedTags,
-    "BOMBA-RETORNO-CLARIFICADO",
-  );
-  const VE288Color = getDeviceColor(normalizedTags, "VE-288");
-  const VE322Color = getDeviceColor(normalizedTags, "VE-322");
-  const VE320Color = getDeviceColor(normalizedTags, "VE-320");
-  const VE318Color = getDeviceColor(normalizedTags, "VE-318");
-  const P015Color = getDeviceColor(normalizedTags, "P-015");
-  const P016Color = getDeviceColor(normalizedTags, "P-016");
-
+const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
   return (
-  <svg
+ <svg
     id="Capa_1"
     x="0px"
     y="0px"
@@ -203,9 +28,9 @@ const SVGComponent = ({
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={1.4142136}
-      inkscape:cx={1167.7868}
-      inkscape:cy={69.650018}
+      inkscape:zoom={0.7071068}
+      inkscape:cx={775.69612}
+      inkscape:cy={638.51741}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
       inkscape:window-x={1912}
@@ -791,8 +616,9 @@ const SVGComponent = ({
         r={8}
         id="circle26"
         style={{
-          ...getDeviceIndicatorStyle(P017Color, 0.779157),
-          opacity: 1,
+          opacity: 0.96,
+          fill: "#ef4444",
+          strokeWidth: 0.779157,
           enableBackground: "new",
         }}
         inkscape:label="P-017"
@@ -922,8 +748,9 @@ const SVGComponent = ({
         r={8}
         id="circle26-4"
         style={{
-          ...getDeviceIndicatorStyle(BombaFiltracionColor, 0.779157),
-          opacity: 1,
+          opacity: 0.15,
+          fill: "#0e76e7",
+          strokeWidth: 0.779157,
           enableBackground: "new",
         }}
         inkscape:label="BOMBA-FILTRACION"
@@ -981,8 +808,9 @@ const SVGComponent = ({
         r={8}
         id="circle26-4-1"
         style={{
-          ...getDeviceIndicatorStyle(BombaRetornoClarificadoColor, 0.779157),
-          opacity: 1,
+          opacity: 0.15,
+          fill: "#0e76e7",
+          strokeWidth: 0.779157,
           enableBackground: "new",
         }}
         inkscape:label="BOMBA-RETORNO-CLARIFICADO"
@@ -1069,57 +897,6 @@ const SVGComponent = ({
           paintOrder: "fill markers stroke",
         }}
       />
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 24,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#efefef",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={662.28241}
-        y={321.59332}
-        id="text32"
-      >
-        <tspan
-          id="tspan32"
-          x={662.28241}
-          y={321.59332}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 24,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#efefef",
-            fillOpacity: 1,
-          }}
-        >
-          {"FIS - 001"}
-        </tspan>
-      </text>
       <rect
         x={613.48572}
         y={345.64746}
@@ -1221,46 +998,6 @@ const SVGComponent = ({
           fill: "#394049",
           strokeWidth: 1.19501,
         }}
-      />
-    </g>
-    <g
-      id="pt-card-0"
-      transform="matrix(0.71418741,0,0,0.5524794,538.57256,639.84752)"
-      style={{
-        strokeWidth: 1.59198,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={3.18395}
-        id="rect1-2-6"
-      />
-    </g>
-    <g
-      id="pt-card-0-0"
-      transform="matrix(0.84983901,0,0,0.625577,525.51127,1030.1682)"
-      style={{
-        strokeWidth: 1.37149,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.1129956}
-        ry={5.3542519}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.74297}
-        id="rect1-2-6-3"
       />
     </g>
     <g id="g6-9" transform="translate(651.53398,226.19409)">
@@ -1366,8 +1103,9 @@ const SVGComponent = ({
         r={8}
         id="circle26-4-8"
         style={{
-          ...getDeviceIndicatorStyle(BombaRetrolavadoColor, 0.779157),
-          opacity: 1,
+          opacity: 0.15,
+          fill: "#0e76e7",
+          strokeWidth: 0.779157,
           enableBackground: "new",
         }}
         inkscape:label="BOMBA-RETROLAVADO"
@@ -1437,58 +1175,6 @@ const SVGComponent = ({
           </g>
         </g>
       </g>
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: "24.4093px",
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={1019.067}
-        y={-676.57733}
-        id="text40"
-        transform="scale(1.1281249,0.88642667)"
-      >
-        <tspan
-          id="tspan40"
-          x={1019.067}
-          y={-676.57733}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: "24.4093px",
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            strokeWidth: 0,
-            strokeDasharray: "none",
-          }}
-        >
-          {"P-015"}
-        </tspan>
-      </text>
       <g
         id="Group_12-6-4-7-8-9-1"
         transform="matrix(2.5202966,0,0,1.6240535,293.70214,-1423.9858)"
@@ -1605,145 +1291,6 @@ const SVGComponent = ({
     </g>
     <text
       xmlSpace="preserve"
-      id="text34"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect34)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(-28.087361,-102.61939)"
-    >
-      <tspan x={36.717773} y={671.27697} id="tspan14">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan11"
-        >
-          {"CL-FLO12"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text35"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect35)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(-29.48455,-70.484029)"
-    >
-      <tspan x={153.69531} y={538.5426} id="tspan16">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan15"
-        >
-          {"P-017"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={439.20877}
-      y={329.35712}
-      id="text37"
-    >
-      <tspan
-        id="tspan37"
-        x={439.20877}
-        y={329.35712}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"VE-288"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
       style={{
         fontStyle: "normal",
         fontVariant: "normal",
@@ -1789,407 +1336,9 @@ const SVGComponent = ({
           strokeWidth: 0,
           strokeDasharray: "none",
         }}
-      >
-        {"P-016"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1250}
-      y={429.84583}
-      id="text40-5-2"
-    >
-      <tspan
-        id="tspan40-1-2"
-        x={1250}
-        y={429.84583}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-          strokeWidth: 0,
-          strokeDasharray: "none",
-        }}
-      >
-        {"A-C1LO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1342.3047}
-      y={429.84583}
-      id="text40-5-2-4"
-    >
-      <tspan
-        id="tspan40-1-2-0"
-        x={1342.3047}
-        y={429.84583}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-          strokeWidth: 0,
-          strokeDasharray: "none",
-        }}
-      >
-        {"F-H1LO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1275.9281}
-      y={584.20679}
-      id="text41"
-    >
-      <tspan
-        id="tspan41"
-        x={1275.9281}
-        y={584.20679}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"TK "}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1276.0248}
-      y={598.98987}
-      id="text41-1"
-    >
-      <tspan
-        id="tspan41-6"
-        x={1276.0248}
-        y={598.98987}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"DECANTADOR"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={255.76958}
-      y={1111.3479}
-      id="text43-0"
-    >
-      <tspan
-        id="tspan43-0"
-        x={255.76958}
-        y={1111.3479}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"BOMBA "}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={258.7251}
-      y={1125.4778}
-      id="text43-0-4"
-    >
-      <tspan
-        id="tspan43-0-9"
-        x={258.7251}
-        y={1125.4778}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"RETROLAVADO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={500.04782}
-      y={1114.4082}
-      id="text44"
-    >
-      <tspan
-        id="tspan44"
-        x={500.04782}
-        y={1114.4082}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"AGUA DE"}
-      </tspan>
+      />
     </text>
     <g id="Capa_1-5" transform="translate(-958.86053,-11.163916)">
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={1093.5457}
-        y={1016.8652}
-        id="text46"
-      >
-        <tspan
-          id="tspan46"
-          x={1093.5457}
-          y={1016.8652}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 16,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        >
-          {"LAGUNA"}
-        </tspan>
-      </text>
       <text
         xmlSpace="preserve"
         style={{
@@ -2237,350 +1386,7 @@ const SVGComponent = ({
           }}
         />
       </text>
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#008ae5",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "stroke markers fill",
-        }}
-        x={1009.0504}
-        y={711.02075}
-        id="text49-4"
-      >
-        <tspan
-          x={1009.0504}
-          y={711.02075}
-          id="tspan50-8"
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 16,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        >
-          {"TK LIMPIEZA"}
-        </tspan>
-      </text>
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#000000",
-          fillOpacity: 1,
-          stroke: "#008ae5",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "stroke markers fill",
-        }}
-        x={1008.1731}
-        y={729.03448}
-        id="text49-4-4"
-      >
-        <tspan
-          x={1008.1731}
-          y={729.03448}
-          id="tspan50-8-5"
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 16,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-        >
-          {"FONDO"}
-        </tspan>
-      </text>
     </g>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={454.1843}
-      y={610.20782}
-      id="text37-0"
-    >
-      <tspan
-        id="tspan37-4"
-        x={454.1843}
-        y={610.20782}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"VE-322"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1067.5775}
-      y={288.47433}
-      id="text37-9"
-    >
-      <tspan
-        id="tspan37-56"
-        x={1067.5775}
-        y={288.47433}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"VE-320"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1125.6364}
-      y={693.0827}
-      id="text37-9-8"
-    >
-      <tspan
-        id="tspan37-56-2"
-        x={1125.6364}
-        y={693.0827}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"VE-318"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={584.45978}
-      y={968.16534}
-      id="text37-9-8-6"
-    >
-      <tspan
-        id="tspan37-56-2-8"
-        x={584.45978}
-        y={968.16534}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"WM-001"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "stroke markers fill",
-      }}
-      x={589.82489}
-      y={697.22064}
-      id="text49"
-    >
-      <tspan
-        x={589.82489}
-        y={697.22064}
-        id="tspan50"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"DIFERENCIAL DE"}
-      </tspan>
-    </text>
     <g
       id="Group_12-6-4-7-8"
       transform="matrix(1.769273,0,0,1.5723018,-624.66873,-402.10254)"
@@ -2638,7 +1444,7 @@ const SVGComponent = ({
       <path
         id="Vector_65-4-6-9"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill={VE288Color}
+        fill="#323e48"
         style={{
           strokeWidth: 1.58724,
           strokeDasharray: "none",
@@ -2655,7 +1461,7 @@ const SVGComponent = ({
         <path
           id="Vector_66-1-7-9"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill={VE288Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -2664,7 +1470,7 @@ const SVGComponent = ({
         <path
           id="Vector_67-2-19-2"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill={VE288Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -2674,7 +1480,7 @@ const SVGComponent = ({
       <path
         id="Vector_68-3-16-6"
         d="m 589.2,585 v 10"
-        stroke={VE288Color}
+        stroke="#323e48"
         strokeWidth={4}
         strokeMiterlimit={10}
         style={{
@@ -2729,57 +1535,6 @@ const SVGComponent = ({
             paintOrder: "fill markers stroke",
           }}
         />
-        <text
-          xmlSpace="preserve"
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 24,
-            fontFamily: "Arial-BoldMT",
-            InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-            fontVariantLigatures: "normal",
-            fontVariantCaps: "normal",
-            fontVariantNumeric: "normal",
-            fontVariantEastAsian: "normal",
-            textAlign: "center",
-            writingMode: "lr-tb",
-            direction: "ltr",
-            textAnchor: "middle",
-            fill: "#efefef",
-            fillOpacity: 1,
-            stroke: "#030303",
-            strokeWidth: 0,
-            strokeLinecap: "square",
-            strokeLinejoin: "round",
-            strokeDasharray: "none",
-            strokeOpacity: 1,
-            paintOrder: "fill markers stroke",
-          }}
-          x={662.28241}
-          y={321.59332}
-          id="text32-2-7"
-        >
-          <tspan
-            id="tspan32-1-9"
-            x={662.28241}
-            y={321.59332}
-            style={{
-              fontStyle: "normal",
-              fontVariant: "normal",
-              fontWeight: "normal",
-              fontStretch: "normal",
-              fontSize: 24,
-              fontFamily: "Calibri",
-              InkscapeFontSpecification: "Calibri",
-              fill: "#efefef",
-              fillOpacity: 1,
-            }}
-          >
-            {"FIS - 003"}
-          </tspan>
-        </text>
         <rect
           x={613.48572}
           y={345.64746}
@@ -2830,7 +1585,7 @@ const SVGComponent = ({
       <path
         id="Vector_65-4-6-9-7"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill={VE322Color}
+        fill="#323e48"
         style={{
           strokeWidth: 1.58724,
           strokeDasharray: "none",
@@ -2847,7 +1602,7 @@ const SVGComponent = ({
         <path
           id="Vector_66-1-7-9-2"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill={VE322Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -2856,7 +1611,7 @@ const SVGComponent = ({
         <path
           id="Vector_67-2-19-2-7"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill={VE322Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -2866,7 +1621,7 @@ const SVGComponent = ({
       <path
         id="Vector_68-3-16-6-7"
         d="m 589.2,585 v 10"
-        stroke={VE322Color}
+        stroke="#323e48"
         strokeWidth={4}
         strokeMiterlimit={10}
         style={{
@@ -2897,158 +1652,6 @@ const SVGComponent = ({
         }}
       />
     </g>
-    <g
-      id="pt-card-87-9"
-      transform="matrix(0.76732418,0,0,0.6847561,239.23077,427.96015)"
-      style={{
-        strokeWidth: 1.26048,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3"
-      />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      id="text38-8"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect38-8-0)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(-281.08809,93.200234)"
-    >
-      <tspan x={551.28027} y={354.45666} id="tspan18">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan17"
-        >
-          {"PT-117"}
-        </tspan>
-      </tspan>
-    </text>
-    <g
-      id="pt-card-87-9-5"
-      transform="matrix(0.76732418,0,0,0.6847561,728.91385,637.23791)"
-      style={{
-        strokeWidth: 1.26048,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3-0"
-      />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1-2"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={781.85059}
-      y={654.83813}
-      id="text37-7"
-    >
-      <tspan
-        id="tspan37-5"
-        x={781.85059}
-        y={654.83813}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"PT-141"}
-      </tspan>
-    </text>
     <path
       d="m 1064.1456,625.2951 32.9767,-0.20476"
       style={{
@@ -3060,256 +1663,6 @@ const SVGComponent = ({
       id="path1-38-1-8-3"
     />
     <g
-      id="pt-card-87-9-5-0-5"
-      transform="matrix(0.68893755,0,0,0.64115436,1097.0063,603.18114)"
-      style={{
-        strokeWidth: 1.26048,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3-0-2-0"
-      />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1-2-4-9"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1142.2261}
-      y={621.47424}
-      id="text37-7-1-2"
-    >
-      <tspan
-        id="tspan37-5-1-5"
-        x={1142.2261}
-        y={621.47424}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"PT-145"}
-      </tspan>
-    </text>
-    <g
-      id="pt-card-87-9-5-6"
-      transform="matrix(0.76732418,0,0,0.6847561,458.2017,248.44043)"
-      style={{
-        strokeWidth: 1.26048,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3-0-1"
-      />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1-2-3"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      id="text38"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect38-8)",
-        display: "inline",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      transform="translate(-65.969103,-88.843409)"
-    >
-      <tspan x={551.28027} y={354.45666} id="tspan20">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-          }}
-          id="tspan19"
-        >
-          {"PT-148"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={499.61374}
-      y={1129.0582}
-      id="text44-7"
-    >
-      <tspan
-        id="tspan44-6"
-        x={499.61374}
-        y={1129.0582}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"LLENADO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#008ae5",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "stroke markers fill",
-      }}
-      x={588.85797}
-      y={714.65186}
-      id="text49-2"
-    >
-      <tspan
-        x={588.85797}
-        y={714.65186}
-        id="tspan50-3"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"PRESI\xD3N"}
-      </tspan>
-    </text>
-    <g
       id="Group_32-5-67-9-6"
       transform="matrix(1.2009488,0,0,1.1337722,361.05591,-334.60546)"
       style={{
@@ -3320,7 +1673,7 @@ const SVGComponent = ({
       <path
         id="Vector_65-4-6-9-1"
         d="m 596.73062,571.88782 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill={VE320Color}
+        fill="#323e48"
         style={{
           strokeWidth: 1.58724,
           strokeDasharray: "none",
@@ -3338,7 +1691,7 @@ const SVGComponent = ({
         <path
           id="Vector_66-1-7-9-3"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill={VE320Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -3347,7 +1700,7 @@ const SVGComponent = ({
         <path
           id="Vector_67-2-19-2-2"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill={VE320Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -3357,7 +1710,7 @@ const SVGComponent = ({
       <path
         id="Vector_68-3-16-6-2"
         d="m 589.33062,570.88782 v 10"
-        stroke={VE320Color}
+        stroke="#323e48"
         strokeWidth={4}
         strokeMiterlimit={10}
         style={{
@@ -3451,7 +1804,7 @@ const SVGComponent = ({
     <path
       id="Vector_185-8-1-9"
       d="m 1332.6903,345.096 h 18.9127 c 1.0808,0 2.0265,-0.9138 2.0265,-1.95809 V 324.8621 c 0,-1.04429 -0.9457,-1.9581 -2.0265,-1.9581 h -18.9127 c -1.0807,0 -2.0263,0.91381 -2.0263,1.9581 v 18.27581 c 0,1.04429 0.9456,1.95809 2.0263,1.95809 z"
-      fill={P016Color}
+      fill="#2f3e49"
       style={{
         strokeWidth: 1.32796,
         strokeLinecap: "square",
@@ -3530,57 +1883,6 @@ const SVGComponent = ({
           paintOrder: "fill markers stroke",
         }}
       />
-      <text
-        xmlSpace="preserve"
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 24,
-          fontFamily: "Arial-BoldMT",
-          InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-          fontVariantLigatures: "normal",
-          fontVariantCaps: "normal",
-          fontVariantNumeric: "normal",
-          fontVariantEastAsian: "normal",
-          textAlign: "center",
-          writingMode: "lr-tb",
-          direction: "ltr",
-          textAnchor: "middle",
-          fill: "#efefef",
-          fillOpacity: 1,
-          stroke: "#030303",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-          paintOrder: "fill markers stroke",
-        }}
-        x={662.28241}
-        y={321.59332}
-        id="text32-2"
-      >
-        <tspan
-          id="tspan32-1"
-          x={662.28241}
-          y={321.59332}
-          style={{
-            fontStyle: "normal",
-            fontVariant: "normal",
-            fontWeight: "normal",
-            fontStretch: "normal",
-            fontSize: 24,
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#efefef",
-            fillOpacity: 1,
-          }}
-        >
-          {"FIS - 002"}
-        </tspan>
-      </text>
       <rect
         x={613.48572}
         y={345.64746}
@@ -4351,251 +2653,6 @@ const SVGComponent = ({
     <text
       xmlSpace="preserve"
       style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={319.33282}
-      y={930.45465}
-      id="text43-0-7"
-    >
-      <tspan
-        id="tspan43-0-8"
-        x={319.33282}
-        y={930.45465}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"BOMBA  "}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={318.52362}
-      y={944.58459}
-      id="text43-0-4-8"
-    >
-      <tspan
-        id="tspan43-0-9-2"
-        x={318.52362}
-        y={944.58459}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FILTRACION"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1288.4939}
-      y={860.01019}
-      id="text43-0-7-2"
-    >
-      <tspan
-        id="tspan43-0-8-0"
-        x={1288.4939}
-        y={860.01019}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"BOMBA  "}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1288.6259}
-      y={873.5127}
-      id="text43-0-4-8-9"
-    >
-      <tspan
-        id="tspan43-0-9-2-7"
-        x={1288.6259}
-        y={873.5127}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"RETORNO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={1289.9795}
-      y={889.20605}
-      id="text43-0-4-8-9-2"
-    >
-      <tspan
-        id="tspan43-0-9-2-7-6"
-        x={1289.9795}
-        y={889.20605}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"CLARIFICADO"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
         fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
@@ -4691,7 +2748,7 @@ const SVGComponent = ({
       <path
         id="Vector_65-4-6-9-7-8"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill={VE318Color}
+        fill="#323e48"
         style={{
           strokeWidth: 1.58724,
           strokeDasharray: "none",
@@ -4708,7 +2765,7 @@ const SVGComponent = ({
         <path
           id="Vector_66-1-7-9-2-2"
           d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill={VE318Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -4717,7 +2774,7 @@ const SVGComponent = ({
         <path
           id="Vector_67-2-19-2-7-4"
           d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill={VE318Color}
+          fill="#323e48"
           style={{
             strokeWidth: 1.58724,
             strokeDasharray: "none",
@@ -4727,7 +2784,7 @@ const SVGComponent = ({
       <path
         id="Vector_68-3-16-6-7-5"
         d="m 589.2,585 v 10"
-        stroke={VE318Color}
+        stroke="#323e48"
         strokeWidth={4}
         strokeMiterlimit={10}
         style={{
@@ -4972,7 +3029,7 @@ const SVGComponent = ({
     <path
       id="Vector_185-8-1"
       d="m 1247.6181,345.096 h 18.9127 c 1.0808,0 2.0265,-0.9138 2.0265,-1.95809 V 324.8621 c 0,-1.04429 -0.9457,-1.9581 -2.0265,-1.9581 h -18.9127 c -1.0807,0 -2.0263,0.91381 -2.0263,1.9581 v 18.27581 c 0,1.04429 0.9456,1.95809 2.0263,1.95809 z"
-      fill={P015Color}
+      fill="#2f3e49"
       style={{
         strokeWidth: 1.32796,
       }}
@@ -5104,12 +3161,12 @@ const SVGComponent = ({
       }}
       transform="translate(-33.656589,-11.635832)"
     >
-      <tspan x={1136.9932} y={49} id="tspan22">
+      <tspan x={1136.9932} y={49} id="tspan4">
         <tspan
           style={{
             fill: "#2c2c2c",
           }}
-          id="tspan21"
+          id="tspan3"
         >
           {"Funcionamiento de Equipos"}
         </tspan>
@@ -5258,85 +3315,8 @@ const SVGComponent = ({
       d="M 962,325.30811 V 401.3035"
       id="path4"
     />
-    <g
-      id="pt-card-87-9-5-65"
-      transform="matrix(0.76732418,0,0,0.6847561,237.34194,557.31524)"
-      style={{
-        strokeWidth: 1.26048,
-      }}
-    >
-      <rect
-        x={1}
-        y={1}
-        width={138}
-        height={68}
-        rx={4.8942113}
-        ry={6.0626636}
-        fill="#ffffff"
-        stroke="#8a94a6"
-        strokeWidth={2.52096}
-        id="rect1-2-7-3-0-0"
-      />
-      <line
-        x1={6}
-        y1={34}
-        x2={134}
-        y2={34}
-        stroke="#8a94a6"
-        strokeWidth={1.89072}
-        id="line1-8-1-2-9"
-      />
-    </g>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontStyle: "normal",
-        fontVariant: "normal",
-        fontWeight: "normal",
-        fontStretch: "normal",
-        fontSize: 16,
-        fontFamily: "Arial-BoldMT",
-        InkscapeFontSpecification: "'Arial-BoldMT, Normal'",
-        fontVariantLigatures: "normal",
-        fontVariantCaps: "normal",
-        fontVariantNumeric: "normal",
-        fontVariantEastAsian: "normal",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000000",
-        fillOpacity: 1,
-        stroke: "#030303",
-        strokeWidth: 0,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-        paintOrder: "fill markers stroke",
-      }}
-      x={287.61667}
-      y={575.16663}
-      id="text37-7-0"
-    >
-      <tspan
-        id="tspan37-5-0"
-        x={287.61667}
-        y={575.16663}
-        style={{
-          fontStyle: "normal",
-          fontVariant: "normal",
-          fontWeight: "normal",
-          fontStretch: "normal",
-          fontSize: 16,
-          fontFamily: "Calibri",
-          InkscapeFontSpecification: "Calibri",
-        }}
-      >
-        {"FIT-003"}
-      </tspan>
-    </text>
   </svg>
   );
 };
-export default SVGComponent;
+export default React.memo(SVGComponent);
+

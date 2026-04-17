@@ -1,0 +1,72 @@
+[
+  {
+    "id": "layout3_static_circle26",
+    "svg_target": "circle26",
+    "role": "pump",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_pump_006",
+    "svg_target": "circle26-4",
+    "role": "pump",
+    "label": "P006_STS_SCADA",
+    "tag": "P006_STS_SCADA"
+  },
+  {
+    "id": "layout3_pump_002",
+    "svg_target": "circle26-4-8",
+    "role": "pump",
+    "label": "P002_STS_SCADA",
+    "tag": "P002_STS_SCADA"
+  },
+  {
+    "id": "layout3_pump_007",
+    "svg_target": "circle26-4-1",
+    "role": "pump",
+    "label": "P007_STS_SCADA",
+    "tag": "P007_STS_SCADA"
+  },
+  {
+    "id": "layout3_static_vector_65_4_6_9_7",
+    "svg_target": "Vector_65-4-6-9-7",
+    "role": "valve",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_static_vector_65_4_6_9_7_8",
+    "svg_target": "Vector_65-4-6-9-7-8",
+    "role": "valve",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_static_vector_65_4_6_9",
+    "svg_target": "Vector_65-4-6-9",
+    "role": "valve",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_static_vector_65_4_6_9_1",
+    "svg_target": "Vector_65-4-6-9-1",
+    "role": "valve",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_static_vector_185_8_1",
+    "svg_target": "Vector_185-8-1",
+    "role": "pump",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout3_static_vector_185_8_1_9",
+    "svg_target": "Vector_185-8-1-9",
+    "role": "pump",
+    "label": "Reserva",
+    "state": 0
+  }
+]

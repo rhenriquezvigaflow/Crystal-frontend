@@ -1,3 +1,4 @@
+import { getStoredSession } from "./session";
 import { API_HTTP } from "../config/api";
 
 export type LoginPayload = {
@@ -18,7 +19,22 @@ export type LoginResponse = {
   user: LoginUser;
 };
 
-const API_BASE = API_HTTP;
+const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? "/api";
+
+function buildRestBaseUrl(base: string, prefix: string): string {
+  const normalizedPrefix = prefix.trim();
+  if (!normalizedPrefix) return base;
+
+  const cleanedPrefix = normalizedPrefix.startsWith("/")
+    ? normalizedPrefix
+    : `/${normalizedPrefix}`;
+  const cleanedBase = base.replace(/\/+$/, "");
+
+  if (!cleanedBase) return cleanedPrefix;
+  return `${cleanedBase}${cleanedPrefix}`;
+}
+
+const API_BASE = buildRestBaseUrl(API_HTTP, API_PREFIX);
 
 export class ApiError extends Error {
   status: number;
@@ -32,7 +48,7 @@ export class ApiError extends Error {
 
 export function getAuthHeaders(headers: HeadersInit = {}): Headers {
   const nextHeaders = new Headers(headers);
-  const token = localStorage.getItem("token");
+  const token = getStoredSession()?.accessToken ?? null;
 
   if (token) {
     nextHeaders.set("Authorization", `Bearer ${token}`);

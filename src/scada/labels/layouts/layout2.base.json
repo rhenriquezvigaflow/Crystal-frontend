@@ -1,0 +1,140 @@
+[
+  {
+    "id": "title_1",
+    "text": "TK LIMPIEZA\nFONDO",
+    "position": { "left": "4%", "top": "48%" },
+    "align": "center",
+    "max_width": 100
+  },
+  {
+    "id": "title_2",
+    "text": "CL-FLO12",
+    "position": { "left": "3.3%", "top": "36%" },
+    "align": "center",
+    "max_width": 96
+  },
+  {
+    "id": "title_3",
+    "text": "BOMBA \n CL-FLO12",
+    "position": { "left": "10.5%", "top": "35%" },
+    "align": "center",
+    "max_width": 90
+  },
+  {
+    "id": "title_4",
+    "text": "FILTRACIÓN / \n RETROLAVADO" ,
+    "position": { "left": "27%", "top": "71%" },
+    "align": "center",
+    "max_width": 88
+  },
+
+  {
+    "id": "title_6",
+    "text": "VE-402",
+    "position": { "left": "16.5%", "top": "86.5%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_7",
+    "text": "VE-401",
+    "position": { "left": "17%", "top": "63%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_8",
+    "text": "VE-237",
+    "position": { "left": "43.8%", "top": "30%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_9",
+    "text": "VE-239",
+    "position": { "left": "43.8%", "top": "41%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_10",
+    "text": "BOMBA \n RETORNO \n CLARIFICADO",
+    "position": { "left": "88.4%", "top": "75.7%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_11",
+    "text": "TK \n DECANTADOR",
+    "position": { "left": "92.8%", "top": "60%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_12",
+    "text": "A-C1LO",
+    "position": { "left": "89.3%", "top": "45.5%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_13",
+    "text": "F-H1LO",
+    "position": { "left": "96.5%", "top": "45.5%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_14",
+    "text": "P-008",
+    "position": { "left": "91%", "top": "34%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_15",
+    "text": "P-007",
+    "position": { "left": "97.6%", "top": "34%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_16",
+    "text": "LAGUNA",
+    "position": { "left": "12%", "top": "73%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "FIS003",
+    "text": "FISS - 003",
+    "position": { "left": "58%", "top": "29%" },
+    "align": "center",
+    "max_width": 140,
+    "color": "#ffffff",
+    "font_size": 26,
+    "font_weight": 700,
+    "text_shadow": "0 1px 2px rgba(15, 23, 42, 0.45)"
+  },
+  {
+    "id": "title_17",
+    "text": "VE-238",
+    "position": { "left": "71.1%", "top": "30.5%" },
+    "align": "center",
+    "max_width": 114
+  },
+    {
+    "id": "title_18",
+    "text": "VE-244",
+    "position": { "left": "76%", "top": "53%" },
+    "align": "center",
+    "max_width": 114
+  },
+  {
+    "id": "title_19",
+    "text": "VE-240",
+    "position": { "left": "69.5%", "top": "41%" },
+    "align": "center",
+    "max_width": 114
+  }
+]

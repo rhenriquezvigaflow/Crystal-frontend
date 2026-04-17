@@ -20,14 +20,28 @@ function extractMessage(payload: ErrorPayload | undefined, fallback: string) {
   return fallback;
 }
 
+const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? "/api";
+
+function buildRestBaseUrl(base: string, prefix: string): string {
+  const normalizedPrefix = prefix.trim();
+  if (!normalizedPrefix) return base;
+
+  const cleanedPrefix = normalizedPrefix.startsWith("/")
+    ? normalizedPrefix
+    : `/${normalizedPrefix}`;
+  const cleanedBase = base.replace(/\/+$/, "");
+
+  if (!cleanedBase) return cleanedPrefix;
+  return `${cleanedBase}${cleanedPrefix}`;
+}
+
 export const httpClient = axios.create({
-  baseURL: API_HTTP,
+  baseURL: buildRestBaseUrl(API_HTTP, API_PREFIX),
   timeout: 30_000,
 });
 
 httpClient.interceptors.request.use((config) => {
-  const token =
-    localStorage.getItem("token") ?? getStoredSession()?.accessToken ?? null;
+  const token = getStoredSession()?.accessToken ?? null;
   if (!token) return config;
 
   if (config.headers && typeof config.headers.set === "function") {

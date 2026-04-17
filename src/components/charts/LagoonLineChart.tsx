@@ -2,9 +2,17 @@
 import Chart from "react-apexcharts";
 import { Box, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
+import type { HistoryPoint, HistoryResponse, HistorySeries } from "./HistoryChart/types";
+import { getHistorySeriesTagKey } from "./historySeries";
+
+type LagoonHistoryData = HistoryResponse & {
+  timezone?: string | null;
+  lagoon_timezone?: string | null;
+  tz?: string | null;
+};
 
 interface Props {
-  data: any;
+  data: LagoonHistoryData | null;
   loading: boolean;
   visibleStart: Date;
   visibleEnd: Date;
@@ -79,7 +87,7 @@ export default function LagoonLineChart({
   selectedTags,
   timezone,
 }: Props) {
-  const sourceSeries = data?.series ?? [];
+  const sourceSeries: HistorySeries[] = useMemo(() => data?.series ?? [], [data?.series]);
 
   // Timezone planta (IANA). Backend recomendado: data.timezone
   const lagoonTz: string = useMemo(() => {
@@ -120,8 +128,8 @@ export default function LagoonLineChart({
   }, [visibleStart, visibleEnd]);
 
   const filteredSeries = useMemo(() => {
-    return sourceSeries.filter((s: any) => {
-      const tag = String(s.tag ?? s.tag_key ?? "");
+    return sourceSeries.filter((s) => {
+      const tag = getHistorySeriesTagKey(s);
       if (!isPlottableTag(tag)) return false;
       if (!selectedTagSet) return true;
       return selectedTagSet.has(tag);
@@ -133,8 +141,8 @@ export default function LagoonLineChart({
     const min = visibleStart.getTime();
     const max = visibleEnd.getTime();
 
-    filteredSeries.forEach((s: any) => {
-      (s.points ?? []).forEach((p: any) => {
+    filteredSeries.forEach((s) => {
+      (s.points ?? []).forEach((p: HistoryPoint) => {
         const t = normalizeByView(p.timestamp, view);
         if (!Number.isNaN(t) && t >= min && t <= max) set.add(t);
       });
@@ -144,11 +152,11 @@ export default function LagoonLineChart({
   }, [view, filteredSeries, visibleStart, visibleEnd]);
 
   const series = useMemo(() => {
-    return filteredSeries.map((s: any) => {
-      const tag = String(s.tag ?? s.tag_key ?? "");
+    return filteredSeries.map((s) => {
+      const tag = getHistorySeriesTagKey(s);
       const map = new Map<number, number | null>();
 
-      (s.points ?? []).forEach((p: any) => {
+      (s.points ?? []).forEach((p: HistoryPoint) => {
         const t = normalizeByView(p.timestamp, view);
         if (Number.isNaN(t)) return;
 

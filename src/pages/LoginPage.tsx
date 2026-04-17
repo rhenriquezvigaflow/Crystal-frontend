@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { ApiError } from "../auth/authApi";
+import loginBackgroundUrl from "../assets/login-background.webp";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function Login() {
     <div className="relative min-h-screen w-full overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center scale-105"
-        style={{ backgroundImage: "url('/login-background.webp')" }}
+        style={{ backgroundImage: `url('${loginBackgroundUrl}')` }}
       />
 
       <div className="absolute inset-0 bg-black/35" />

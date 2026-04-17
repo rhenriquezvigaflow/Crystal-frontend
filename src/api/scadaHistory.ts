@@ -7,30 +7,32 @@ export interface HistoryParams {
   lagoon_id: string;
   start_date: string;
   end_date: string;
-  tags: string[];              
+  tags: string[];
   view?: HistoryView;
 }
 
 export const fetchHistory = async (
-  params: HistoryParams
+  params: HistoryParams,
 ): Promise<HistoryResponse> => {
-  const { view = "hourly", tags, ...rest } = params;
+  const { view = "hourly", tags, lagoon_id, ...rest } = params;
+  const normalizedLagoonId = lagoon_id.trim();
 
-  const endpointMap: Record<HistoryView, string | null> = {
-    hourly: "/scada/history/hourly",
-    daily: null,
-    weekly: null,
-  };
+  if (!normalizedLagoonId) {
+    return {
+      series: [],
+    };
+  }
 
-  const endpoint = endpointMap[view] ?? endpointMap.hourly;
+  const endpoint = `/scada/${encodeURIComponent(normalizedLagoonId)}/history`;
 
   const { data } = await httpClient.get<HistoryResponse>(endpoint, {
     params: {
       ...rest,
-      tags, 
+      tags,
+      resolution: view,
     },
     paramsSerializer: {
-      indexes: false, // 🔑 genera ?tags=a&tags=b (FastAPI-friendly)
+      indexes: false,
     },
   });
 

@@ -1,0 +1,143 @@
+{
+  "layout": {
+    "id": "layout4",
+    "name": "Kirah Local Layout",
+    "json_definition": {
+      "plant": "KIRAH - SCADA",
+      "version": "1.0",
+      "description": "Layout local de Kirah definido en frontend para ajustar posiciones sin depender de layouts en BD.",
+      "svg_component": "layout4",
+      "aspect_ratio": "1393.0437 / 960.00002",
+      "elements": [
+        {
+          "id": "pressure_1",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "40%", "left": "21%" },
+          "icon_type": "pressure",
+          "fallback_tag": "PT115_R",
+          "default_label": "PT115_R"
+        },
+        {
+          "id": "pressure_2",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "85%", "left": "23.4%" },
+          "icon_type": "pressure",
+          "fallback_tag": "PT119_R",
+          "default_label": "PT119_R"
+        },
+        {
+          "id": "pressure_3",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "25%", "left": "33.9%" },
+          "icon_type": "pressure",
+          "fallback_tag": "PT122_R",
+          "default_label": "PT122_R"
+        },
+        {
+          "id": "pressure_4",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "61%", "left": "51.7%" },
+          "icon_type": "pressure",
+          "fallback_tag": "PT123_R",
+          "default_label": "PT123_R"
+        },
+        {
+          "id": "pressure_5",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "61%", "left": "69%" },
+          "icon_type": "pressure",
+          "fallback_tag": "PT143_R",
+          "default_label": "PT143_R"
+        },
+        {
+          "id": "flow_1",
+          "type": "kpi",
+          "unit": "l/s",
+          "position": { "top": "39%", "left": "41.2%" },
+          "icon_type": "flow",
+          "fallback_tag": "FIT002",
+          "default_label": "FIT002"
+        },
+        {
+          "id": "totalizer_1",
+          "type": "kpi",
+          "unit": "m3",
+          "position": { "top": "91.5%", "left": "42%" },
+          "icon_type": "volume",
+          "fallback_tag": "WM01_TOT",
+          "default_label": "WM01_TOT"
+        },
+        {
+          "id": "diff_pressure_1",
+          "type": "kpi",
+          "unit": "bar",
+          "position": { "top": "61%", "left": "36%" },
+          "icon_type": "pressure",
+          "fallback_tag": "BACKWASH.DIFF_PRES",
+          "default_label": "BACKWASH.DIFF_PRES"
+        },
+        {
+          "id": "plc_status",
+          "type": "plc_status",
+          "position": { "top": "12%", "left": "14%" }
+        },
+        {
+          "id": "pump_retrolavado",
+          "type": "pump",
+          "panel": "pump-status",
+          "position": { "top": "91.5%", "left": "18.3%" },
+          "svg_target": "circle26-4-8",
+          "fallback_tag": "P002_STS",
+          "default_label": "ESTADO BOMBA RETROLAVADO"
+        },
+        {
+          "id": "pump_filtracion",
+          "type": "pump",
+          "panel": "pump-status",
+          "position": { "top": "76.5%", "left": "22.5%" },
+          "svg_target": "circle26-4",
+          "fallback_tag": "P006_STS",
+          "default_label": "ESTADO BOMBA FILTRACION"
+        },
+        {
+          "id": "pump_retorno_clarificado",
+          "type": "pump",
+          "panel": "pump-status",
+          "position": { "top": "71.5%", "left": "92.4%" },
+          "svg_target": "BOMBA-RETORNO-CLARIFICADO",
+          "fallback_tag": "P007_STS",
+          "default_label": "ESTADO BOMBA RETORNO CLARIFICADO"
+        },
+        {
+          "id": "pump_015",
+          "type": "pump",
+          "position": { "top": "22%", "left": "92%" },
+          "svg_target": "Vector_185-8-1",
+          "fallback_tag": "P015_STS",
+          "default_label": "P-015"
+        },
+        {
+          "id": "pump_016",
+          "type": "pump",
+          "position": { "top": "22%", "left": "97.7%" },
+          "svg_target": "Vector_185-8-1-9",
+          "fallback_tag": "P016_STS",
+          "default_label": "P-016"
+        },
+        {
+          "id": "pump_017",
+          "type": "pump",
+          "position": { "top": "36%", "left": "10.5%" },
+          "svg_target": "circle26",
+          "fallback_tag": "P017_STS",
+          "default_label": "P-017"
+        }
+      ]
+    }
+  }
+}

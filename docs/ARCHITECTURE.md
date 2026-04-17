@@ -1,136 +1,243 @@
 # Arquitectura Frontend SCADA
 
-Ultima actualizacion: 2026-03-13
+Documento alineado al codigo actual del frontend.
 
-## 1) Panorama general
+## Panorama general
 
-El frontend esta dividido en capas claras:
+Capas principales:
 
-1. `pages` y `components` para composicion de UI.
-2. `hooks` para estado remoto y orquestacion de datos.
-3. `api` para acceso HTTP tipado con `axios`.
-4. `auth` y `lagoons` para contexto global de sesion y permisos.
-5. `layouts` + `svg` para desacoplar presentacion SCADA por planta.
+1. `pages` para shell y routing.
+2. `auth` y `lagoons` para sesion y alcance RBAC.
+3. `api` para REST.
+4. `hooks` para realtime, historico, layouts y alarmas.
+5. `scada` para resolver escenas, tags, labels y estado SVG.
+6. `components` y `containers` para render final.
 
-## 2) Diagrama de alto nivel
+## Arranque de la aplicacion
 
 ```text
-Browser
+main.tsx
   -> App.tsx
-    -> BrowserRouter
+      -> BrowserRouter
       -> AuthProvider
-        -> LagoonsProvider
-          -> Routes
-             /login                -> LoginPage
-             /dashboard            -> ProtectedRoute -> DashboardRedirect
-             /lagoon/:lagoonId     -> ProtectedRoute -> LagoonsView
-                                         -> TopBar + Sidebar + LagoonContainer
+      -> LagoonsProvider
+      -> /login | /dashboard | /lagoon/:lagoonId
 ```
 
-## 3) Routing y providers
+Notas:
 
-- `AuthProvider`:
-  - restaura sesion desde `localStorage`.
-  - valida JWT (`isTokenValid`).
-  - expone `login/logout/isAuthenticated`.
-- `LagoonsProvider`:
-  - obtiene lagunas desde `GET /lagoons`.
-  - filtra por `can_view`.
-  - aplica allowlist de nombres visibles en UI.
-- `ProtectedRoute`:
-  - redirige a `/login` si no hay sesion valida.
-- `DashboardRedirect`:
-  - redirige a la primera laguna disponible.
-- `App.tsx`:
-  - aplica auto refresh cada 30 minutos.
+- `App.tsx` hace auto-refresh de pagina cada 30 minutos.
+- `DashboardRedirect` redirige a la laguna permitida.
+- `ProtectedRoute` exige sesion valida.
 
-## 4) Flujos de datos
+## Networking y entorno
 
-### 4.1 Realtime
+Archivos:
 
-- Hook: `src/hooks/useScadaRealtime.ts`
-- Transporte: WebSocket
-- Ruta: `/ws/scada/{lagoonId}?token={accessToken}`
-- Payload consumido:
-  - `tags`
-  - `pump_last_on`
-  - `ts`
-  - `plc_status`
-  - `local_time`
-  - `timezone`
+- `src/config/env.ts`
+- `src/config/api.ts`
+- `src/api/httpClient.ts`
+- `vite.config.ts`
 
-### 4.2 Historico
+Comportamiento actual:
 
-- Hook: `src/hooks/useHistory.ts`
-- API: `src/api/scadaHistory.ts`
-- Endpoint usado hoy: `GET /scada/history/hourly`
-- `view` (`hourly|daily|weekly`) se calcula en frontend segun rango visible.
-- `LagoonLineChart`:
-  - alinea series por timeline comun.
-  - formatea fechas en timezone de laguna.
-  - devuelve nuevo rango al hacer zoom.
+- REST usa `VITE_API_PREFIX` con default `/api`
+- por defecto el frontend trabaja same-origin
+- si `VITE_USE_DIRECT_BACKEND=true`, puede apuntar a un origin directo
+- el WebSocket se arma desde `VITE_API_WS`, `VITE_SCADA_WS_URL`, `VITE_BACKEND_WS_PORT` o browser origin
+- en dev hay dos modos:
+  - `iis`: REST por `/api`, WS same-host, HMR opcional
+  - `vite`: REST por proxy `/api` y WS proxy `/ws`
 
-### 4.3 Eventos de bombas
+## RBAC y lagunas
 
-- Hook: `src/hooks/usePumpEventsLast3.ts`
-- API: `src/api/scadaPumpEvents.ts`
-- Endpoint: `GET /scada/{lagoon_id}/pump-events/last-3`
-- Integracion:
-  - `LagoonContainer` agrupa por `tag_id`.
-  - `PumpStatusKpi` muestra hasta 3 eventos por bomba.
-  - si falla endpoint, usa fallback con `pump_last_on` realtime.
+Archivos:
 
-## 5) Pipeline de layout + SVG
+- `src/auth/AuthContext.tsx`
+- `src/api/lagoonsApi.ts`
+- `src/api/productApi.ts`
+- `src/lagoons/LagoonsContext.tsx`
 
-1. El backend entrega `lagoon.scada_layout`.
-2. `LagoonContainer` resuelve alias (`layout_small -> layout3`).
-3. Carga dinamicamente JSON:
-   - `src/layouts/crystal-${layout}.layout.json`
-4. Resuelve SVG desde `src/scada/svgRegistry.ts`:
-   - componente React.
-   - `aspectRatio` para el contenedor.
-5. `ScadaMapPanel` renderiza:
-   - SVG base.
-   - `ScadaOverlay` (KPIs y caja PLC).
+Flujo:
 
-## 6) Responsabilidades de cada bloque visual
+1. login obtiene JWT
+2. `LagoonsProvider` llama `GET /api/lagoons`
+3. el frontend normaliza lagunas y aplica filtro `can_view && enable`
+4. `can_edit` y `can_control` gobiernan modal de alarmas y visibilidad de controles
 
-- `LagoonsView`:
-  - shell responsive.
-  - drawer movil para sidebar.
-- `ScadaMapPanel`:
-  - encabezado de laguna.
-  - marco del plano SCADA.
-  - aplica `canControl` para ocultar controles cuando corresponde.
-- `ScadaOverlay`:
-  - dibuja elementos de `layout.kpis`.
-  - soporta tipos `kpi` y `plc_status`.
-- `PumpStatusKpi`:
-  - estado por bomba.
-  - eventos recientes por tarjeta.
-- `LagoonLineChart`:
-  - historico multi serie por TAG.
+## Resolucion de escena SCADA
 
-## 7) Modelo de permisos (RBAC en UI)
+Archivos:
 
-- `can_view`:
-  - controla acceso de laguna en sidebar y routing.
-- `can_edit`:
-  - habilita/deshabilita affordances de edicion en topbar.
-- `can_control`:
-  - si es `false`, se ocultan controles visuales en el SVG.
-  - se muestra mensaje: "Controles de bombas ocultos por permisos RBAC."
+- `src/hooks/useScadaLayoutScene.ts`
+- `src/api/scadaLayoutsApi.ts`
+- `src/scada/layoutSceneResolver.ts`
+- `src/scada/layoutResolver.ts`
+- `src/scada/localSceneRegistry.ts`
 
-## 8) Configuracion y errores
+Flujo:
 
-- HTTP y WS base: `src/config/api.ts`.
-- Cliente HTTP: `src/api/httpClient.ts` con interceptor de token.
-- Errores API se envuelven en `ApiError` con `status` y `message`.
-- Mensajes de 403 se tratan de forma explicita en login, lagunas e historico/eventos.
+1. `GET /api/lagoons/{lagoon_id}/mapping`
+2. `GET /api/layouts/{layout_id}`
+3. `resolveScadaElements()` mezcla layout y mapping
+4. `collector_tags` filtra tarjetas que no deben mostrarse
+5. si existe override local `src/scada/scene/lagoons/<lagoon>.scene.json`, ese layout local puede reemplazar el de backend
 
-## 9) Riesgos y deuda tecnica
+Caches en memoria:
 
-1. Uso de `any` en varios modulos de layout y contenedores.
-2. Inconsistencia entre tipos `crystal-lagoons.types.ts` y layout JSON real (`plc_status`, `pumps` no estan tipados ahi).
-3. Hay texto legacy con encoding irregular en algunos mensajes de UI.
-4. Algunos SVG siguen en formato exportado extenso, con ruido de metadatos.
+- `layoutCache`
+- `mappingCache`
+- `sceneCache`
+- `inFlightRequests`
+
+Layouts soportados en `svgRegistry`:
+
+- `layout1`
+- `layout2`
+- `layout3`
+- `layout4`
+
+Alias:
+
+- `layout_small` -> `layout3`
+
+## Realtime SCADA
+
+Archivo:
+
+- `src/hooks/useScadaRealtime.ts`
+
+URL efectiva:
+
+- `WS /ws/scada/{lagoon_id}`
+
+Autenticacion:
+
+1. intento legacy con `?token=<jwt>`
+2. fallback a subprotocol:
+   - `crystal-scada.v1`
+   - `bearer.<jwt>`
+
+Estado expuesto por el hook:
+
+- `tags`
+- `pumpLastOn`
+- `ts`
+- `plc_status`
+- `local_time`
+- `timezone`
+- `connection_state`
+- `connection_error`
+- `last_data_age_sec`
+
+Salud:
+
+- `connected`
+- `reconnecting`
+- `degraded`
+- `disconnected`
+
+`degraded` aparece cuando pasan 30s sin mensaje nuevo.
+
+## Contenedor principal de laguna
+
+Archivo:
+
+- `src/components/lagoonContainer.tsx`
+
+Responsabilidades:
+
+- pedir escena
+- abrir WebSocket
+- esperar hasta 7s por realtime antes de mostrar `--`
+- renderizar banner de salud
+- componer:
+  - `ScadaMapPanel`
+  - `PumpStatusSection`
+  - `HistorySection`
+
+## Historico
+
+Archivos:
+
+- `src/hooks/useHistory.ts`
+- `src/api/scadaHistory.ts`
+- `src/components/charts/LagoonLineChart.tsx`
+- `src/components/charts/historySeries.ts`
+
+Endpoint:
+
+- `GET /api/scada/{lagoon_id}/history`
+
+Resolucion:
+
+- `hourly` hasta 14 dias
+- `daily` hasta 180 dias
+- `weekly` sobre 180 dias
+
+Filtro de tags no ploteables:
+
+- contiene `WM`
+- contiene `_ST_`
+- contiene `_STATUS`
+- contiene `_BOOL`
+- contiene `RETRO`
+
+## Bombas y eventos
+
+Archivos:
+
+- `src/hooks/usePumpEventsLast3.ts`
+- `src/api/scadaPumpEvents.ts`
+- `src/components/lagoon/PumpStatusKpi.tsx`
+
+Endpoint:
+
+- `GET /api/scada/{lagoon_id}/pump-events/last-3`
+
+Fallback:
+
+- si falla el endpoint, la UI puede usar `pump_last_on` del WebSocket
+
+## Alarmas PT/FIT
+
+Archivos:
+
+- `src/components/AlarmManagerModal.tsx`
+- `src/hooks/useAlarmThresholds.ts`
+- `src/services/alarm-thresholds.api.ts`
+
+Endpoint:
+
+- `GET /api/alarms/{lagoon_id}/thresholds/pt-fit/view`
+- `PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`
+
+Comportamiento:
+
+- mezcla filas configuradas de backend con tags PT/FIT detectados por realtime
+- valida min/max, severity y prefijo PT/FIT
+- puede trabajar en modo solo lectura si `can_edit=false`
+
+## Labels y estados SVG
+
+Archivos:
+
+- `src/scada/labels/layouts/*.base.json`
+- `src/scada/labels/lagoons/*.json`
+- `src/scada/equipment-state/layouts/*.equipment.json`
+- `src/containers/ScadaTextOverlay.tsx`
+- `src/containers/ScadaEquipmentStateOverlay.tsx`
+
+Estados discretos:
+
+- `0` rojo
+- `1` verde
+- `2` azul
+- `3` amarillo
+- sin dato gris
+
+## Riesgos visibles
+
+- el bundle sigue creciendo y conviene vigilar `manualChunks`
+- los SVG grandes son sensibles a cambios de IDs
+- la escena puede divergir si backend y override local representan layouts distintos

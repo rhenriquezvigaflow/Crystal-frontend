@@ -16,6 +16,7 @@ export default function Sidebar({
   className,
 }: Props) {
   const navigate = useNavigate();
+  const visibleLagoons = lagoons.filter((lagoon) => lagoon.can_view && lagoon.enable);
 
   return (
     <aside
@@ -38,19 +39,25 @@ export default function Sidebar({
       </div>
 
       <nav className="relative space-y-2">
-        {!lagoons.length && (
+        {!visibleLagoons.length && (
           <div className="rounded-[14px] border border-slate-200 bg-white/75 px-4 py-3 text-sm text-slate-600">
             Sin lagunas disponibles.
           </div>
         )}
 
-        {lagoons.map((lagoon) => {
+        {visibleLagoons.map((lagoon) => {
           const active = selectedLagoonId === lagoon.lagoon_id;
 
           return (
             <button
+              type="button"
               key={lagoon.lagoon_id}
               onClick={() => {
+                if (active) {
+                  onNavigate?.();
+                  return;
+                }
+
                 navigate(`/lagoon/${encodeURIComponent(lagoon.lagoon_id)}`);
                 onNavigate?.();
               }}

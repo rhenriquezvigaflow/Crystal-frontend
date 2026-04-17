@@ -1,59 +1,256 @@
 import { useEffect, useRef, useState } from "react";
+
 import { API_WS } from "../config/api";
+
+export type RealtimeConnectionState =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "degraded"
+  | "disconnected";
+
+type WebSocketAuthMode = "query" | "subprotocol";
+
+const WS_COMPAT_SUBPROTOCOL = "crystal-scada.v1";
+const INITIAL_RECONNECT_DELAY_MS = 2000;
+const MAX_RECONNECT_DELAY_MS = 10000;
+const REALTIME_STALE_AFTER_SEC = 30;
+
+function buildLegacyQueryUrl(lagoonId: string, accessToken: string) {
+  return `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}?token=${encodeURIComponent(accessToken)}`;
+}
+
+function createRealtimeSocket(
+  lagoonId: string,
+  accessToken: string,
+  mode: WebSocketAuthMode,
+) {
+  if (mode === "subprotocol") {
+    return new WebSocket(
+      `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}`,
+      [WS_COMPAT_SUBPROTOCOL, `bearer.${accessToken}`],
+    );
+  }
+
+  return new WebSocket(buildLegacyQueryUrl(lagoonId, accessToken));
+}
 
 export function useScadaRealtime(lagoonId: string, accessToken?: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
 
-  const [tags, setTags] = useState<Record<string, any>>({});
-  const [pumpLastOn, setPumpLastOn] = useState<any>({});
+  const [tags, setTags] = useState<Record<string, unknown>>({});
+  const [pumpLastOn, setPumpLastOn] = useState<Record<string, unknown>>({});
   const [ts, setTs] = useState<string | null>(null);
-
-  // 🔹 NUEVOS ESTADOS
   const [plcStatus, setPlcStatus] = useState<"online" | "offline" | undefined>();
   const [localTime, setLocalTime] = useState<string | null>(null);
   const [timezone, setTimezone] = useState<string | null>(null);
+  const [connectionState, setConnectionState] =
+    useState<RealtimeConnectionState>("idle");
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
+  const [lastMessageAt, setLastMessageAt] = useState<number | null>(null);
+  const [lastDataAgeSec, setLastDataAgeSec] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!lagoonId || lagoonId === "undefined" || !accessToken) return;
+    if (lastMessageAt === null) {
+      setLastDataAgeSec(null);
+      return;
+    }
 
-    const ws = new WebSocket(
-      `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}?token=${encodeURIComponent(accessToken)}`,
-    );
-    wsRef.current = ws;
+    const updateAge = () => {
+      setLastDataAgeSec(
+        Math.max(0, Math.floor((Date.now() - lastMessageAt) / 1000)),
+      );
+    };
 
-    ws.onmessage = (ev) => {
+    updateAge();
+    const timer = window.setInterval(updateAge, 1000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [lastMessageAt]);
+
+  useEffect(() => {
+    let disposed = false;
+    let reconnectTimer: number | null = null;
+    let reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+    let reconnectCount = 0;
+    let hasEverReceivedSnapshot = false;
+    let currentMode: WebSocketAuthMode = "query";
+
+    const cleanupSocket = (socket: WebSocket | null) => {
+      if (!socket) return;
+
+      socket.onopen = null;
+      socket.onmessage = null;
+      socket.onerror = null;
+      socket.onclose = null;
+
       try {
-        const msg = JSON.parse(ev.data);
-
-        setTags(msg.tags ?? {});
-        setPumpLastOn(msg.pump_last_on ?? {});
-        setTs(msg.ts ?? null);
-
-        // 🔹 NUEVO
-        setPlcStatus(msg.plc_status);
-        setLocalTime(msg.local_time ?? null);
-        setTimezone(msg.timezone ?? null);
-
-      } catch (e) {
-        console.warn("WS parse error", e);
+        socket.close();
+      } catch {
+        // no-op
       }
     };
 
-    ws.onerror = (err) => {
-      console.warn("WS disconnected", err);
+    const clearReconnectTimer = () => {
+      if (reconnectTimer === null) return;
+      window.clearTimeout(reconnectTimer);
+      reconnectTimer = null;
     };
 
+    setTags({});
+    setPumpLastOn({});
+    setTs(null);
+    setPlcStatus(undefined);
+    setLocalTime(null);
+    setTimezone(null);
+    setReconnectAttempt(0);
+    setConnectionError(null);
+    setLastMessageAt(null);
+    setLastDataAgeSec(null);
+    setConnectionState("idle");
+
+    if (!lagoonId || lagoonId === "undefined" || !accessToken) {
+      return;
+    }
+
+    const scheduleReconnect = () => {
+      if (disposed || reconnectTimer !== null) {
+        return;
+      }
+
+      reconnectCount += 1;
+      setReconnectAttempt(reconnectCount);
+      setConnectionState(hasEverReceivedSnapshot ? "reconnecting" : "connecting");
+
+      reconnectTimer = window.setTimeout(() => {
+        reconnectTimer = null;
+        connect(currentMode);
+      }, reconnectDelayMs);
+
+      reconnectDelayMs = Math.min(reconnectDelayMs * 2, MAX_RECONNECT_DELAY_MS);
+    };
+
+    const connect = (mode: WebSocketAuthMode) => {
+      if (disposed) return;
+
+      currentMode = mode;
+      setConnectionState(reconnectCount > 0 ? "reconnecting" : "connecting");
+      setConnectionError(null);
+
+      const ws = createRealtimeSocket(lagoonId, accessToken, mode);
+      let receivedSnapshotOnSocket = false;
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        if (disposed || wsRef.current !== ws) return;
+
+        reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+        setConnectionState("connected");
+        setConnectionError(null);
+      };
+
+      ws.onmessage = (event) => {
+        if (disposed || wsRef.current !== ws) return;
+
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg?.type === "ping") return;
+
+          hasEverReceivedSnapshot = true;
+          receivedSnapshotOnSocket = true;
+          reconnectCount = 0;
+          reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+
+          setTags(msg.tags ?? {});
+          setPumpLastOn(msg.pump_last_on ?? {});
+          setTs(msg.ts ?? null);
+          setPlcStatus(msg.plc_status);
+          setLocalTime(msg.local_time ?? null);
+          setTimezone(msg.timezone ?? null);
+          setLastMessageAt(Date.now());
+          setReconnectAttempt(0);
+          setConnectionState("connected");
+          setConnectionError(null);
+        } catch {
+          setConnectionError("Mensaje de tiempo real invalido.");
+        }
+      };
+
+      ws.onerror = () => {
+        if (disposed || wsRef.current !== ws) return;
+        setConnectionError("Conexion de tiempo real con error.");
+      };
+
+      ws.onclose = (event) => {
+        if (wsRef.current === ws) {
+          wsRef.current = null;
+        }
+
+        if (disposed) {
+          return;
+        }
+
+        const closeReason = event.reason?.trim();
+        const shouldFallbackToSubprotocol =
+          mode === "query" &&
+          !receivedSnapshotOnSocket;
+
+        if (shouldFallbackToSubprotocol) {
+          setConnectionState("connecting");
+          setConnectionError(null);
+          connect("subprotocol");
+          return;
+        }
+
+        setConnectionState(
+          hasEverReceivedSnapshot ? "reconnecting" : "disconnected",
+        );
+        setConnectionError(
+          closeReason || "Tiempo real no disponible. Reintentando conexion.",
+        );
+        scheduleReconnect();
+      };
+    };
+
+    connect("query");
+
     return () => {
-      ws.close();
+      disposed = true;
+      clearReconnectTimer();
+
+      if (wsRef.current) {
+        cleanupSocket(wsRef.current);
+        wsRef.current = null;
+      }
     };
   }, [lagoonId, accessToken]);
+
+  const isRealtimeStale =
+    typeof lastDataAgeSec === "number" &&
+    lastDataAgeSec >= REALTIME_STALE_AFTER_SEC;
+
+  const effectiveConnectionState =
+    connectionState === "connected" && isRealtimeStale
+      ? "degraded"
+      : connectionState;
 
   return {
     tags,
     pumpLastOn,
     ts,
+    realtime_ready: ts !== null,
+    realtime_stale: isRealtimeStale,
     plc_status: plcStatus,
     local_time: localTime,
     timezone,
+    connection_state: effectiveConnectionState,
+    connection_error: connectionError,
+    reconnect_attempt: reconnectAttempt,
+    last_message_at: lastMessageAt,
+    last_data_age_sec: lastDataAgeSec,
   };
 }

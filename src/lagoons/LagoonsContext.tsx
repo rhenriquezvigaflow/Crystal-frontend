@@ -18,26 +18,6 @@ interface LagoonsContextValue extends LagoonsState {
 
 const LagoonsContext = createContext<LagoonsContextValue | null>(null);
 
-const ALLOWED_LAGOON_NAMES = new Set([
-  "ava lagoons",
-  "costa del lago",
-  "laguna santa rosalia",
-  "santa rosalia",
-]);
-
-function normalizeLagoonName(name: string): string {
-  return name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function isAllowedLagoon(lagoon: LagoonAccess): boolean {
-  return ALLOWED_LAGOON_NAMES.has(normalizeLagoonName(lagoon.lagoon_name));
-}
-
 function getLagoonsError(err: unknown): { message: string; status: number | null } {
   if (err instanceof ApiError) {
     if (err.status === 403) {
@@ -77,9 +57,7 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const data = await fetchLagoons();
-      const visible = data.filter(
-        (lagoon) => lagoon.can_view && isAllowedLagoon(lagoon),
-      );
+      const visible = data.filter((lagoon) => lagoon.can_view && lagoon.enable);
 
       setState({
         lagoons: visible,

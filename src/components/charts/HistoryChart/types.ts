@@ -1,11 +1,12 @@
 export interface HistoryPoint {
   timestamp: string;
-  value: number;
+  value: number | null;
 }
 
 export interface HistorySeries {
-  tag_key: string;
-  name: string;
+  tag?: string | null;
+  tag_key?: string | null;
+  name?: string | null;
   points: HistoryPoint[];
 }
 

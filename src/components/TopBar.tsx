@@ -5,6 +5,7 @@ interface Props {
   selectedLagoonId: string | null;
   onLagoonChange?: (lagoonId: string) => void;
   canEdit?: boolean;
+  onOpenAlarms?: () => void;
   onLogout?: () => void;
   onMenuToggle?: () => void;
   isMenuOpen?: boolean;
@@ -41,11 +42,25 @@ function GearIcon() {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+      <path
+        d="M12 3.5a6 6 0 0 0-6 6v4.05l-1.15 1.8a1.1 1.1 0 0 0 .93 1.65h12.45a1.1 1.1 0 0 0 .93-1.65L18 13.55V9.5a6 6 0 0 0-6-6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M10.1 19a1.9 1.9 0 0 0 3.8 0" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export default function TopBar({
   lagoons,
   selectedLagoonId,
   onLagoonChange,
   canEdit = false,
+  onOpenAlarms,
   onLogout,
   onMenuToggle,
   isMenuOpen,
@@ -57,7 +72,7 @@ export default function TopBar({
           <button
             type="button"
             onClick={onMenuToggle}
-            aria-label={isMenuOpen ? "Cerrar menú lateral" : "Abrir menú lateral"}
+            aria-label={isMenuOpen ? "Cerrar menu lateral" : "Abrir menu lateral"}
             className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
           >
             <HamburgerIcon />
@@ -99,16 +114,26 @@ export default function TopBar({
 
           <button
             type="button"
+            onClick={onOpenAlarms}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-sky-100 bg-white/88 px-3 text-xs font-semibold tracking-wide text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
+          >
+            <BellIcon />
+            <span className="hidden sm:inline">Alarmas</span>
+            <span className="sm:hidden">AL</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onLogout}
             className="h-11 rounded-xl border border-rose-100 bg-white/88 px-3 text-xs font-semibold tracking-wide text-rose-700 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-rose-200 hover:bg-rose-50"
           >
-            Cerrar sesión
+            Cerrar sesion
           </button>
 
           {canEdit && (
             <button
               type="button"
-              aria-label="Configuración"
+              aria-label="Configuracion"
               className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/88 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
             >
               <GearIcon />

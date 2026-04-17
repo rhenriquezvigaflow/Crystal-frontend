@@ -2,7 +2,12 @@ import { Box, Typography } from "@mui/material";
 
 interface Props {
   axisValue?: number | string | Date;
-  series?: any[];
+  series?: Array<{
+    id: string;
+    color: string;
+    label: string;
+    value: unknown;
+  }>;
 }
 
 export default function ChartTooltip({ axisValue, series }: Props) {
@@ -46,7 +51,7 @@ export default function ChartTooltip({ axisValue, series }: Props) {
         })}
       </Typography>
 
-      {series.map((s: any) => (
+      {series.map((s) => (
         <Box
           key={s.id}
           sx={{

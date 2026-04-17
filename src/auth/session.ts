@@ -8,7 +8,6 @@ const TOKEN_KEY = "token";
 
 export function storeSession(s: StoredSession) {
   localStorage.setItem(KEY, JSON.stringify(s));
-  localStorage.setItem(TOKEN_KEY, s.accessToken);
 }
 
 export function getStoredSession(): StoredSession | null {
@@ -49,7 +48,7 @@ function base64UrlDecode(input: string): string {
   }
 }
 
-export function parseJwt(token: string): any | null {
+export function parseJwt(token: string): Record<string, unknown> | null {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
   try {

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "layout2_pump_005",
+    "svg_target": "circle26-4",
+    "role": "pump",
+    "label": "P005_STS_SCADA",
+    "tag": "P005_STS_SCADA"
+  },
+  {
+    "id": "layout2_pump_006",
+    "svg_target": "circle26-4-1",
+    "role": "pump",
+    "label": "P006_STS_SCADA",
+    "tag": "P006_STS_SCADA"
+  },
+  {
+    "id": "layout2_static_circle26",
+    "svg_target": "circle26",
+    "role": "pump",
+    "label": "Reserva",
+    "state": 0
+  },
+  {
+    "id": "layout2_pump_008",
+    "svg_target": "Vector_185-8-4",
+    "role": "pump",
+    "label": "P008_STS_SCADA",
+    "tag": "P008_STS_SCADA"
+  },
+  {
+    "id": "layout2_pump_007",
+    "svg_target": "Vector_185-8-4-2",
+    "role": "pump",
+    "label": "P007_STS_SCADA",
+    "tag": "P007_STS_SCADA"
+  }
+]

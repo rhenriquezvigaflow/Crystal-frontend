@@ -1,0 +1,72 @@
+[
+  {
+    "id": "layout4_pump_017",
+    "svg_target": "circle26",
+    "role": "pump",
+    "label": "P017_STS",
+    "tag": "P017_STS"
+  },
+  {
+    "id": "layout4_pump_006",
+    "svg_target": "circle26-4",
+    "role": "pump",
+    "label": "P006_STS",
+    "tag": "P006_STS"
+  },
+  {
+    "id": "layout4_pump_002",
+    "svg_target": "circle26-4-8",
+    "role": "pump",
+    "label": "P002_STS",
+    "tag": "P002_STS"
+  },
+  {
+    "id": "layout4_pump_007",
+    "svg_target": "BOMBA-RETORNO-CLARIFICADO",
+    "role": "pump",
+    "label": "P007_STS",
+    "tag": "P007_STS"
+  },
+  {
+    "id": "layout4_static_vector_65_4_6_9_7",
+    "svg_target": "Vector_65-4-6-9-7",
+    "role": "valve",
+    "label": "VX-251",
+    "state": 0
+  },
+  {
+    "id": "layout4_static_vector_65_4_6_9",
+    "svg_target": "Vector_65-4-6-9",
+    "role": "valve",
+    "label": "VX-248",
+    "state": 0
+  },
+  {
+    "id": "layout4_static_ve_318",
+    "svg_target": "VE-318",
+    "role": "valve",
+    "label": "VX-271",
+    "state": 0
+  },
+  {
+    "id": "layout4_static_vector_65_4_6_9_1",
+    "svg_target": "Vector_65-4-6-9-1",
+    "role": "valve",
+    "label": "VX-275",
+    "state": 0
+  },
+  {
+    "id": "layout4_pump_015",
+    "svg_target": "Vector_185-8-1",
+    "role": "pump",
+    "label": "P015_STS",
+    "tag": "P015_STS"
+  },
+  {
+    "id": "layout4_pump_016",
+    "svg_target": "Vector_185-8-1-9",
+    "role": "pump",
+    "label": "P016_STS",
+    "tag": "P016_STS"
+  }
+]

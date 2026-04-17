@@ -1,4 +1,8 @@
 import type { PumpEvent } from "../../api/scadaPumpEvents";
+import {
+  formatPumpEventTime,
+  getPumpEventSortTime,
+} from "../../scada/pumpEventTime";
 
 interface PumpInfo {
   label: string;
@@ -14,49 +18,16 @@ interface Props {
   eventsEmpty?: boolean;
 }
 
-/* =======================
-   Helpers
-======================= */
-
 const EVENT_ROWS = 3;
 
-function formatPumpTime(iso?: string | null, timezone?: string | null) {
-  if (!iso) return "--";
-
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "--";
-
-  const fallbackTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  try {
-    return date
-      .toLocaleString("es-CL", {
-        timeZone: timezone || fallbackTz,
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-      .replace(",", " -");
-  } catch {
-    return date
-      .toLocaleString("es-CL", {
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-      .replace(",", " -");
-  }
+function getEventSortTime(event: PumpEvent): number {
+  return getPumpEventSortTime(event.start_local) ?? Number.NEGATIVE_INFINITY;
 }
 
 function getTopEvents(events: PumpEvent[]) {
   return [...events]
-    .filter((event) => !Number.isNaN(new Date(event.start_local).getTime()))
-    .sort(
-      (a, b) =>
-        new Date(b.start_local).getTime() - new Date(a.start_local).getTime(),
-    )
+    .filter((event) => getPumpEventSortTime(event.start_local) !== null)
+    .sort((a, b) => getEventSortTime(b) - getEventSortTime(a))
     .slice(0, EVENT_ROWS);
 }
 
@@ -190,7 +161,7 @@ export default function PumpStatusKpi({
                           {getDisplayPumpName(pump.label, event)}
                         </span>
                         <span className="text-slate-700 font-medium tabular-nums shrink-0">
-                          {formatPumpTime(event.start_local, timezone)}
+                          {formatPumpEventTime(event.start_local, timezone)}
                         </span>
                       </div>
                     ))}

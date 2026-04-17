@@ -1,22 +1,39 @@
+import { normalizeScadaLayoutName, type ScadaLayoutId } from "../scada/layoutResolver";
 import { httpClient } from "./httpClient";
+import {
+  hasWritePrivilegesForProduct,
+  inferProductTypeFromValue,
+  resolveCurrentUserScope,
+  type ProductType,
+  type UserScope,
+} from "./productApi";
 
 export interface LagoonAccess {
   lagoon_id: string;
   lagoon_name: string;
-  scada_layout: string;
+  scada_layout: ScadaLayoutId;
   timezone: string | null;
   ip: string | null;
+  enable: boolean;
   can_view: boolean;
   can_edit: boolean;
   can_control: boolean;
+  product_type?: ProductType | null;
 }
 
-type RawLagoon = Partial<LagoonAccess> & {
+type RawLagoon = {
   lagoon_id?: string | number | null;
   lagoon_name?: string | null;
+  id?: string | number | null;
+  name?: string | null;
   scada_layout?: string | null;
+  layout?: string | null;
+  layout_id?: string | null;
   timezone?: string | null;
   ip?: string | null;
+  product_type?: string | null;
+  enable?: boolean | number | string | null;
+  enabled?: boolean | number | string | null;
   can_view?: boolean | number | string | null;
   can_edit?: boolean | number | string | null;
   can_control?: boolean | number | string | null;
@@ -35,6 +52,16 @@ function parseBoolean(value: unknown, fallback: boolean): boolean {
   return fallback;
 }
 
+function asCleanString(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+}
+
+function toNullableString(value: unknown): string | null {
+  const clean = asCleanString(value);
+  return clean || null;
+}
+
 function getRawRows(payload: unknown): RawLagoon[] {
   if (Array.isArray(payload)) return payload as RawLagoon[];
 
@@ -48,20 +75,74 @@ function getRawRows(payload: unknown): RawLagoon[] {
   return [];
 }
 
-export async function fetchLagoons(): Promise<LagoonAccess[]> {
-  const { data } = await httpClient.get<unknown>("/lagoons");
-  const rows = getRawRows(data);
+function normalizeLagoon(
+  raw: RawLagoon,
+  scope: UserScope,
+): LagoonAccess | null {
+  const lagoonId = asCleanString(raw.lagoon_id ?? raw.id);
+  const lagoonName = asCleanString(raw.lagoon_name ?? raw.name);
+  if (!lagoonId || !lagoonName) return null;
+  const apiLayout = normalizeScadaLayoutName(
+    raw.scada_layout ?? raw.layout ?? raw.layout_id,
+  );
 
-  return rows
-    .map((lagoon) => ({
-      lagoon_id: String(lagoon?.lagoon_id ?? ""),
-      lagoon_name: String(lagoon?.lagoon_name ?? ""),
-      scada_layout: String(lagoon?.scada_layout ?? "layout1"),
-      timezone: lagoon?.timezone ? String(lagoon.timezone) : null,
-      ip: lagoon?.ip ? String(lagoon.ip) : null,
-      can_view: parseBoolean(lagoon?.can_view, true),
-      can_edit: parseBoolean(lagoon?.can_edit, true),
-      can_control: parseBoolean(lagoon?.can_control, true),
-    }))
-    .filter((lagoon) => lagoon.lagoon_id && lagoon.lagoon_name);
+  const productType = inferProductTypeFromValue(raw.product_type);
+  const inferredWrite = hasWritePrivilegesForProduct(scope, productType);
+
+  return {
+    lagoon_id: lagoonId,
+    lagoon_name: lagoonName,
+    scada_layout: apiLayout,
+    timezone: toNullableString(raw.timezone),
+    ip: toNullableString(raw.ip),
+    enable: parseBoolean(raw.enable ?? raw.enabled, false),
+    can_view: parseBoolean(raw.can_view, true),
+    can_edit: parseBoolean(raw.can_edit, inferredWrite),
+    can_control: parseBoolean(raw.can_control, inferredWrite),
+    product_type: productType,
+  };
+}
+
+function mergeLagoon(current: LagoonAccess, incoming: LagoonAccess): LagoonAccess {
+  return {
+    lagoon_id: current.lagoon_id,
+    lagoon_name: current.lagoon_name || incoming.lagoon_name,
+    scada_layout:
+      current.scada_layout && current.scada_layout !== "layout1"
+        ? current.scada_layout
+        : incoming.scada_layout || current.scada_layout,
+    timezone: current.timezone ?? incoming.timezone,
+    ip: current.ip ?? incoming.ip,
+    enable: current.enable && incoming.enable,
+    can_view: current.can_view || incoming.can_view,
+    can_edit: current.can_edit || incoming.can_edit,
+    can_control: current.can_control || incoming.can_control,
+    product_type: current.product_type ?? incoming.product_type ?? null,
+  };
+}
+
+export async function fetchLagoons(): Promise<LagoonAccess[]> {
+  const scope = resolveCurrentUserScope();
+  const endpoint = "/lagoons";
+
+  const { data } = await httpClient.get<unknown>(endpoint);
+  const rows = getRawRows(data);
+  const normalized = rows
+    .map((row) => normalizeLagoon(row, scope))
+    .filter((lagoon): lagoon is LagoonAccess => lagoon !== null);
+
+  const merged = new Map<string, LagoonAccess>();
+  normalized.forEach((lagoon) => {
+    const existing = merged.get(lagoon.lagoon_id);
+    merged.set(
+      lagoon.lagoon_id,
+      existing ? mergeLagoon(existing, lagoon) : lagoon,
+    );
+  });
+
+  const final = Array.from(merged.values()).filter(
+    (lagoon) => lagoon.can_view && lagoon.enable,
+  );
+
+  return final;
 }

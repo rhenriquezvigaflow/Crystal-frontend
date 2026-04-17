@@ -1,26 +1,21 @@
-# Contratos API consumidos por el frontend SCADA
+# Contratos API consumidos por el frontend
 
-Ultima actualizacion: 2026-03-13
+Este documento lista las rutas realmente usadas por el frontend actual.
 
-## Base URL y autenticacion
+## Convencion de URL
 
-- Configuracion central: `src/config/api.ts`
-- `API_HTTP`:
-  - usa `VITE_API_HTTP` o `VITE_API_BASE_URL` si existen.
-  - fallback actual: `http://192.168.1.22:8000`
-- `API_WS`:
-  - usa `VITE_API_WS` si existe.
-  - si no existe, se deriva desde `API_HTTP` (`http -> ws`).
-- Token:
-  - se guarda en `localStorage` (`token` y `crystal_auth_v1`).
-  - para HTTP se inyecta via interceptor (`Authorization: Bearer <token>`).
-  - para WS se envia como query param `token`.
+Desde el browser, el frontend llama normalmente a rutas bajo `/api/*`.
 
-## 1) Autenticacion
+Ejemplos:
 
-- Metodo: `POST`
-- Ruta: `/auth/login`
-- Consumidor: `authApi.login`
+- frontend: `/api/lagoons`
+- backend real detras del proxy: `/lagoons`
+
+## Autenticacion
+
+Ruta:
+
+- `POST /api/auth/login`
 
 Request:
 
@@ -41,27 +36,28 @@ Response esperada:
   "user": {
     "id": "uuid",
     "email": "user@domain.com",
-    "role": "ADMIN"
+    "roles": ["AdminCrystal"]
   }
 }
 ```
 
-## 2) Lagunas disponibles (RBAC)
+## Lagunas
 
-- Metodo: `GET`
-- Ruta: `/lagoons`
-- Consumidor: `fetchLagoons` (`src/api/lagoonsApi.ts`)
+Ruta:
 
-El frontend soporta dos formatos de payload:
+- `GET /api/lagoons`
+
+Payload compatible:
 
 ```json
 [
   {
-    "lagoon_id": "ava_lagoons",
-    "lagoon_name": "AVA Lagoons",
+    "lagoon_id": "costa_del_lago",
+    "lagoon_name": "Costa del Lago",
     "scada_layout": "layout2",
     "timezone": "America/Santiago",
-    "ip": "10.0.0.2",
+    "product_type": "crystal",
+    "enable": true,
     "can_view": true,
     "can_edit": false,
     "can_control": true
@@ -69,90 +65,138 @@ El frontend soporta dos formatos de payload:
 ]
 ```
 
-o:
+## Layout SCADA
+
+### 1) Mapping por laguna
+
+Ruta:
+
+- `GET /api/lagoons/{lagoon_id}/mapping`
+
+Response esperada:
 
 ```json
 {
-  "lagoons": [
+  "lagoon_id": "costa_del_lago",
+  "layout_id": "layout2",
+  "mapping_json": {
+    "pressure_1": {
+      "tag": "PT112_R_SCADA",
+      "label": "PT_112"
+    }
+  },
+  "collector_tags": ["PT112_R_SCADA", "P005_STS_SCADA"],
+  "warnings": [],
+  "updated_at": "2026-04-17T10:00:00Z"
+}
+```
+
+### 2) Layout base
+
+Ruta:
+
+- `GET /api/layouts/{layout_id}`
+
+Response esperada:
+
+```json
+{
+  "id": "layout2",
+  "name": "Crystal Layout 2",
+  "json_definition": {
+    "plant": "LAYOUT2 - SCADA",
+    "svg_component": "layout2",
+    "aspect_ratio": "1429.5 / 960",
+    "elements": [
+      {
+        "id": "pressure_1",
+        "type": "kpi",
+        "fallback_tag": "PT117_R_SCADA",
+        "default_label": "PT117_R_SCADA",
+        "position": { "left": "21.3%", "top": "40.3%" }
+      }
+    ]
+  }
+}
+```
+
+## Realtime SCADA
+
+Ruta:
+
+- `WS /ws/scada/{lagoon_id}`
+
+Autenticacion soportada por el frontend:
+
+- query string `?token=<jwt>`
+- subprotocol `crystal-scada.v1` + `bearer.<jwt>`
+
+Payload esperado:
+
+```json
+{
+  "type": "tick",
+  "lagoon_id": "costa_del_lago",
+  "tags": { "PT117_R_SCADA": 2.31 },
+  "pump_last_on": {},
+  "ts": "2026-04-17T14:20:00Z",
+  "plc_status": "online",
+  "local_time": "10:20:00",
+  "timezone": "America/Santiago",
+  "scada_layout": "layout2"
+}
+```
+
+El frontend tambien ignora mensajes:
+
+```json
+{ "type": "ping" }
+```
+
+## Historico
+
+Ruta:
+
+- `GET /api/scada/{lagoon_id}/history`
+
+Query:
+
+- `start_date`
+- `end_date`
+- `resolution=hourly|daily|weekly`
+- `tags[]`
+
+Response compatible:
+
+```json
+{
+  "lagoon_id": "costa_del_lago",
+  "resolution": "hourly",
+  "source": "table",
+  "series": [
     {
-      "lagoon_id": "ava_lagoons",
-      "lagoon_name": "AVA Lagoons",
-      "scada_layout": "layout2",
-      "can_view": true,
-      "can_edit": false,
-      "can_control": true
+      "tag": "PT117_R_SCADA",
+      "points": [
+        { "timestamp": "2026-04-17T12:00:00Z", "value": 2.34 }
+      ]
     }
   ]
 }
 ```
 
-Notas:
+Las series aceptan cualquiera de estos identificadores:
 
-- `can_view`, `can_edit`, `can_control` se normalizan a boolean.
-- si `scada_layout` no viene, fallback a `layout1`.
-- luego se filtra por `can_view` y por una allowlist de nombres conocida en frontend.
+- `tag`
+- `tag_key`
+- `name`
 
-## 3) Realtime SCADA
+## Eventos de bombas
 
-- Metodo: `WS`
-- Ruta: `/ws/scada/{lagoonId}?token={accessToken}`
-- Consumidor: `useScadaRealtime`
+Ruta:
 
-Campos esperados del mensaje:
+- `GET /api/scada/{lagoon_id}/pump-events/last-3`
 
-- `tags: Record<string, unknown>`
-- `pump_last_on?: Record<string, unknown>`
-- `ts?: string`
-- `plc_status?: "online" | "offline"`
-- `local_time?: string`
-- `timezone?: string`
-
-## 4) Historico
-
-- Metodo: `GET`
-- Ruta usada hoy: `/scada/history/hourly`
-- Consumidor: `useHistory` -> `fetchHistory`
-
-Query params:
-
-- `lagoon_id: string`
-- `start_date: string` (ISO)
-- `end_date: string` (ISO)
-- `tags: string[]` (serializacion repetida: `?tags=a&tags=b`)
-- `view?: "hourly" | "daily" | "weekly"`
-
-Importante:
-
-- El frontend calcula `view` segun rango visible.
-- Actualmente `fetchHistory` siempre resuelve al endpoint hourly (daily/weekly aun no tienen endpoint dedicado en el cliente).
-
-Shape de respuesta compatible:
-
-```json
-{
-  "series": [
-    {
-      "tag_key": "PT117_R_SCADA",
-      "name": "PT117_R_SCADA",
-      "points": [
-        {
-          "timestamp": "2026-03-13T12:00:00Z",
-          "value": 2.34
-        }
-      ]
-    }
-  ],
-  "timezone": "America/Santiago"
-}
-```
-
-## 5) Eventos de bombas (ultimos 3)
-
-- Metodo: `GET`
-- Ruta: `/scada/{lagoon_id}/pump-events/last-3`
-- Consumidor: `usePumpEventsLast3` -> `fetchPumpEventsLast3`
-
-Response:
+Response esperada:
 
 ```json
 {
@@ -162,21 +206,41 @@ Response:
       "lagoon_id": "costa_del_lago",
       "tag_id": "P002_STS_SCADA",
       "tag_label": "Bomba Retrolavado",
-      "start_local": "2026-03-13T12:49:45.964664"
+      "start_local": "2026-04-17T12:49:45.964664"
     }
   ]
 }
 ```
 
-## Manejo de errores y degradacion
+## Alarmas PT/FIT
 
-- HTTP:
-  - errores se normalizan a `ApiError(status, message)`.
-  - `401` tipico: credenciales invalidas.
-  - `403` tipico: acceso no permitido.
-- WS:
-  - errores de parseo o desconexion se registran en consola, sin derribar la UI.
-- Pump events:
-  - si falla `/pump-events/last-3`, la UI degrada usando `pump_last_on` realtime.
-- Historico:
-  - si falla, se muestra mensaje en seccion de chart sin bloquear mapa o estado de bombas.
+Lectura:
+
+- `GET /api/alarms/{lagoon_id}/thresholds/pt-fit/view`
+
+Escritura:
+
+- `PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`
+
+Request de guardado:
+
+```json
+{
+  "items": [
+    {
+      "tag_id": "PT117_R_SCADA",
+      "min_value": 1.2,
+      "max_value": 3.5,
+      "severity": "warning",
+      "enabled": true
+    }
+  ]
+}
+```
+
+## Manejo de errores esperado
+
+- `401/403`: cortar la accion y mostrar error de permisos o sesion
+- `404` en mapping/layout/history: mostrar estado vacio o mensaje no bloqueante
+- fallo WebSocket: seguir mostrando layout y datos vacios luego de la gracia inicial
+- `422` en alarmas PT/FIT: reflejar error de validacion en el modal

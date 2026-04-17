@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import TopBar from "../components/TopBar";
@@ -6,6 +6,8 @@ import Sidebar from "../components/Sidebar";
 import LagoonContainer from "../components/lagoonContainer";
 import { useAuth } from "../auth/AuthContext";
 import { useLagoons } from "../lagoons/LagoonsContext";
+
+const AlarmManagerModal = lazy(() => import("../components/AlarmManagerModal"));
 
 function CloseIcon() {
   return (
@@ -57,14 +59,27 @@ export default function LagoonsView() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { lagoonId: rawLagoonId } = useParams<{ lagoonId: string }>();
-  const lagoonId = rawLagoonId ? safeDecode(rawLagoonId) : null;
+  const lagoonId = useMemo(
+    () => (rawLagoonId ? safeDecode(rawLagoonId) : null),
+    [rawLagoonId],
+  );
   const { lagoons, loading, error, errorStatus, getLagoonById } = useLagoons();
 
-  const selectedLagoon = lagoonId ? getLagoonById(lagoonId) : null;
+  const selectedLagoon = useMemo(
+    () => (lagoonId ? getLagoonById(lagoonId) : null),
+    [getLagoonById, lagoonId],
+  );
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isAlarmModalOpen, setIsAlarmModalOpen] = useState(false);
+  const [realtimePtFitTags, setRealtimePtFitTags] = useState<string[]>([]);
 
   useEffect(() => {
     setIsMobileNavOpen(false);
+  }, [lagoonId]);
+
+  useEffect(() => {
+    setIsAlarmModalOpen(false);
+    setRealtimePtFitTags([]);
   }, [lagoonId]);
 
   useEffect(() => {
@@ -86,12 +101,22 @@ export default function LagoonsView() {
     };
   }, [isMobileNavOpen]);
 
+  const handleRealtimePtFitTagsChange = useCallback((nextTags: string[]) => {
+    setRealtimePtFitTags((previous) => {
+      if (previous.length === nextTags.length) {
+        const unchanged = previous.every((value, index) => value === nextTags[index]);
+        if (unchanged) return previous;
+      }
+      return nextTags;
+    });
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
 
-  if (loading) {
+  if (loading && !lagoons.length) {
     return <FullscreenMessage message="Cargando lagunas..." />;
   }
 
@@ -107,7 +132,7 @@ export default function LagoonsView() {
     return (
       <FullscreenMessage
         message="No hay lagunas disponibles para tu usuario."
-        actionLabel="Cerrar sesión"
+        actionLabel="Cerrar sesion"
         onAction={handleLogout}
       />
     );
@@ -118,6 +143,13 @@ export default function LagoonsView() {
   }
 
   const handleLagoonChange = (nextLagoonId: string) => {
+    if (!nextLagoonId) return;
+
+    if (nextLagoonId === selectedLagoon.lagoon_id) {
+      setIsMobileNavOpen(false);
+      return;
+    }
+
     navigate(`/lagoon/${encodeURIComponent(nextLagoonId)}`);
     setIsMobileNavOpen(false);
   };
@@ -134,13 +166,17 @@ export default function LagoonsView() {
           selectedLagoonId={selectedLagoon.lagoon_id}
           onLagoonChange={handleLagoonChange}
           canEdit={selectedLagoon.can_edit}
+          onOpenAlarms={() => setIsAlarmModalOpen(true)}
           onLogout={handleLogout}
           onMenuToggle={() => setIsMobileNavOpen((open) => !open)}
           isMenuOpen={isMobileNavOpen}
         />
 
         <div className="px-2 pb-4 pt-2 sm:px-3 lg:px-3 lg:pb-4 lg:pt-1">
-          <LagoonContainer lagoon={selectedLagoon} />
+          <LagoonContainer
+            lagoon={selectedLagoon}
+            onRealtimePtFitTagsChange={handleRealtimePtFitTagsChange}
+          />
         </div>
       </div>
 
@@ -148,7 +184,7 @@ export default function LagoonsView() {
         <div className="fixed inset-0 z-[120] lg:hidden">
           <button
             type="button"
-            aria-label="Cerrar menú lateral"
+            aria-label="Cerrar menu lateral"
             className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
             onClick={() => setIsMobileNavOpen(false)}
           />
@@ -158,7 +194,7 @@ export default function LagoonsView() {
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(false)}
-                aria-label="Cerrar menú"
+                aria-label="Cerrar menu"
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/70 bg-white/90 text-slate-700 shadow-sm"
               >
                 <CloseIcon />
@@ -174,6 +210,18 @@ export default function LagoonsView() {
           </div>
         </div>
       )}
+
+      <Suspense fallback={null}>
+        {isAlarmModalOpen ? (
+          <AlarmManagerModal
+            open={isAlarmModalOpen}
+            lagoonId={selectedLagoon.lagoon_id}
+            wsTagIds={realtimePtFitTags}
+            canEdit={selectedLagoon.can_edit}
+            onClose={() => setIsAlarmModalOpen(false)}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 }

@@ -1,14 +1,16 @@
 # Crystal Lagoons Frontend
 
-Frontend SCADA para monitoreo de lagunas Crystal (React + Vite + TypeScript).
+Frontend SCADA para monitoreo de lagunas Crystal con React, Vite y TypeScript.
 
 ## Objetivo
 
 Mostrar en una sola vista:
-- Estado en tiempo real (WebSocket)
-- KPIs y overlay SCADA por layout
-- Historico por rango (1D, 7D, 30D, 90D, etc.)
-- Eventos de bombas (ultimos 3)
+
+- mapa SCADA backend-driven
+- estado realtime por WebSocket
+- KPIs de bombas y equipos
+- historico por rango
+- configuracion de alarmas PT/FIT
 
 ## Stack
 
@@ -20,61 +22,90 @@ Mostrar en una sola vista:
 - ApexCharts
 - Axios
 
-## Quick Start
+## Quick start
 
-```bash
+```powershell
 npm install
 npm run dev
 ```
 
-Build de produccion:
+Build:
 
-```bash
+```powershell
 npm run build
 ```
 
-## Configuracion API
+## Rutas de la app
 
-- HTTP/WS principal: `src/config/api.ts`
-- Auth API: `src/auth/authApi.ts` (usa `VITE_API_HTTP` o `VITE_API_BASE_URL`)
+- `/login`
+- `/dashboard`
+- `/lagoon/:lagoonId`
 
-Nota: hoy existen dos estrategias de configuracion (hardcoded y env vars). Ver arquitectura para estandarizacion recomendada.
+## Como se conecta al backend
 
-## Arquitectura (resumen)
+REST:
+
+- usa `src/api/httpClient.ts`
+- por defecto consume rutas browser-relative bajo `VITE_API_PREFIX=/api`
+- el proxy de Vite o IIS reescribe `/api/*` al backend real
+
+WebSocket:
+
+- usa `src/hooks/useScadaRealtime.ts`
+- intenta primero autenticacion legacy por query string
+- si no recibe snapshot, hace fallback a subprotocol `crystal-scada.v1`
+
+## Variables de entorno relevantes
+
+- `VITE_API_HTTP`
+- `VITE_API_WS`
+- `VITE_SCADA_WS_URL`
+- `VITE_BACKEND_WS_PORT`
+- `VITE_USE_DIRECT_BACKEND`
+- `VITE_DIRECT_BACKEND_ORIGIN`
+- `VITE_FORCE_SAME_ORIGIN`
+- `VITE_API_PREFIX`
+- `VITE_PRODUCT_TYPE`
+- `VITE_DEV_RUNTIME_MODE`
+- `VITE_IIS_HMR`
+- `VITE_DEV_BACKEND_HTTP_TARGET`
+- `VITE_DEV_BACKEND_WS_TARGET`
+
+## Estructura importante
+
+- `src/pages/lagoonsView.tsx`: shell principal.
+- `src/components/lagoonContainer.tsx`: compone SCADA, historico y bombas.
+- `src/hooks/useScadaRealtime.ts`: socket y salud de realtime.
+- `src/hooks/useScadaLayoutScene.ts`: layout + mapping + cache.
+- `src/hooks/useHistory.ts`: historico.
+- `src/hooks/useAlarmThresholds.ts`: modal PT/FIT.
+- `src/api/*.ts`: clientes HTTP.
+- `src/scada/*`: resolucion de layouts, aliases, labels y estados SVG.
+- `src/svg/*`: SVG React por layout.
+
+## Flujo SCADA actual
 
 ```text
 Browser
-  -> React Router (/lagoon/:lagoonId)
-    -> LagoonContainer
-      -> useScadaRealtime (WS /ws/scada)
-      -> useHistory (HTTP /scada/history/hourly)
-      -> usePumpEventsLast3 (HTTP /scada/{lagoon_id}/pump-events/last-3)
-      -> ScadaOverlay + PumpStatusKpi + LagoonLineChart
+  -> /lagoon/:lagoonId
+  -> LagoonsProvider -> GET /api/lagoons
+  -> useScadaLayoutScene
+       -> GET /api/lagoons/{lagoon_id}/mapping
+       -> GET /api/layouts/{layout_id}
+  -> useScadaRealtime
+       -> WS /ws/scada/{lagoon_id}
+  -> useHistory
+       -> GET /api/scada/{lagoon_id}/history
+  -> usePumpEventsLast3
+       -> GET /api/scada/{lagoon_id}/pump-events/last-3
+  -> useAlarmThresholds
+       -> GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit
 ```
 
-Documentacion completa:
-- [Arquitectura](docs/ARCHITECTURE.md)
-- [Contratos API](docs/API_CONTRACTS.md)
-- [Troubleshooting Operativo](docs/TROUBLESHOOTING.md)
+## Documentacion relacionada
 
-## Estructura principal
-
-- `src/components`: UI, charts y contenedores de modulo
-- `src/hooks`: consumo y estado de datos remotos
-- `src/api`: clientes HTTP
-- `src/layouts`: configuraciones JSON por laguna/layout
-- `src/svg`: SVG por layout
-- `src/scada/svgRegistry.ts`: registro de layouts SVG
-
-## Flujos criticos
-
-- Realtime: `useScadaRealtime` actualiza tags, PLC status, hora local y timezone.
-- Historico: `useHistory` consulta buckets y alimenta `LagoonLineChart`.
-- Eventos bomba: `usePumpEventsLast3` trae lista de eventos; `PumpStatusKpi` renderiza hasta 3 por bomba.
-- Resolucion de estado de bomba: soporta `number` y `boolean` (`true/false` => `FUNCIONANDO/DETENIDA`).
-
-## Convenciones
-
-- Los tags tecnicos se transforman a labels visibles en UI.
-- En cards de bombas, si faltan datos se manejan estados `loading`, `error`, `empty`.
-- Los layouts SCADA se cargan dinamicamente desde JSON + SVG registry.
+- `docs/ARCHITECTURE.md`
+- `docs/API_CONTRACTS.md`
+- `docs/TROUBLESHOOTING.md`
+- `docs/SCADA_UI_CHANGES.md`
+- `docs/SVG_EDITING_GUIDE.md`

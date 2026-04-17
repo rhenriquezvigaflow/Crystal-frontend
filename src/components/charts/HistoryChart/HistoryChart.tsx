@@ -2,6 +2,7 @@ import { LineChart } from "@mui/x-charts";
 import { Box, Typography } from "@mui/material";
 import type { HistoryResponse } from "./types";
 import { getColorByIndex } from "./chartConfig";
+import { getHistorySeriesLabel, getHistorySeriesTagKey } from "../historySeries";
 
 /* ======================================================
    Props
@@ -84,8 +85,8 @@ const HistoryChart = ({
   ====================================================== */
   const filteredSeries =
     selectedTags && selectedTags.length > 0
-      ? data.series.filter((s) => selectedTags.includes(s.tag_key))
-      : data.series.filter((s) => s.tag_key !== "WM001_TOT_SCADA");
+      ? data.series.filter((s) => selectedTags.includes(getHistorySeriesTagKey(s)))
+      : data.series.filter((s) => getHistorySeriesTagKey(s) !== "WM001_TOT_SCADA");
 
   if (!filteredSeries.length) return null;
 
@@ -106,6 +107,7 @@ const HistoryChart = ({
      Series alineadas
   ---------------------------- */
   const series = filteredSeries.map((serie, index) => {
+    const tag = getHistorySeriesTagKey(serie);
     const map = new Map(
       serie.points.map((p) => [
         new Date(p.timestamp).getTime(),
@@ -114,8 +116,8 @@ const HistoryChart = ({
     );
 
     return {
-      id: serie.tag_key,
-      label: serie.name,
+      id: tag,
+      label: getHistorySeriesLabel(serie),
       data: timeline.map((t) => map.get(t.getTime()) ?? null),
       color: getColorByIndex(index),
       showMark: false,

@@ -141,3 +141,79 @@ body {
 .animate-kpi-breath {
   animation: kpi-breath 4.5s ease-in-out infinite;
 }
+
+.scada-equipment-target {
+  transition:
+    fill 220ms ease,
+    stroke 220ms ease,
+    opacity 220ms ease,
+    filter 220ms ease,
+    transform 220ms ease;
+  will-change: fill, stroke, opacity, filter, transform;
+}
+
+.scada-equipment-state--0 {
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--scada-state-color) 32%, transparent));
+}
+
+.scada-equipment-state--1 {
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--scada-state-color) 44%, transparent));
+}
+
+.scada-equipment-state--2 {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--scada-state-color) 48%, transparent));
+}
+
+.scada-equipment-state--3 {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--scada-state-color) 56%, transparent));
+}
+
+@keyframes scada-pump-running {
+  0%,
+  100% {
+    opacity: 0.94;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes scada-valve-moving {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes scada-warning-blink {
+  0%,
+  100% {
+    opacity: 0.88;
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--scada-state-color) 42%, transparent));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 9px color-mix(in srgb, var(--scada-state-color) 72%, transparent));
+  }
+}
+
+.scada-equipment--pump.scada-equipment-state--1 {
+  animation: scada-pump-running 1.8s ease-in-out infinite;
+}
+
+.scada-equipment--pump.scada-equipment-state--2,
+.scada-equipment--valve.scada-equipment-state--2 {
+  animation: scada-valve-moving 0.95s ease-in-out infinite;
+}
+
+.scada-equipment--pump.scada-equipment-state--3,
+.scada-equipment--valve.scada-equipment-state--3 {
+  animation: scada-warning-blink 1.1s ease-in-out infinite;
+}
