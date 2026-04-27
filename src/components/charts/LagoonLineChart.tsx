@@ -3,6 +3,7 @@ import Chart from "react-apexcharts";
 import { Box, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
 import type { HistoryPoint, HistoryResponse, HistorySeries } from "./HistoryChart/types";
+import { DAY_MS, HOUR_MS } from "../../config/timing";
 import { getHistorySeriesTagKey } from "./historySeries";
 
 type LagoonHistoryData = HistoryResponse & {
@@ -41,7 +42,7 @@ const isPlottableTag = (tagKey?: string) => {
 };
 
 function daysBetween(a: Date, b: Date) {
-  return Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24);
+  return Math.abs(b.getTime() - a.getTime()) / DAY_MS;
 }
 
 function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
@@ -75,7 +76,7 @@ function normalizeByView(
   if (view === "weekly") return normalizeWeekUtc(ts);
 
   const ms = new Date(ts).getTime();
-  return Math.floor(ms / (1000 * 60 * 60)) * (1000 * 60 * 60);
+  return Math.floor(ms / HOUR_MS) * HOUR_MS;
 }
 
 export default function LagoonLineChart({

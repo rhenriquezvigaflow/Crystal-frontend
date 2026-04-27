@@ -1,0 +1,285 @@
+{
+  "lagoon_id": "ary",
+  "layout_id": "layout2",
+  "svg_component": "layout2",
+  "aspect_ratio": "1400 / 1150",
+  "kpis": [
+    {
+      "tag": "PT117_R",
+      "label": "PT_117",
+      "unit": "bar",
+      "position": {
+        "top": "29%",
+        "left": "37.4%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "FIT002_R",
+      "label": "FIT_002",
+      "unit": "l/s",
+      "position": {
+        "top": "39.6%",
+        "left": "29.3%"
+      },
+      "icon_type": "flow"
+    },
+    {
+      "tag": "PT119_R",
+      "label": "PT_119",
+      "unit": "bar",
+      "position": {
+        "top": "63%",
+        "left": "72%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "BACKWASH.DIFF_PRES",
+      "label": "DIF_PRES",
+      "unit": "bar",
+      "position": {
+        "top": "62.5%",
+        "left": "52.3%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT114_R",
+      "label": "PT_114",
+      "unit": "bar",
+      "position": {
+        "top": "48%",
+        "left": "29.3%"
+      },
+      "icon_type": "pressure"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P005_ST",
+      "label": "BOMBA FILTRO \n /RETROLAVADO",
+      "svg_target": "circle26-4",
+      "panel": "pump-status"
+      
+    },
+    {
+      "tag": "P009_ST",
+      "label": "BOMBA RETORNO \n CLARIFICADO",
+      "svg_target": "circle26-4-1",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P009_ST",
+      "label": "Bomba CL-FLO12",
+      "svg_target": "circle26"
+    },
+    {
+      "tag": "P008_ST",
+      "label": "Bomba A-C1LO",
+      "svg_target": "Vector_185-8-4"
+    },
+    {
+      "tag": "P007_ST",
+      "label": "Bomba F-H1LO",
+      "svg_target": "Vector_185-8-4-2"
+    }
+  ],
+  "valves": [
+    {
+      "tag": "VE246_ST",
+      "label": "VE-401",
+      "svg_target": "VE-401"
+    },
+    {
+      "tag": "VE252_ST",
+      "label": "VE-402",
+      "svg_target": "VE-402"
+    },
+    {
+      "tag": "VE239_ST",
+      "label": "VE-239",
+      "svg_target": "VE-239"
+    },
+    {
+      "tag": "VE237_ST",
+      "label": "VE-237",
+      "svg_target": "VE-237"
+    },
+    {
+      "tag": "VE240_ST",
+      "label": "VE-240",
+      "svg_target": "VE-240"
+    },
+    {
+      "tag": "VE238_ST",
+      "label": "VE-238",
+      "svg_target": "VE-238"
+    },
+    {
+      "tag": "VE244_ST",
+      "label": "VE-244",
+      "svg_target": "VE-244"
+    }
+  ],
+  "labels": [
+    {
+      "id": "pump-title-circle26-4",
+      "text": "BOMBA FILTRO/ \n  RETROLAVADO",
+      "source_svg_target": "circle26-4",
+      "source_element_type": "pump",
+      "position": {
+        "top": "63%",
+        "left": "28%"
+      }
+    },
+    {
+      "id": "pump-title-circle26-4-1",
+      "text": "BOMBA RETORNO \n CLARIFICADO",
+      "source_svg_target": "circle26-4-1",
+      "source_element_type": "pump",
+      "position": {
+        "top": "75.5%",
+        "left": "88.8%"
+      }
+    },
+    {
+      "id": "pump-title-circle26",
+      "text": "Bomba\nCL-FLO12",
+      "source_svg_target": "circle26",
+      "source_element_type": "pump",
+      "position": {
+        "top": "36%",
+        "left": "10.5%"
+      }
+    },
+    {
+      "id": "pump-title-circle26",
+      "text": "CLO-FLO-12",
+      "source_svg_target": "circle26",
+      "source_element_type": "pump",
+      "position": {
+        "top": "36%",
+        "left": "3.5%"
+      }
+    },
+    {
+      "id": "pump-title-circle26",
+      "text": "LIMPIEZA \n DE FONDO",
+      "source_svg_target": "circle26",
+      "source_element_type": "pump",
+      "position": {
+        "top": "49%",
+        "left": "3.8%"
+      }
+      
+    },
+    {
+      "id": "pump-title-circle26",
+      "text": "AGUA \n LIMPIA",
+      "source_svg_target": "circle26",
+      "source_element_type": "pump",
+      "position": {
+        "top": "73%",
+        "left": "11.5%"
+      }
+      
+    },
+    {
+      "id": "pump-title-vector-185-8-4",
+      "text": "Bomba A-C1LO",
+      "source_svg_target": "Vector_185-8-4",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-vector-185-8-4-2",
+      "text": "Bomba F-H1LO",
+      "source_svg_target": "Vector_185-8-4-2",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-401",
+      "text": "VX-254",
+      "source_svg_target": "VE-401",
+      "source_element_type": "valve",
+      "position": {
+        "top": "86%",
+        "left": "16.5%"
+      }
+    },
+    {
+      "id": "valve-title-ve-402",
+      "text": "VX-246",
+      "source_svg_target": "VE-402",
+      "source_element_type": "valve",
+      "position": {
+      "top": "63%",
+      "left": "16.9%"
+      }
+    },
+    {
+      "id": "valve-title-ve-245",
+      "text": "VX-245",
+      "source_svg_target": "VE-245",
+      "source_element_type": "valve",
+      "position": {
+        "top": "52.8%",
+        "left": "75.8%"
+      }
+    },
+    {
+      "id": "valve-title-ve-244",
+      "text": "VX-244",
+      "source_svg_target": "VX-244",
+      "source_element_type": "valve",
+      "position": {
+        "top": "40.9%",
+        "left": "69.5%"
+      }
+    },
+    {
+      "id": "valve-title-ve-242",
+      "text": "VX-242",
+      "source_svg_target": "VX-240",
+      "source_element_type": "valve",
+      "position": {
+        "top": "30.3%",
+        "left": "71.7%"
+      }
+    },
+    {
+      "id": "valve-title-ve-238",
+      "text": "VX-243",
+      "source_svg_target": "VE-238",
+      "source_element_type": "valve",
+      "position": {
+        "top": "40.8%",
+        "left": "43.5%"
+      }
+    },
+    {
+      "id": "valve-title-ve-244",
+      "text": "VX-241",
+      "source_svg_target": "VE-244",
+      "source_element_type": "valve",
+      "position": {
+        "top": "29.9%",
+        "left": "43.7%"
+      }
+    }
+  ],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  }
+}

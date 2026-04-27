@@ -1,0 +1,244 @@
+{
+  "lagoon_id": "aquavista",
+  "layout_id": "layout1",
+  "svg_component": "layout1",
+  "aspect_ratio": "1393.0437 / 960.00002",
+  "kpis": [
+    {
+      "tag": "PT117_R_SCADA",
+      "label": "PT117_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "40%",
+        "left": "20.5%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT148_R_SCADA",
+      "label": "PT148_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "24.7%",
+        "left": "36.5%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT141_R_SCADA",
+      "label": "PT141_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "58%",
+        "left": "56%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT145_R_SCADA",
+      "label": "PT145_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "55%",
+        "left": "82.3%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT143_R_SCADA",
+      "label": "PT143_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "58%",
+        "left": "69.7%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "FIT003_R_SCADA",
+      "label": "FIT003_R_SCADA",
+      "unit": "l/s",
+      "position": {
+        "top": "51.5%",
+        "left": "21.3%"
+      },
+      "icon_type": "flow"
+    },
+    {
+      "tag": "WM01_TOT_SCADA",
+      "label": "WM01_TOT_SCADA",
+      "unit": "m3",
+      "position": {
+        "top": "92%",
+        "left": "42%"
+      },
+      "icon_type": "volume"
+    },
+    {
+      "tag": "DIF_PRES_SCADA",
+      "label": "DIF_PRES_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "58%",
+        "left": "42.3%"
+      },
+      "icon_type": "pressure"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P002_STS_SCADA",
+      "label": "Bomba Retrolavado",
+      "svg_target": "BOMBA-RETROLAVADO",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P006_STS_SCADA",
+      "label": "Bomba Filtracion",
+      "svg_target": "BOMBA-FILTRACION",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P007_STS_SCADA",
+      "label": "Bomba Retorno Clarificado",
+      "svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P015_STS_SCADA",
+      "label": "P-015",
+      "svg_target": "P-015"
+    },
+    {
+      "tag": "P016_STS_SCADA",
+      "label": "P-016",
+      "svg_target": "P-016"
+    },
+    {
+      "tag": "RETRO_SCADA",
+      "label": "Retrolavado Filtros",
+      "panel": "pump-status",
+      "always_visible": true
+    }
+  ],
+  "valves": [
+    {
+      "tag": "VE288_ST",
+      "label": "VE-288",
+      "svg_target": "VE-288"
+    },
+    {
+      "tag": "VE322_ST",
+      "label": "VE-322",
+      "svg_target": "VE-322"
+    },
+    {
+      "tag": "VE320_ST",
+      "label": "VE-320",
+      "svg_target": "VE-320"
+    },
+    {
+      "tag": "VE318_ST",
+      "label": "VE-318",
+      "svg_target": "VE-318"
+    }
+  ],
+  "labels": [
+    {
+      "id": "pump-title-bomba-retrolavado",
+      "text": "Bomba Retrolavado",
+      "source_svg_target": "BOMBA-RETROLAVADO",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-bomba-filtracion",
+      "text": "Bomba Filtracion",
+      "source_svg_target": "BOMBA-FILTRACION",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-bomba-retorno-clarificado",
+      "text": "Bomba Retorno Clarificado",
+      "source_svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-p-015",
+      "text": "P-015",
+      "source_svg_target": "P-015",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-p-016",
+      "text": "P-016",
+      "source_svg_target": "P-016",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-288",
+      "text": "VE-288",
+      "source_svg_target": "VE-288",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-322",
+      "text": "VE-322",
+      "source_svg_target": "VE-322",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-320",
+      "text": "VE-320",
+      "source_svg_target": "VE-320",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-318",
+      "text": "VE-318",
+      "source_svg_target": "VE-318",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    }
+  ],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  }
+}

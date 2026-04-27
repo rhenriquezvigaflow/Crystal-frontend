@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ApiError } from "../auth/authApi";
+import { TOAST_AUTO_DISMISS_MS } from "../config/timing";
 import {
   getThresholdsView,
   upsertThresholds,
@@ -18,7 +19,6 @@ import type {
 import { ALARM_SEVERITIES } from "../types/alarm-thresholds";
 
 const PT_FIT_TAG_REGEX = /^(PT|FIT)/i;
-const TOAST_AUTO_DISMISS_MS = 4_500;
 
 interface UseAlarmThresholdsParams {
   lagoonId: string;

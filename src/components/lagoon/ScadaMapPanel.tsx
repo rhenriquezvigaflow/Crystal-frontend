@@ -1,9 +1,11 @@
-import { useRef } from "react";
-import type { ComponentType } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { CSSProperties, ComponentType } from "react";
 
 import ScadaEquipmentStateOverlay from "../../containers/ScadaEquipmentStateOverlay";
 import ScadaOverlay from "../../containers/ScadaOverlay";
+import ScadaSvgEquipmentLabelsOverlay from "../../containers/ScadaSvgEquipmentLabelsOverlay";
 import ScadaTextOverlay from "../../containers/ScadaTextOverlay";
+import { useScadaLayout } from "../../hooks/useScadaLayout";
 import type { ScadaSvgProps } from "../../scada/svgRegistry";
 import type {
   RealtimeTagLookup,
@@ -63,6 +65,39 @@ function ScadaMapSkeleton() {
   );
 }
 
+function isScadaDebugEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("scadaDebug") === "1";
+}
+
+function ScadaDebugLayer() {
+  const ticks = [0, 0.25, 0.5, 0.75, 1];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-[3] text-[10px] font-semibold text-sky-950/70">
+      <div className="absolute inset-0 scada-debug-grid" />
+      {ticks.map((tick) => (
+        <div
+          key={`x-${tick}`}
+          className="absolute top-1 rounded bg-white/85 px-1"
+          style={{ left: `${tick * 100}%`, transform: "translateX(-50%)" }}
+        >
+          x {tick.toFixed(2)}
+        </div>
+      ))}
+      {ticks.map((tick) => (
+        <div
+          key={`y-${tick}`}
+          className="absolute left-1 rounded bg-white/85 px-1"
+          style={{ top: `${tick * 100}%`, transform: "translateY(-50%)" }}
+        >
+          y {tick.toFixed(2)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function ScadaMapPanel({
   heading,
   title,
@@ -78,7 +113,24 @@ export default function ScadaMapPanel({
   aspectRatio,
   canControl = true,
 }: Props) {
-  const stageRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
+
+  const setContainerRef = useCallback((node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    setContainerElement(node);
+  }, []);
+
+  const layout = useMemo(() => ({
+    elements,
+    labels,
+  }), [elements, labels]);
+
+  const scadaLayout = useScadaLayout(layout, containerRef, { containerElement });
+  const debugLayout = useMemo(() => isScadaDebugEnabled(), []);
+  const frameStyle: CSSProperties = loading || !SvgComponent
+    ? { aspectRatio, width: "100%" }
+    : { width: "100%" };
 
   return (
     <section className="lagoon-map-shell rounded-[18px] p-2 sm:p-3">
@@ -94,51 +146,58 @@ export default function ScadaMapPanel({
 
       <div className="mb-3 h-px w-full bg-slate-200" />
 
-      <div className="-mx-2 overflow-x-auto overflow-y-hidden px-2 sm:mx-0 sm:px-0">
+      <div className="-mx-2 overflow-hidden px-2 sm:mx-0 sm:px-0">
         <div
-          className="lagoon-map-frame relative w-full min-w-[820px] rounded-[14px] sm:min-w-[900px] md:min-w-0"
-          style={{ aspectRatio, maxWidth: "100%" }}
+          className="lagoon-map-frame relative w-full min-w-0 rounded-[14px]"
+          style={frameStyle}
         >
           {loading ? (
             <ScadaMapSkeleton />
           ) : SvgComponent ? (
             <div
-              ref={stageRef}
+              ref={setContainerRef}
               className={[
-                "scada-stage",
+                "scada-stage relative w-full",
                 canControl ? "" : "scada-stage-no-control",
               ]
                 .filter(Boolean)
                 .join(" ")}
+              data-scada-scale={scadaLayout.scale.toFixed(2)}
+              data-scada-width={scadaLayout.containerSize.width}
             >
-              <SvgComponent className="h-full w-full" />
+              <SvgComponent
+                className="scada-svg"
+                preserveAspectRatio="xMidYMid meet"
+              />
+              {debugLayout ? <ScadaDebugLayer /> : null}
+              <ScadaTextOverlay labels={labels} placements={scadaLayout.labels} />
+              <ScadaSvgEquipmentLabelsOverlay
+                elements={elements}
+                labels={labels}
+                stageRef={containerRef}
+              />
+              <ScadaOverlay
+                layoutId={layoutId}
+                elements={elements}
+                tagLookup={tagLookup}
+                stageRef={containerRef}
+                plc_status={plcStatus}
+                local_time={localTime}
+                timezone={timezone}
+                placements={scadaLayout.elements}
+              />
+              <ScadaEquipmentStateOverlay
+                layoutId={layoutId}
+                elements={elements}
+                tagLookup={tagLookup}
+                stageRef={containerRef}
+              />
             </div>
           ) : (
             <div className="flex h-full items-center justify-center rounded-[14px] text-sm font-medium text-slate-500">
               No hay layout SCADA disponible para esta laguna.
             </div>
           )}
-
-          {!loading && SvgComponent ? (
-            <>
-              <ScadaTextOverlay labels={labels} />
-              <ScadaOverlay
-                layoutId={layoutId}
-                elements={elements}
-                tagLookup={tagLookup}
-                stageRef={stageRef}
-                plc_status={plcStatus}
-                local_time={localTime}
-                timezone={timezone}
-              />
-              <ScadaEquipmentStateOverlay
-                layoutId={layoutId}
-                elements={elements}
-                tagLookup={tagLookup}
-                stageRef={stageRef}
-              />
-            </>
-          ) : null}
         </div>
       </div>
     </section>

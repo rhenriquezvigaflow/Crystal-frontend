@@ -1,3 +1,5 @@
+import { SECOND_MS, TOKEN_EXPIRY_LEEWAY_SEC } from "../config/timing";
+
 type StoredSession = {
   accessToken: string;
   userEmail?: string;
@@ -65,6 +67,6 @@ export function isTokenValid(token: string): boolean {
   const exp = typeof payload.exp === "number" ? payload.exp : null;
   if (!exp) return true;
 
-  const nowSec = Math.floor(Date.now() / 1000);
-  return exp > nowSec + 30; // leeway
+  const nowSec = Math.floor(Date.now() / SECOND_MS);
+  return exp > nowSec + TOKEN_EXPIRY_LEEWAY_SEC;
 }

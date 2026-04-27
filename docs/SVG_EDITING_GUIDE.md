@@ -57,7 +57,7 @@ Identificar:
 - mantener IDs estables
 - no renombrar nodos usados por `svg_target`
 - evitar filtros o metadata innecesaria
-- si cambia proporcion, ajustar `aspectRatio` en `svgRegistry`
+- si cambia proporcion, ajustar `aspectRatio` en `svgRegistry` para que coincida con el `viewBox`
 
 ## Ajustar cards y elementos
 
@@ -74,7 +74,7 @@ Ejemplo:
 {
   "id": "pressure_1",
   "type": "kpi",
-  "position": { "left": "21.3%", "top": "40.3%" }
+  "position": { "x": 0.213, "y": 0.403 }
 }
 ```
 
@@ -86,7 +86,7 @@ Base por layout:
 {
   "id": "FIS001",
   "text": "FISS - 001",
-  "position": { "left": "42.5%", "top": "41.5%" },
+  "position": { "x": 0.425, "y": 0.415 },
   "align": "center",
   "color": "#ffffff"
 }

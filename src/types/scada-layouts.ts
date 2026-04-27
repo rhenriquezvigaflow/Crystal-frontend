@@ -1,65 +1,74 @@
 export interface ScadaLayoutPosition {
-  top?: string | null;
-  left?: string | null;
+  top: string;
+  left: string;
 }
 
-export interface ScadaLayoutElement {
-  id: string;
-  type: string;
+export interface LagoonScadaKpiDefinition {
+  tag: string;
+  label?: string | null;
+  unit?: string | null;
+  position: ScadaLayoutPosition;
+  icon_type?: string | null;
+  always_visible?: boolean | null;
+}
+
+export interface LagoonScadaPumpDefinition {
+  tag: string;
+  label?: string | null;
   position?: ScadaLayoutPosition | null;
   svg_target?: string | null;
-  default_label?: string | null;
-  fallback_tag?: string | null;
+  panel?: string | null;
+  always_visible?: boolean | null;
+}
+
+export interface LagoonScadaValveDefinition {
+  tag: string;
+  label?: string | null;
+  position?: ScadaLayoutPosition | null;
+  svg_target?: string | null;
+  always_visible?: boolean | null;
+}
+
+export interface LagoonScadaPlcStatusDefinition {
+  position: ScadaLayoutPosition;
+}
+
+export interface LagoonScadaConfig {
+  lagoon_id: string;
+  layout_id?: string | null;
+  svg_component?: string | null;
+  aspect_ratio?: string | null;
+  kpis: LagoonScadaKpiDefinition[];
+  pumps: LagoonScadaPumpDefinition[];
+  valves?: LagoonScadaValveDefinition[];
+  plc_status?: LagoonScadaPlcStatusDefinition | null;
+  labels?: ScadaTextLabelDefinition[] | null;
+  warnings?: string[] | null;
+}
+
+export interface ResolvedScadaElement {
+  id: string;
+  type: string;
+  tag: string | null;
+  label: string;
+  position?: ScadaLayoutPosition | null;
+  svg_target?: string | null;
   unit?: string | null;
   icon_type?: string | null;
   panel?: string | null;
+  always_visible?: boolean | null;
+  fallback_tag?: string | null;
   [key: string]: unknown;
-}
-
-export interface ScadaLayoutDefinition {
-  plant?: string | null;
-  version?: string | null;
-  description?: string | null;
-  svg_component?: string | null;
-  aspect_ratio?: string | null;
-  elements: ScadaLayoutElement[];
-}
-
-export interface ScadaLayoutRecord {
-  id: string;
-  name: string;
-  json_definition: ScadaLayoutDefinition;
-  updated_at: string | null;
-}
-
-export interface ScadaLayoutMappingEntry {
-  tag?: string | null;
-  label?: string | null;
-  svg_target?: string | null;
-  [key: string]: unknown;
-}
-
-export type ScadaLayoutMappingJson = Record<string, ScadaLayoutMappingEntry>;
-
-export interface LagoonScadaMapping {
-  lagoon_id: string;
-  layout_id: string;
-  mapping_json: ScadaLayoutMappingJson;
-  collector_tags: string[];
-  warnings: string[];
-  updated_at: string | null;
-}
-
-export interface ResolvedScadaElement extends ScadaLayoutElement {
-  tag: string | null;
-  label: string;
-  mapping: ScadaLayoutMappingEntry | null;
 }
 
 export interface ResolvedScadaScene {
-  layout: ScadaLayoutRecord;
-  mapping: LagoonScadaMapping;
+  lagoon_id: string;
+  layout_id: string;
+  svg_component: string;
+  aspect_ratio: string | null;
+  warnings: string[];
   elements: ResolvedScadaElement[];
+  labels: ResolvedScadaTextLabel[];
 }
 
 export interface RealtimeTagLookup {
@@ -80,16 +89,20 @@ export interface ScadaTextLabelDefinition {
   font_size?: number | null;
   font_weight?: number | null;
   text_shadow?: string | null;
+  source_svg_target?: string | null;
+  source_element_type?: string | null;
 }
 
 export interface ResolvedScadaTextLabel {
   id: string;
   text: string;
-  position: ScadaLayoutPosition;
+  position: ScadaLayoutPosition | null;
   align: ScadaTextLabelAlign;
   max_width: number | null;
   color: string | null;
   font_size: number | null;
   font_weight: number | null;
   text_shadow: string | null;
+  source_svg_target: string | null;
+  source_element_type: string | null;
 }

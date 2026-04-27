@@ -106,14 +106,14 @@ Response esperada:
   "json_definition": {
     "plant": "LAYOUT2 - SCADA",
     "svg_component": "layout2",
-    "aspect_ratio": "1429.5 / 960",
+    "aspect_ratio": "1400 / 1150",
     "elements": [
       {
         "id": "pressure_1",
         "type": "kpi",
         "fallback_tag": "PT117_R_SCADA",
         "default_label": "PT117_R_SCADA",
-        "position": { "left": "21.3%", "top": "40.3%" }
+        "position": { "x": 0.213, "y": 0.403 }
       }
     ]
   }

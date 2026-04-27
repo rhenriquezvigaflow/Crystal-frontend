@@ -1,20 +1,16 @@
 import { memo } from "react";
 
+import {
+  buildScadaOverlayStyle,
+  getScadaOverlayAnchor,
+  type ScadaOverlayPlacement,
+} from "../../scada/scadaLayoutPosition";
 import type { ResolvedScadaTextLabel } from "../../types/scada-layouts";
 
 interface Props {
   label: ResolvedScadaTextLabel;
-}
-
-function getTransform(align: ResolvedScadaTextLabel["align"]) {
-  switch (align) {
-    case "left":
-      return "translate(0, -50%)";
-    case "right":
-      return "translate(-100%, -50%)";
-    default:
-      return "translate(-50%, -50%)";
-  }
+  scale?: number;
+  placement?: ScadaOverlayPlacement | null;
 }
 
 function getTextAlign(align: ResolvedScadaTextLabel["align"]): "left" | "center" | "right" {
@@ -28,14 +24,27 @@ function getTextAlign(align: ResolvedScadaTextLabel["align"]): "left" | "center"
   }
 }
 
-function EquipmentLabel({ label }: Props) {
+function EquipmentLabel({ label, scale = 1, placement }: Props) {
+  if (!label.position?.left || !label.position?.top) return null;
+
+  const effectiveScale = placement?.scale ?? scale;
+  const normalizedText = label.text.replace(/\s+/g, " ").trim();
+
+  if (effectiveScale < 0.7 && (label.text.includes("\n") || normalizedText.length > 14)) {
+    return null;
+  }
+
+  const overlayStyle = placement?.style ?? buildScadaOverlayStyle(
+    label.position,
+    effectiveScale,
+    getScadaOverlayAnchor(label.align),
+  );
+
   return (
     <div
       className="absolute pointer-events-none whitespace-pre-line text-[13px] font-medium leading-[1.15] text-slate-800"
       style={{
-        top: label.position.top ?? undefined,
-        left: label.position.left ?? undefined,
-        transform: getTransform(label.align),
+        ...overlayStyle,
         textAlign: getTextAlign(label.align),
         maxWidth: label.max_width ? `${label.max_width}px` : undefined,
         fontFamily: "inherit",

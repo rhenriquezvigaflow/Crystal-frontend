@@ -1,0 +1,216 @@
+{
+  "lagoon_id": "kirah",
+  "layout_id": "layout4",
+  "svg_component": "layout4",
+  "aspect_ratio": "1393.0437 / 1150",
+  "kpis": [
+    {
+      "tag": "PT115_R",
+      "label": "PT115_R",
+      "unit": "bar",
+      "position": {
+        "top": "40%",
+        "left": "21%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT119_R",
+      "label": "PT119_R",
+      "unit": "bar",
+      "position": {
+        "top": "85%",
+        "left": "23.4%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT122_R",
+      "label": "PT122_R",
+      "unit": "bar",
+      "position": {
+        "top": "25%",
+        "left": "33.9%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT123_R",
+      "label": "PT123_R",
+      "unit": "bar",
+      "position": {
+        "top": "61%",
+        "left": "51.7%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT143_R",
+      "label": "PT143_R",
+      "unit": "bar",
+      "position": {
+        "top": "61%",
+        "left": "69%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "FIT002",
+      "label": "FIT002",
+      "unit": "l/s",
+      "position": {
+        "top": "39%",
+        "left": "41.2%"
+      },
+      "icon_type": "flow"
+    },
+    {
+      "tag": "WM01_TOT",
+      "label": "WM01_TOT",
+      "unit": "m3",
+      "position": {
+        "top": "91.5%",
+        "left": "42%"
+      },
+      "icon_type": "volume"
+    },
+    {
+      "tag": "BACKWASH.DIFF_PRES",
+      "label": "BACKWASH.DIFF_PRES",
+      "unit": "bar",
+      "position": {
+        "top": "61%",
+        "left": "36%"
+      },
+      "icon_type": "pressure"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P002_STS",
+      "label": "ESTADO BOMBA RETROLAVADO",
+      "position": {
+        "top": "91.5%",
+        "left": "18.3%"
+      },
+      "svg_target": "circle26-4-8",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P006_STS",
+      "label": "ESTADO BOMBA FILTRACION",
+      "position": {
+        "top": "76.5%",
+        "left": "22.5%"
+      },
+      "svg_target": "circle26-4",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P007_STS",
+      "label": "ESTADO BOMBA RETORNO CLARIFICADO",
+      "position": {
+        "top": "71.5%",
+        "left": "92.4%"
+      },
+      "svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P015_STS",
+      "label": "P-015",
+      "position": {
+        "top": "22%",
+        "left": "92%"
+      },
+      "svg_target": "Vector_185-8-1"
+    },
+    {
+      "tag": "P016_STS",
+      "label": "P-016",
+      "position": {
+        "top": "22%",
+        "left": "97.7%"
+      },
+      "svg_target": "Vector_185-8-1-9"
+    },
+    {
+      "tag": "P017_STS",
+      "label": "P-017",
+      "position": {
+        "top": "36%",
+        "left": "10.5%"
+      },
+      "svg_target": "circle26"
+    }
+  ],
+  "valves": [],
+  "labels": [
+    {
+      "id": "pump-title-circle26-4-8",
+      "text": "ESTADO BOMBA RETROLAVADO",
+      "source_svg_target": "circle26-4-8",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-circle26-4",
+      "text": "ESTADO BOMBA FILTRACION",
+      "source_svg_target": "circle26-4",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-bomba-retorno-clarificado",
+      "text": "ESTADO BOMBA RETORNO CLARIFICADO",
+      "source_svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-vector-185-8-1",
+      "text": "P-015",
+      "source_svg_target": "Vector_185-8-1",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-vector-185-8-1-9",
+      "text": "P-016",
+      "source_svg_target": "Vector_185-8-1-9",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-circle26",
+      "text": "P-017",
+      "source_svg_target": "circle26",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    }
+  ],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  }
+}

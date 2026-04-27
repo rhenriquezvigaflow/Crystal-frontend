@@ -5,6 +5,7 @@ import KPIComponent from "../components/scada/KPIComponent";
 import PlcStatusComponent from "../components/scada/PlcStatusComponent";
 import PumpComponent from "../components/scada/PumpComponent";
 import ValveComponent from "../components/scada/ValveComponent";
+import type { ScadaPlacementLookup } from "../hooks/useScadaLayout";
 import { getScadaEquipmentSvgTargetForElement } from "../scada/layoutEquipmentState";
 import { getRealtimeValue } from "../scada/layoutSceneResolver";
 import type { RealtimeTagLookup, ResolvedScadaElement } from "../types/scada-layouts";
@@ -17,6 +18,7 @@ interface Props {
   plc_status?: "online" | "offline";
   local_time?: string | null;
   timezone?: string | null;
+  placements?: ScadaPlacementLookup;
 }
 
 function ScadaOverlay({
@@ -27,13 +29,14 @@ function ScadaOverlay({
   plc_status,
   local_time,
   timezone,
+  placements = {},
 }: Props) {
   if (!elements.length) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-50">
+    <div className="pointer-events-none absolute inset-0 z-[2]">
       {elements.map((element) => {
-        if (layoutId === "layout4" && element.id.startsWith("pump_")) {
+        if (layoutId === "layout4" && element.type === "pump") {
           return null;
         }
 
@@ -48,6 +51,7 @@ function ScadaOverlay({
               value={value}
               unit={element.unit}
               position={element.position}
+              placement={placements[element.id]}
             />
           );
         }
@@ -60,6 +64,7 @@ function ScadaOverlay({
               localTime={local_time}
               timezone={timezone}
               position={element.position}
+              placement={placements[element.id]}
             />
           );
         }
@@ -73,6 +78,7 @@ function ScadaOverlay({
               svgTarget={getScadaEquipmentSvgTargetForElement(layoutId, element)}
               stageRef={stageRef}
               position={element.position}
+              placement={placements[element.id]}
             />
           );
         }
@@ -86,6 +92,7 @@ function ScadaOverlay({
               svgTarget={getScadaEquipmentSvgTargetForElement(layoutId, element)}
               stageRef={stageRef}
               position={element.position}
+              placement={placements[element.id]}
             />
           );
         }

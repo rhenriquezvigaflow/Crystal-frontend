@@ -25,12 +25,11 @@ import { usePumpEventsLast3 } from "../hooks/usePumpEventsLast3";
 import { useAuth } from "../auth/AuthContext";
 import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
+import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
 import { normalizeScadaLayoutName } from "../scada/layoutResolver";
-import { resolveScadaTextLabels } from "../scada/layoutLabels";
 import {
   buildRealtimeTagLookup,
   getRealtimeValue,
-  resolveScadaElements,
 } from "../scada/layoutSceneResolver";
 import { getPumpEventSortTime } from "../scada/pumpEventTime";
 import { svgRegistry } from "../scada/svgRegistry";
@@ -52,7 +51,7 @@ function getViewByDays(days: number): "hourly" | "daily" | "weekly" {
 }
 
 function daysBetween(a: Date, b: Date) {
-  return Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24);
+  return Math.abs(b.getTime() - a.getTime()) / DAY_MS;
 }
 
 const isPlottableTag = (tagKey?: string) => {
@@ -100,8 +99,6 @@ const quickRanges = [
   { label: "185D", days: 185 },
   { label: "365D", days: 365 },
 ];
-const SCADA_REALTIME_GRACE_MS = 7000;
-
 function formatRealtimeTimestamp(
   value: string | null,
   timezone?: string | null,
@@ -343,6 +340,7 @@ function PumpStatusSection({ lagoonId, pumpElements, tagLookup, pumpLastOn, time
 
   return (
     <PumpStatusKpi
+      lagoonId={lagoonId}
       pumps={resolvedPumps}
       timezone={timezone}
       eventsLoading={pumpEventsLoading}
@@ -359,7 +357,7 @@ interface HistorySectionProps {
 
 function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
   const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const oneDayAgo = new Date(now.getTime() - DAY_MS);
 
   const [startISO, setStartISO] = useState(oneDayAgo.toISOString());
   const [endISO, setEndISO] = useState(now.toISOString());
@@ -517,25 +515,21 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   const { accessToken } = useAuth();
   const { scene, loading: sceneLoading, error: sceneError } = useScadaLayoutScene(
     lagoon.lagoon_id,
-    lagoon.scada_layout,
   );
 
   const lagoonId = lagoon.lagoon_id;
   const lagoonName = lagoon.lagoon_name;
   const lagoonHeading = lagoon.timezone ?? "SCADA";
 
-  const sceneLayoutId = normalizeScadaLayoutName(scene?.mapping.layout_id ?? lagoon.scada_layout);
-  const svgKey = normalizeScadaLayoutName(scene?.layout.json_definition.svg_component ?? sceneLayoutId);
-  const svgEntry = svgRegistry[svgKey] ?? null;
+  const sceneLayoutId = scene ? normalizeScadaLayoutName(scene.layout_id) : "";
+  const svgKey = scene ? normalizeScadaLayoutName(scene.svg_component || sceneLayoutId) : "";
+  const svgEntry = svgKey ? svgRegistry[svgKey] ?? null : null;
   const SvgComponent = svgEntry?.component ?? null;
-  const aspectRatio = scene?.layout.json_definition.aspect_ratio ?? svgEntry?.aspectRatio ?? "1429.5 / 960";
-  const resolvedElements = useMemo(
-    () => (scene ? resolveScadaElements(scene.layout, scene.mapping) : []),
-    [scene],
-  );
+  const aspectRatio = svgEntry?.aspectRatio ?? scene?.aspect_ratio ?? "1400 / 1150";
+  const resolvedElements = useMemo(() => scene?.elements ?? [], [scene]);
   const resolvedTextLabels = useMemo<ResolvedScadaTextLabel[]>(
-    () => resolveScadaTextLabels(sceneLayoutId, lagoonId),
-    [lagoonId, sceneLayoutId],
+    () => scene?.labels ?? [],
+    [scene],
   );
   const pumpElements = useMemo(
     () => resolvedElements.filter((element) => element.type === "pump" && element.panel === "pump-status"),
@@ -605,9 +599,9 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           </div>
         ) : null}
 
-        {scene?.mapping.warnings?.length ? (
+        {scene?.warnings?.length ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {scene.mapping.warnings.join(" | ")}
+            {scene.warnings.join(" | ")}
           </div>
         ) : null}
 

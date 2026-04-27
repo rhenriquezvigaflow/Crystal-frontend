@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import { API_WS } from "../config/api";
+import {
+  REALTIME_AGE_TICK_MS,
+  REALTIME_INITIAL_RECONNECT_DELAY_MS,
+  REALTIME_MAX_RECONNECT_DELAY_MS,
+  REALTIME_STALE_AFTER_SEC,
+  SECOND_MS,
+} from "../config/timing";
 
 export type RealtimeConnectionState =
   | "idle"
@@ -13,9 +20,6 @@ export type RealtimeConnectionState =
 type WebSocketAuthMode = "query" | "subprotocol";
 
 const WS_COMPAT_SUBPROTOCOL = "crystal-scada.v1";
-const INITIAL_RECONNECT_DELAY_MS = 2000;
-const MAX_RECONNECT_DELAY_MS = 10000;
-const REALTIME_STALE_AFTER_SEC = 30;
 
 function buildLegacyQueryUrl(lagoonId: string, accessToken: string) {
   return `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}?token=${encodeURIComponent(accessToken)}`;
@@ -60,12 +64,12 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
 
     const updateAge = () => {
       setLastDataAgeSec(
-        Math.max(0, Math.floor((Date.now() - lastMessageAt) / 1000)),
+        Math.max(0, Math.floor((Date.now() - lastMessageAt) / SECOND_MS)),
       );
     };
 
     updateAge();
-    const timer = window.setInterval(updateAge, 1000);
+    const timer = window.setInterval(updateAge, REALTIME_AGE_TICK_MS);
 
     return () => {
       window.clearInterval(timer);
@@ -75,7 +79,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
   useEffect(() => {
     let disposed = false;
     let reconnectTimer: number | null = null;
-    let reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+    let reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
     let reconnectCount = 0;
     let hasEverReceivedSnapshot = false;
     let currentMode: WebSocketAuthMode = "query";
@@ -131,7 +135,10 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
         connect(currentMode);
       }, reconnectDelayMs);
 
-      reconnectDelayMs = Math.min(reconnectDelayMs * 2, MAX_RECONNECT_DELAY_MS);
+      reconnectDelayMs = Math.min(
+        reconnectDelayMs * 2,
+        REALTIME_MAX_RECONNECT_DELAY_MS,
+      );
     };
 
     const connect = (mode: WebSocketAuthMode) => {
@@ -148,7 +155,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
       ws.onopen = () => {
         if (disposed || wsRef.current !== ws) return;
 
-        reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+        reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
         setConnectionState("connected");
         setConnectionError(null);
       };
@@ -163,7 +170,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
           hasEverReceivedSnapshot = true;
           receivedSnapshotOnSocket = true;
           reconnectCount = 0;
-          reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+          reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
 
           setTags(msg.tags ?? {});
           setPumpLastOn(msg.pump_last_on ?? {});

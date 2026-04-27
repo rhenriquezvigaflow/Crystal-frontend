@@ -1,0 +1,213 @@
+{
+  "lagoon_id": "laguna_santa_rosalia",
+  "layout_id": "layout2",
+  "svg_component": "layout2",
+  "aspect_ratio": "1429.5 / 960",
+  "kpis": [
+    {
+      "tag": "PT112_R_SCADA",
+      "label": "PT112_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "40.3%",
+        "left": "29%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "FIT002_R_SCADA",
+      "label": "FIT002_R_SCADA",
+      "unit": "l/s",
+      "position": {
+        "top": "49%",
+        "left": "29%"
+      },
+      "icon_type": "flow"
+    },
+    {
+      "tag": "PT116_R_SCADA",
+      "label": "PT116_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "63.2%",
+        "left": "72%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "DIF_PRES_SCADA",
+      "label": "DIF_PRES_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "62.5%",
+        "left": "52.3%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT114_R_SCADA",
+      "label": "PT114_R_SCADA",
+      "unit": "bar",
+      "position": {
+        "top": "29.5%",
+        "left": "37.5%"
+      },
+      "icon_type": "pressure"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P005_STS_SCADA",
+      "label": "Bomba Filtro/Retrolavado",
+      "svg_target": "P-008",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "P006_STS_SCADA",
+      "label": "Bomba Retorno Clarificado",
+      "svg_target": "P-007",
+      "panel": "pump-status"
+    },
+    {
+      "tag": "RETRO_SCADA",
+      "label": "Retrolavado Filtros",
+      "panel": "pump-status",
+      "always_visible": true
+    }
+  ],
+  "valves": [
+    {
+      "tag": "VE401_ST",
+      "label": "VE-401",
+      "svg_target": "VE-401"
+    },
+    {
+      "tag": "VE402_ST",
+      "label": "VE-402",
+      "svg_target": "VE-402"
+    },
+    {
+      "tag": "VE239_ST",
+      "label": "VE-239",
+      "svg_target": "VE-239"
+    },
+    {
+      "tag": "VE237_ST",
+      "label": "VE-237",
+      "svg_target": "VE-237"
+    },
+    {
+      "tag": "VE240_ST",
+      "label": "VE-240",
+      "svg_target": "VE-240"
+    },
+    {
+      "tag": "VE238_ST",
+      "label": "VE-238",
+      "svg_target": "VE-238"
+    },
+    {
+      "tag": "VE244_ST",
+      "label": "VE-244",
+      "svg_target": "VE-244"
+    }
+  ],
+  "labels": [
+    {
+      "id": "pump-title-p-008",
+      "text": "Bomba Filtro/Retrolavado",
+      "source_svg_target": "P-008",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "pump-title-p-007",
+      "text": "Bomba Retorno Clarificado",
+      "source_svg_target": "P-007",
+      "source_element_type": "pump",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-401",
+      "text": "VE-401",
+      "source_svg_target": "VE-401",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-402",
+      "text": "VE-402",
+      "source_svg_target": "VE-402",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-239",
+      "text": "VE-239",
+      "source_svg_target": "VE-239",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-237",
+      "text": "VE-237",
+      "source_svg_target": "VE-237",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-240",
+      "text": "VE-240",
+      "source_svg_target": "VE-240",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-238",
+      "text": "VE-238",
+      "source_svg_target": "VE-238",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    },
+    {
+      "id": "valve-title-ve-244",
+      "text": "VE-244",
+      "source_svg_target": "VE-244",
+      "source_element_type": "valve",
+      "position": {
+        "top": "",
+        "left": ""
+      }
+    }
+  ],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  }
+}

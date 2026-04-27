@@ -1,32 +1,33 @@
 import type { ComponentType, SVGProps } from "react";
 
-import SVGComponent1 from "../svg/layout1";
-import SVGComponent2 from "../svg/layout2";
-import SVGComponent3 from "../svg/layout3";
-import SVGComponent4 from "../svg/layout4";
+import Layout1 from "../svg/layout1";
+import Layout2 from "../svg/layout2";
+import Layout3 from "../svg/layout3";
+import Layout4 from "../svg/layout4";
+import type { ScadaLayoutId } from "./layoutResolver";
 
-export interface ScadaSvgProps extends SVGProps<SVGSVGElement> {}
+export type ScadaSvgProps = SVGProps<SVGSVGElement>;
 
-export interface SvgRegistryEntry {
+export interface ScadaSvgRegistryEntry {
   component: ComponentType<ScadaSvgProps>;
   aspectRatio: string;
 }
 
-export const svgRegistry: Record<string, SvgRegistryEntry> = {
+export const svgRegistry: Record<ScadaLayoutId, ScadaSvgRegistryEntry> = {
   layout1: {
-    component: SVGComponent1,
-    aspectRatio: "1393.0437 / 960.00002",
+    component: Layout1,
+    aspectRatio: "1393.0437 / 1150",
   },
   layout2: {
-    component: SVGComponent2,
-    aspectRatio: "1429.5 / 960",
+    component: Layout2,
+    aspectRatio: "1400 / 1150",
   },
   layout3: {
-    component: SVGComponent3,
-    aspectRatio: "1393.0437 / 960.00002",
+    component: Layout3,
+    aspectRatio: "1393.0437 / 1150",
   },
   layout4: {
-    component: SVGComponent4,
-    aspectRatio: "1393.0437 / 960.00002",
+    component: Layout4,
+    aspectRatio: "1393.0437 / 1150",
   },
 };

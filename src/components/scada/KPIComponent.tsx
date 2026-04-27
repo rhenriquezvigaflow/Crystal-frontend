@@ -1,5 +1,9 @@
 import { memo } from "react";
 
+import {
+  buildScadaOverlayStyle,
+  type ScadaOverlayPlacement,
+} from "../../scada/scadaLayoutPosition";
 import type { ScadaLayoutPosition } from "../../types/scada-layouts";
 
 interface Props {
@@ -8,14 +12,15 @@ interface Props {
   value: unknown;
   unit?: string | null;
   position?: ScadaLayoutPosition | null;
+  scale?: number;
+  placement?: ScadaOverlayPlacement | null;
 }
 
 const KPI_BACKGROUND = "#f4f6f8";
 const KPI_BORDER_COLOR = "#9aa3ad";
-const KPI_VERTICAL_OFFSET_PX = 10;
 
 function formatValue(value: unknown): string {
-  if (value === undefined || value === null || value === "") return "--";
+  if (value === undefined || value === null || value === "") return "N/A";
   if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(2);
   if (typeof value === "boolean") return value ? "ON" : "OFF";
   return String(value);
@@ -41,40 +46,70 @@ function formatTagTitle(tag?: string | null, label?: string | null): string {
   return cleaned;
 }
 
-function KPIComponent({ tag, label, value, unit, position }: Props) {
-  if (!position?.top || !position?.left) return null;
+function KPIComponent({ tag, label, value, unit, position, scale = 1, placement }: Props) {
+  const effectiveScale = placement?.scale ?? scale;
+  const overlayStyle = placement?.style ?? (
+    position?.left && position.top
+      ? buildScadaOverlayStyle(position, effectiveScale)
+      : null
+  );
+
+  if (!overlayStyle) return null;
 
   const displayLabel = formatTagTitle(tag, label);
   const displayValue = formatValue(value);
+  const isCompact = effectiveScale < 0.75;
+  const showLabel = effectiveScale >= 0.65;
+  const overlayTitle = `${displayLabel}: ${displayValue}${unit ? ` ${unit}` : ""}`;
 
   return (
     <div
-      className="absolute w-fit min-w-[122px] rounded-[6px] border px-[12px] py-[6px] text-center"
+      className={[
+        "absolute rounded-[6px] border text-center shadow-sm",
+        isCompact
+          ? showLabel
+            ? "w-[76px] px-[5px] py-[3px]"
+            : "w-[54px] px-[4px] py-[3px]"
+          : "w-fit min-w-[122px] px-[12px] py-[6px]",
+      ].join(" ")}
+      title={overlayTitle}
       style={{
-        top: `calc(${position.top} - ${KPI_VERTICAL_OFFSET_PX}px)`,
-        left: position.left,
-        transform: "translate(-50%, -50%)",
+        ...overlayStyle,
         backgroundColor: KPI_BACKGROUND,
         borderColor: KPI_BORDER_COLOR,
         fontFamily: "inherit",
       }}
     >
-      <div className="whitespace-nowrap text-[16px] font-semibold leading-[1.1] text-[#374151]">
-        {displayLabel}
-      </div>
-      <div
-        className="mb-1 mt-[3px] h-px w-full"
-        style={{ backgroundColor: KPI_BORDER_COLOR }}
-      />
+      {showLabel ? (
+        <div
+          className={[
+            "whitespace-nowrap font-semibold leading-[1.1] text-[#374151]",
+            isCompact ? "overflow-hidden text-ellipsis text-[9px]" : "text-[16px]",
+          ].join(" ")}
+        >
+          {displayLabel}
+        </div>
+      ) : null}
+      {!isCompact ? (
+        <div
+          className="mb-1 mt-[3px] h-px w-full"
+          style={{ backgroundColor: KPI_BORDER_COLOR }}
+        />
+      ) : null}
       <div className="flex items-baseline justify-center gap-1 leading-none">
         <span
-          className="text-[16px] font-semibold text-[#111827]"
+          className={[
+            "font-semibold text-[#111827]",
+            isCompact ? "text-[13px]" : "text-[16px]",
+          ].join(" ")}
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
           {displayValue}
         </span>
         {unit ? (
-          <span className="text-[11px] text-[#6b7280]">{unit}</span>
+          <span className={isCompact ? "text-[8px] text-[#6b7280]" : "text-[11px] text-[#6b7280]"}>
+            {unit}
+          </span>
         ) : null}
       </div>
     </div>

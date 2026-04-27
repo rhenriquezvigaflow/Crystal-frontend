@@ -1,8 +1,15 @@
-import type { PumpEvent } from "../../api/scadaPumpEvents";
+import { useState } from "react";
+
+import {
+  downloadPumpEventsReport,
+  type PumpEvent,
+} from "../../api/scadaPumpEvents";
+import { ApiError } from "../../auth/authApi";
 import {
   formatPumpEventTime,
   getPumpEventSortTime,
 } from "../../scada/pumpEventTime";
+import { DOWNLOAD_URL_REVOKE_DELAY_MS } from "../../config/timing";
 
 interface PumpInfo {
   label: string;
@@ -11,6 +18,7 @@ interface PumpInfo {
 }
 
 interface Props {
+  lagoonId: string;
   pumps: Record<string, PumpInfo>;
   timezone?: string | null;
   eventsLoading?: boolean;
@@ -91,22 +99,88 @@ function getStateConfig(state: number | null) {
   }
 }
 
+function saveBlob(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(
+    () => window.URL.revokeObjectURL(url),
+    DOWNLOAD_URL_REVOKE_DELAY_MS,
+  );
+}
+
 /* =======================
    Component
 ======================= */
 
 export default function PumpStatusKpi({
+  lagoonId,
   pumps,
   timezone,
   eventsLoading,
   eventsError,
   eventsEmpty,
 }: Props) {
+  const [reportDownloading, setReportDownloading] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+
+  const handleDownloadReport = async () => {
+    if (!lagoonId || reportDownloading) return;
+
+    setReportDownloading(true);
+    setReportError(null);
+
+    try {
+      const report = await downloadPumpEventsReport(lagoonId);
+      saveBlob(report.blob, report.filename);
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 403) {
+        setReportError("Acceso no permitido para descargar el reporte.");
+      } else {
+        setReportError("No se pudo descargar el reporte.");
+      }
+    } finally {
+      setReportDownloading(false);
+    }
+  };
+
   return (
     <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm">
       <div className="px-4 py-3 border-b border-slate-200">
-        <div className="text-sm font-semibold text-slate-700">Estado de Bombas</div>
-        <div className="text-xs text-slate-500 mt-0.5">Ultimos 3 eventos por bomba</div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-slate-700">Estado de Bombas</div>
+            <div className="text-xs text-slate-500 mt-0.5">Ultimos 3 eventos por bomba</div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDownloadReport}
+            disabled={!lagoonId || reportDownloading}
+            title="Descargar reporte"
+            aria-label="Descargar reporte"
+            className="inline-flex h-9 min-w-[6.75rem] shrink-0 items-center justify-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              className="h-4 w-4"
+              fill="currentColor"
+            >
+              <path d="M10 2a1 1 0 0 1 1 1v7.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42L9 10.59V3a1 1 0 0 1 1-1Z" />
+              <path d="M4 14a1 1 0 0 1 1 1v1h10v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z" />
+            </svg>
+            <span>{reportDownloading ? "Generando" : "Reporte"}</span>
+          </button>
+        </div>
+
+        {reportError ? (
+          <div className="mt-2 text-xs text-rose-600">{reportError}</div>
+        ) : null}
       </div>
 
       <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">

@@ -1,4 +1,7 @@
 import type { LagoonAccess } from "../api/lagoonsApi";
+import HeaderActions from "./header/HeaderActions";
+import HeaderBrand from "./header/HeaderBrand";
+import LagoonSelector from "./header/LagoonSelector";
 
 interface Props {
   lagoons: LagoonAccess[];
@@ -24,37 +27,6 @@ function HamburgerIcon() {
   );
 }
 
-function GearIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path
-        d="M12 8.75a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <path
-        d="m19.2 15.15.35 1.52-1.51 2.62-1.58.15-1.06 1.2-2.88.05-1.12-1.13-1.56-.12-2.57-1.54-.12-1.56-1.18-1.08-.05-2.94 1.12-1.12.12-1.55 1.5-2.58 1.57-.15 1.08-1.2 2.92-.05 1.1 1.13 1.57.12 2.57 1.54.15 1.57 1.18 1.08.05 2.9-1.13 1.16Z"
-        stroke="currentColor"
-        strokeWidth="1.35"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function BellIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path
-        d="M12 3.5a6 6 0 0 0-6 6v4.05l-1.15 1.8a1.1 1.1 0 0 0 .93 1.65h12.45a1.1 1.1 0 0 0 .93-1.65L18 13.55V9.5a6 6 0 0 0-6-6Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path d="M10.1 19a1.9 1.9 0 0 0 3.8 0" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
 export default function TopBar({
   lagoons,
   selectedLagoonId,
@@ -66,99 +38,60 @@ export default function TopBar({
   isMenuOpen,
 }: Props) {
   return (
-    <header className="lagoon-topbar sticky top-0 z-30 mx-4 mt-3 rounded-[18px] px-3 py-3 sm:mx-6">
-      <div className="relative flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+    <header className="lagoon-topbar sticky top-0 z-30 mx-2 mt-2 rounded-[18px] px-2.5 py-2.5 sm:mx-4 sm:mt-3 sm:px-4 sm:py-3 lg:mx-6">
+      <div className="relative flex flex-col gap-3">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 md:hidden">
           <button
             type="button"
             onClick={onMenuToggle}
             aria-label={isMenuOpen ? "Cerrar menu lateral" : "Abrir menu lateral"}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
           >
             <HamburgerIcon />
           </button>
 
-          <div className="min-w-0">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-sky-700/70">
-              Monitoreo en vivo
-            </div>
-            <span className="block truncate text-sm font-semibold uppercase tracking-[0.24em] text-slate-900 sm:text-base">
-              CRYSTAL LAGOONS
-            </span>
-          </div>
+          <HeaderBrand compact />
+          <HeaderActions
+            compact
+            canEdit={canEdit}
+            onOpenAlarms={onOpenAlarms}
+            onLogout={onLogout}
+          />
         </div>
 
-        <div className="hidden flex-1 justify-center px-2 md:flex">
-          <label className="w-full max-w-md">
-            <span className="sr-only">Seleccionar laguna</span>
-            <select
-              value={selectedLagoonId ?? ""}
-              onChange={(event) => onLagoonChange?.(event.target.value)}
-              disabled={!lagoons.length}
-              className="h-10 w-full rounded-xl border border-sky-100 bg-white/88 px-4 text-sm font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-sky-200 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {!lagoons.length && <option value="">Sin lagunas disponibles</option>}
-              {lagoons.map((lagoon) => (
-                <option key={lagoon.lagoon_id} value={lagoon.lagoon_id}>
-                  {lagoon.lagoon_name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <span className="hidden xl:inline text-sky-800/75">
-            {canEdit ? "Editor" : "Solo lectura"}
-          </span>
-
-          <button
-            type="button"
-            onClick={onOpenAlarms}
-            className="inline-flex h-11 items-center gap-2 rounded-xl border border-sky-100 bg-white/88 px-3 text-xs font-semibold tracking-wide text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
-          >
-            <BellIcon />
-            <span className="hidden sm:inline">Alarmas</span>
-            <span className="sm:hidden">AL</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onLogout}
-            className="h-11 rounded-xl border border-rose-100 bg-white/88 px-3 text-xs font-semibold tracking-wide text-rose-700 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-rose-200 hover:bg-rose-50"
-          >
-            Cerrar sesion
-          </button>
-
-          {canEdit && (
+        <div className="hidden min-w-0 items-center gap-4 md:flex">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
               type="button"
-              aria-label="Configuracion"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-white/88 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50"
+              onClick={onMenuToggle}
+              aria-label={isMenuOpen ? "Cerrar menu lateral" : "Abrir menu lateral"}
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
             >
-              <GearIcon />
+              <HamburgerIcon />
             </button>
-          )}
-        </div>
-      </div>
+            <HeaderBrand />
+          </div>
 
-      <div className="mt-3 md:hidden">
-        <label className="block">
-          <span className="sr-only">Seleccionar laguna</span>
-          <select
-            value={selectedLagoonId ?? ""}
-            onChange={(event) => onLagoonChange?.(event.target.value)}
-            disabled={!lagoons.length}
-            className="h-10 w-full rounded-xl border border-sky-100 bg-white/88 px-4 text-sm font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-sky-200 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {!lagoons.length && <option value="">Sin lagunas disponibles</option>}
-            {lagoons.map((lagoon) => (
-              <option key={lagoon.lagoon_id} value={lagoon.lagoon_id}>
-                {lagoon.lagoon_name}
-              </option>
-            ))}
-          </select>
-        </label>
+          <LagoonSelector
+            lagoons={lagoons}
+            selectedLagoonId={selectedLagoonId}
+            onLagoonChange={onLagoonChange}
+            className="w-full flex-1 md:max-w-md"
+          />
+
+          <HeaderActions
+            canEdit={canEdit}
+            onOpenAlarms={onOpenAlarms}
+            onLogout={onLogout}
+          />
+        </div>
+
+        <LagoonSelector
+          lagoons={lagoons}
+          selectedLagoonId={selectedLagoonId}
+          onLagoonChange={onLagoonChange}
+          className="md:hidden"
+        />
       </div>
     </header>
   );

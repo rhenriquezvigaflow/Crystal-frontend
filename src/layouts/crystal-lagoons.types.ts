@@ -1,8 +1,8 @@
 export type KpiType = "kpi" | "status" | "level";
 
 export interface KpiPosition {
-  top: string;
-  left: string;
+  x: number;
+  y: number;
 }
 
 export interface LagoonKpi {

@@ -26,7 +26,7 @@ main.tsx
 
 Notas:
 
-- `App.tsx` hace auto-refresh de pagina cada 30 minutos.
+- `App.tsx` hace auto-refresh de pagina cada 1 hora.
 - `DashboardRedirect` redirige a la laguna permitida.
 - `ProtectedRoute` exige sesion valida.
 

@@ -1,107 +1,56 @@
 import { useEffect, useState } from "react";
 
-import {
-  fetchLagoonScadaMapping,
-  fetchScadaLayout,
-} from "../api/scadaLayoutsApi";
-import { resolveScadaElements } from "../scada/layoutSceneResolver";
-import { getLocalScadaSceneOverride } from "../scada/localSceneRegistry";
-import type {
-  LagoonScadaMapping,
-  ResolvedScadaScene,
-  ScadaLayoutRecord,
-} from "../types/scada-layouts";
+import { DEV_SCENE_REFRESH_MS } from "../config/timing";
+import { loadLagoonScadaScene } from "../scada/localSceneRegistry";
+import type { ResolvedScadaScene } from "../types/scada-layouts";
 
-const layoutCache = new Map<string, ScadaLayoutRecord>();
-const mappingCache = new Map<string, LagoonScadaMapping>();
 const sceneCache = new Map<string, ResolvedScadaScene>();
 const inFlightRequests = new Map<string, Promise<ResolvedScadaScene>>();
 
-function buildScene(
-  layout: ScadaLayoutRecord,
-  mapping: LagoonScadaMapping,
-): ResolvedScadaScene {
-  return {
-    layout,
-    mapping,
-    elements: resolveScadaElements(layout, mapping),
-  };
-}
-
-function mergeSceneWithLocalLayout(
-  localScene: ResolvedScadaScene,
-  mapping: LagoonScadaMapping,
-): ResolvedScadaScene {
-  return buildScene(localScene.layout, {
-    ...mapping,
-    layout_id: localScene.layout.id,
-    collector_tags:
-      mapping.collector_tags.length > 0
-        ? mapping.collector_tags
-        : localScene.mapping.collector_tags,
-  });
+function areScenesEqual(
+  left: ResolvedScadaScene | null,
+  right: ResolvedScadaScene | null,
+): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 async function loadScene(
   lagoonId: string,
-  fallbackLayoutId: string,
   forceRefetch: boolean,
 ): Promise<ResolvedScadaScene> {
+  const normalizedLagoonId = String(lagoonId ?? "").trim().toLowerCase();
+  if (!normalizedLagoonId) {
+    throw new Error("lagoon_id es requerido para cargar la configuracion SCADA.");
+  }
+
   if (!forceRefetch) {
-    const cached = sceneCache.get(lagoonId);
+    const cached = sceneCache.get(normalizedLagoonId);
     if (cached) {
-      const rebuiltScene = buildScene(cached.layout, cached.mapping);
-      sceneCache.set(lagoonId, rebuiltScene);
-      return rebuiltScene;
+      return cached;
     }
   }
 
-  const inFlight = inFlightRequests.get(lagoonId);
+  const inFlight = inFlightRequests.get(normalizedLagoonId);
   if (inFlight) return inFlight;
 
   const request = (async () => {
-    const localScene = getLocalScadaSceneOverride(lagoonId, fallbackLayoutId);
+    const scene = await loadLagoonScadaScene(normalizedLagoonId, {
+      forceFresh: forceRefetch,
+    });
 
-    try {
-      const mapping = forceRefetch
-        ? await fetchLagoonScadaMapping(lagoonId, fallbackLayoutId)
-        : mappingCache.get(lagoonId) ??
-          (await fetchLagoonScadaMapping(lagoonId, fallbackLayoutId));
-
-      mappingCache.set(lagoonId, mapping);
-
-      if (localScene) {
-        layoutCache.set(localScene.layout.id, localScene.layout);
-        const scene = mergeSceneWithLocalLayout(localScene, mapping);
-        sceneCache.set(lagoonId, scene);
-        return scene;
-      }
-
-      const layout = forceRefetch
-        ? await fetchScadaLayout(mapping.layout_id)
-        : layoutCache.get(mapping.layout_id) ??
-          (await fetchScadaLayout(mapping.layout_id));
-
-      layoutCache.set(layout.id, layout);
-
-      const scene = buildScene(layout, mapping);
-
-      sceneCache.set(lagoonId, scene);
-      return scene;
-    } catch (error) {
-      if (!localScene) throw error;
-
-      layoutCache.set(localScene.layout.id, localScene.layout);
-      mappingCache.set(lagoonId, localScene.mapping);
-      const fallbackScene = buildScene(localScene.layout, localScene.mapping);
-      sceneCache.set(lagoonId, fallbackScene);
-      return fallbackScene;
+    if (!scene) {
+      throw new Error(
+        `No existe configuracion JSON para la laguna "${normalizedLagoonId}".`,
+      );
     }
+
+    sceneCache.set(normalizedLagoonId, scene);
+    return scene;
   })().finally(() => {
-    inFlightRequests.delete(lagoonId);
+    inFlightRequests.delete(normalizedLagoonId);
   });
 
-  inFlightRequests.set(lagoonId, request);
+  inFlightRequests.set(normalizedLagoonId, request);
   return request;
 }
 
@@ -114,14 +63,15 @@ interface UseScadaLayoutSceneResult {
 
 export function useScadaLayoutScene(
   lagoonId: string,
-  fallbackLayoutId: string,
 ): UseScadaLayoutSceneResult {
   const [scene, setScene] = useState<ResolvedScadaScene | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!lagoonId) {
+    const normalizedLagoonId = String(lagoonId ?? "").trim().toLowerCase();
+
+    if (!normalizedLagoonId) {
       setScene(null);
       setLoading(false);
       setError(null);
@@ -129,9 +79,9 @@ export function useScadaLayoutScene(
     }
 
     let cancelled = false;
-    const cached = sceneCache.get(lagoonId);
+    const cached = sceneCache.get(normalizedLagoonId);
     if (cached) {
-      setScene(buildScene(cached.layout, cached.mapping));
+      setScene(cached);
       setLoading(false);
       setError(null);
       return;
@@ -140,14 +90,19 @@ export function useScadaLayoutScene(
     setLoading(true);
     setError(null);
 
-    loadScene(lagoonId, fallbackLayoutId, false)
+    loadScene(normalizedLagoonId, false)
       .then((nextScene) => {
         if (cancelled) return;
         setScene(nextScene);
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Error cargando layout SCADA");
+        setScene(null);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Error cargando configuracion SCADA.",
+        );
       })
       .finally(() => {
         if (cancelled) return;
@@ -157,19 +112,62 @@ export function useScadaLayoutScene(
     return () => {
       cancelled = true;
     };
-  }, [fallbackLayoutId, lagoonId]);
+  }, [lagoonId]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return undefined;
+
+    const normalizedLagoonId = String(lagoonId ?? "").trim().toLowerCase();
+    if (!normalizedLagoonId) return undefined;
+
+    let cancelled = false;
+
+    const tick = async () => {
+      if (document.visibilityState === "hidden") return;
+
+      try {
+        const nextScene = await loadScene(normalizedLagoonId, true);
+        if (cancelled) return;
+
+        setScene((currentScene) =>
+          areScenesEqual(currentScene, nextScene) ? currentScene : nextScene,
+        );
+        setError(null);
+      } catch (err: unknown) {
+        if (cancelled) return;
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Error cargando configuracion SCADA.",
+        );
+      }
+    };
+
+    const intervalId = window.setInterval(tick, DEV_SCENE_REFRESH_MS);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [lagoonId]);
 
   const refresh = async () => {
-    if (!lagoonId) return;
+    const normalizedLagoonId = String(lagoonId ?? "").trim().toLowerCase();
+    if (!normalizedLagoonId) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const nextScene = await loadScene(lagoonId, fallbackLayoutId, true);
+      const nextScene = await loadScene(normalizedLagoonId, true);
       setScene(nextScene);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error cargando layout SCADA");
+      setScene(null);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error cargando configuracion SCADA.",
+      );
     } finally {
       setLoading(false);
     }

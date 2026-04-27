@@ -1,17 +1,37 @@
-export type ScadaLayoutId = string;
+export type ScadaLayoutId = "layout1" | "layout2" | "layout3" | "layout4";
 
-export const DEFAULT_SCADA_LAYOUT: ScadaLayoutId = "layout1";
+const LAYOUT_ALIASES: Record<string, ScadaLayoutId> = {
+  layout1: "layout1",
+  layout_1: "layout1",
+  layout2: "layout2",
+  layout_2: "layout2",
+  layout3: "layout3",
+  layout_3: "layout3",
+  layout4: "layout4",
+  layout_4: "layout4",
+  layout_small: "layout3",
+  small: "layout3",
+};
+
+function normalizeLayoutToken(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+}
 
 export function normalizeScadaLayoutName(value: unknown): ScadaLayoutId {
-  const raw = String(value ?? "").trim().toLowerCase();
-  if (!raw) return DEFAULT_SCADA_LAYOUT;
+  const normalized = normalizeLayoutToken(value);
 
-  let normalized = raw.replace(/\\/g, "/");
-  normalized = normalized.slice(normalized.lastIndexOf("/") + 1);
-  normalized = normalized.replace(/\.(tsx|ts|jsx|js|json)$/i, "");
-  normalized = normalized.replace(/[^a-z0-9._-]+/gi, "_");
-  normalized = normalized.replace(/^[_\-.]+|[_\-.]+$/g, "");
+  if (normalized in LAYOUT_ALIASES) {
+    return LAYOUT_ALIASES[normalized];
+  }
 
-  if (normalized === "layout_small") return "layout3";
-  return normalized || DEFAULT_SCADA_LAYOUT;
+  const compact = normalized.replace(/_/g, "");
+  if (compact === "layout1") return "layout1";
+  if (compact === "layout2") return "layout2";
+  if (compact === "layout3") return "layout3";
+  if (compact === "layout4") return "layout4";
+
+  return "layout1";
 }

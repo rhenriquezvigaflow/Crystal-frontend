@@ -1,114 +1,112 @@
-import { getDiscreteStateColor, getDiscreteStateLabel, normalizeDiscreteState } from "./layoutSceneResolver";
+import {
+  getDiscreteStateColor,
+  normalizeDiscreteState,
+} from "./layoutSceneResolver";
 
 export type EquipmentRole = "pump" | "valve";
 
-const SCADA_TARGET_BASE_CLASS = "scada-equipment-target";
-const ROLE_CLASS_PREFIX = "scada-equipment--";
-const STATE_CLASS_PREFIX = "scada-equipment-state--";
-const ALL_STATE_CLASSES = [
-  `${STATE_CLASS_PREFIX}unknown`,
-  `${STATE_CLASS_PREFIX}0`,
-  `${STATE_CLASS_PREFIX}1`,
-  `${STATE_CLASS_PREFIX}2`,
-  `${STATE_CLASS_PREFIX}3`,
+const SHAPE_SELECTOR = "path, circle, ellipse, rect, polygon, polyline, line";
+const STATE_CLASSES = [
+  "scada-equipment-state--0",
+  "scada-equipment-state--1",
+  "scada-equipment-state--2",
+  "scada-equipment-state--3",
 ];
+const ROLE_CLASSES = ["scada-equipment--pump", "scada-equipment--valve"];
 
-function normalizeTargetKey(value: string): string {
-  return value.trim().toUpperCase();
+interface ElementSnapshot {
+  node: SVGElement;
+  className: string | null;
+  style: string | null;
 }
 
-function getStateClass(state: number | null): string {
-  return `${STATE_CLASS_PREFIX}${state === null ? "unknown" : state}`;
+function isSvgElement(value: Element | null): value is SVGElement {
+  return value instanceof SVGElement;
 }
 
-function getEquipmentOpacity(role: EquipmentRole, state: number | null): string {
-  if (state === null) return "0.72";
-  if (role === "pump" && state === 1) return "1";
-  if (role === "valve" && state === 2) return "1";
-  return "0.96";
+function isPaintableShape(node: SVGElement): boolean {
+  return SHAPE_SELECTOR
+    .split(",")
+    .map((selector) => selector.trim())
+    .includes(node.tagName.toLowerCase());
 }
 
-function matchesScadaTarget(node: SVGElement, targetKey: string): boolean {
-  const candidates = [
-    node.getAttribute("data-scada-id"),
-    node.getAttribute("id"),
-    node.getAttribute("inkscape:label"),
-    node.getAttribute("label"),
-    node.getAttribute("data-name"),
-  ]
-    .filter((value): value is string => Boolean(value))
-    .map((value) => normalizeTargetKey(value));
-
-  return candidates.includes(targetKey);
+function queryTarget(stage: HTMLDivElement, svgTarget: string): SVGElement | null {
+  const safeTarget = svgTarget.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const target = stage.querySelector(`[id="${safeTarget}"]`);
+  return isSvgElement(target) ? target : null;
 }
 
-export function findScadaEquipmentTargets(root: ParentNode, svgTarget: string): SVGElement[] {
-  const targetKey = normalizeTargetKey(svgTarget);
-  const nodes = Array.from(root.querySelectorAll<SVGElement>("svg *"));
-  const dataScadaMatches = nodes.filter(
-    (node) => normalizeTargetKey(node.getAttribute("data-scada-id") ?? "") === targetKey,
-  );
-  if (dataScadaMatches.length) return dataScadaMatches;
-
-  const idMatches = nodes.filter(
-    (node) => normalizeTargetKey(node.getAttribute("id") ?? "") === targetKey,
-  );
-  if (idMatches.length) return idMatches;
-
-  return nodes.filter((node) => matchesScadaTarget(node, targetKey));
+function collectPaintableNodes(root: SVGElement): SVGElement[] {
+  const descendants = Array.from(root.querySelectorAll<SVGElement>(SHAPE_SELECTOR));
+  if (isPaintableShape(root)) {
+    return [root, ...descendants];
+  }
+  return descendants.length ? descendants : [root];
 }
 
-function resetScadaEquipmentNode(node: SVGElement, role: EquipmentRole) {
-  node.classList.remove(
-    SCADA_TARGET_BASE_CLASS,
-    `${ROLE_CLASS_PREFIX}${role}`,
-    ...ALL_STATE_CLASSES,
-  );
-  node.style.removeProperty("--scada-state-color");
-  node.style.removeProperty("fill");
-  node.style.removeProperty("stroke");
-  node.style.removeProperty("opacity");
-  node.style.removeProperty("transform-box");
-  node.style.removeProperty("transform-origin");
-  node.removeAttribute("aria-label");
+function snapshotNodes(nodes: SVGElement[]): ElementSnapshot[] {
+  return nodes.map((node) => ({
+    node,
+    className: node.getAttribute("class"),
+    style: node.getAttribute("style"),
+  }));
+}
+
+function restoreNodes(snapshots: ElementSnapshot[]): void {
+  snapshots.forEach(({ node, className, style }) => {
+    if (className === null) {
+      node.removeAttribute("class");
+    } else {
+      node.setAttribute("class", className);
+    }
+
+    if (style === null) {
+      node.removeAttribute("style");
+    } else {
+      node.setAttribute("style", style);
+    }
+  });
 }
 
 export function applyScadaEquipmentState(
-  root: ParentNode,
+  stage: HTMLDivElement,
   svgTarget: string,
   role: EquipmentRole,
-  label: string,
+  _label: string,
   value: unknown,
 ): () => void {
-  const targets = findScadaEquipmentTargets(root, svgTarget);
-  if (!targets.length) return () => undefined;
+  const normalizedTarget = String(svgTarget ?? "").trim();
+  if (!normalizedTarget) return () => undefined;
 
+  const root = queryTarget(stage, normalizedTarget);
+  if (!root) return () => undefined;
+
+  const paintableNodes = collectPaintableNodes(root);
+  const snapshots = snapshotNodes([root, ...paintableNodes]);
   const state = normalizeDiscreteState(value);
   const color = getDiscreteStateColor(value);
-  const stateClass = getStateClass(state);
-  const ariaLabel = `${label}: ${getDiscreteStateLabel(value)}`;
 
-  targets.forEach((target) => {
-    resetScadaEquipmentNode(target, role);
-    target.classList.add(
-      SCADA_TARGET_BASE_CLASS,
-      `${ROLE_CLASS_PREFIX}${role}`,
-      stateClass,
-    );
-    target.style.setProperty("--scada-state-color", color);
-    target.style.fill = color;
+  root.classList.add("scada-equipment-target", `scada-equipment--${role}`);
+  ROLE_CLASSES
+    .filter((className) => className !== `scada-equipment--${role}`)
+    .forEach((className) => root.classList.remove(className));
+  root.style.setProperty("--scada-state-color", color);
 
-    if (target.getAttribute("stroke") || target.style.stroke) {
-      target.style.stroke = color;
-    }
+  STATE_CLASSES.forEach((className) => root.classList.remove(className));
+  if (state !== null) {
+    root.classList.add(`scada-equipment-state--${state}`);
+  }
 
-    target.style.opacity = getEquipmentOpacity(role, state);
-    target.style.transformBox = "fill-box";
-    target.style.transformOrigin = "center";
-    target.setAttribute("aria-label", ariaLabel);
+  paintableNodes.forEach((node) => {
+    node.classList.add("scada-equipment-target");
+    node.style.setProperty("--scada-state-color", color);
+    node.style.setProperty("fill", color, "important");
+    node.style.setProperty("stroke", color, "important");
+    node.style.setProperty("opacity", state === null ? "0.72" : "1");
   });
 
   return () => {
-    targets.forEach((target) => resetScadaEquipmentNode(target, role));
+    restoreNodes(snapshots);
   };
 }

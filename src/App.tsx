@@ -10,17 +10,17 @@ import Login from "./pages/LoginPage";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import { AUTO_PAGE_REFRESH_MS } from "./config/timing";
 import { LagoonsProvider } from "./lagoons/LagoonsContext";
-
-const AUTO_REFRESH_MS = 30 * 60 * 1000; // 30 minutos
 
 function App() {
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
+      // Recarga la URL actual para mantener al usuario en el mismo link.
       window.location.reload();
-    }, AUTO_REFRESH_MS);
+    }, AUTO_PAGE_REFRESH_MS);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
