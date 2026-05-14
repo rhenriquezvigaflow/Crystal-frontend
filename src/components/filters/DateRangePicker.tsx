@@ -49,7 +49,7 @@ export default function DateRangePicker({
             color: "#475569",
           }}
         >
-          Desde
+          From
         </span>
 
         <input
@@ -76,7 +76,7 @@ export default function DateRangePicker({
             color: "#475569",
           }}
         >
-          Hasta
+          To
         </span>
 
         <input

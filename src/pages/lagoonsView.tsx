@@ -5,6 +5,7 @@ import TopBar from "../components/TopBar";
 import Sidebar from "../components/Sidebar";
 import LagoonContainer from "../components/lagoonContainer";
 import { useAuth } from "../auth/AuthContext";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import { useLagoons } from "../lagoons/LagoonsContext";
 
 const AlarmManagerModal = lazy(() => import("../components/AlarmManagerModal"));
@@ -60,7 +61,10 @@ export default function LagoonsView() {
   const { logout } = useAuth();
   const { lagoonId: rawLagoonId } = useParams<{ lagoonId: string }>();
   const lagoonId = useMemo(
-    () => (rawLagoonId ? safeDecode(rawLagoonId) : null),
+    () => {
+      if (!rawLagoonId) return null;
+      return normalizeLagoonId(safeDecode(rawLagoonId));
+    },
     [rawLagoonId],
   );
   const { lagoons, loading, error, errorStatus, getLagoonById } = useLagoons();
@@ -76,6 +80,15 @@ export default function LagoonsView() {
   useEffect(() => {
     setIsMobileNavOpen(false);
   }, [lagoonId]);
+
+  useEffect(() => {
+    if (!rawLagoonId || !lagoonId) return;
+
+    const decodedLagoonId = safeDecode(rawLagoonId);
+    if (decodedLagoonId === lagoonId) return;
+
+    navigate(`/lagoon/${encodeURIComponent(lagoonId)}`, { replace: true });
+  }, [lagoonId, navigate, rawLagoonId]);
 
   useEffect(() => {
     setIsAlarmModalOpen(false);
@@ -117,11 +130,11 @@ export default function LagoonsView() {
   };
 
   if (loading && !lagoons.length) {
-    return <FullscreenMessage message="Cargando lagunas..." />;
+    return <FullscreenMessage message="Loading lagoons..." />;
   }
 
   if (errorStatus === 403) {
-    return <FullscreenMessage message="Acceso no permitido" />;
+    return <FullscreenMessage message="Access not allowed" />;
   }
 
   if (error) {
@@ -131,15 +144,15 @@ export default function LagoonsView() {
   if (!lagoons.length) {
     return (
       <FullscreenMessage
-        message="No hay lagunas disponibles para tu usuario."
-        actionLabel="Cerrar sesion"
+        message="No lagoons are available for your user."
+        actionLabel="Log out"
         onAction={handleLogout}
       />
     );
   }
 
   if (!selectedLagoon) {
-    return <FullscreenMessage message="Acceso no permitido" />;
+    return <FullscreenMessage message="Access not allowed" />;
   }
 
   const handleLagoonChange = (nextLagoonId: string) => {
@@ -184,7 +197,7 @@ export default function LagoonsView() {
         <div className="fixed inset-0 z-[120] lg:hidden">
           <button
             type="button"
-            aria-label="Cerrar menu lateral"
+            aria-label="Close side menu"
             className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
             onClick={() => setIsMobileNavOpen(false)}
           />
@@ -194,7 +207,7 @@ export default function LagoonsView() {
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(false)}
-                aria-label="Cerrar menu"
+                aria-label="Close menu"
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/70 bg-white/90 text-slate-700 shadow-sm"
               >
                 <CloseIcon />

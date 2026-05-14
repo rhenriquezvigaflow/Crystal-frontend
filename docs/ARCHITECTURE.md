@@ -2,18 +2,18 @@
 
 Documento alineado al codigo actual del frontend.
 
-## Panorama general
+## Panorama General
 
 Capas principales:
 
 1. `pages` para shell y routing.
 2. `auth` y `lagoons` para sesion y alcance RBAC.
 3. `api` para REST.
-4. `hooks` para realtime, historico, layouts y alarmas.
-5. `scada` para resolver escenas, tags, labels y estado SVG.
+4. `hooks` para realtime, historico, escenas y alarmas.
+5. `scada` para resolver escenas locales, tags, labels y estado SVG.
 6. `components` y `containers` para render final.
 
-## Arranque de la aplicacion
+## Arranque
 
 ```text
 main.tsx
@@ -27,10 +27,10 @@ main.tsx
 Notas:
 
 - `App.tsx` hace auto-refresh de pagina cada 1 hora.
-- `DashboardRedirect` redirige a la laguna permitida.
+- `DashboardRedirect` redirige a la primera laguna permitida.
 - `ProtectedRoute` exige sesion valida.
 
-## Networking y entorno
+## Networking y Entorno
 
 Archivos:
 
@@ -39,17 +39,15 @@ Archivos:
 - `src/api/httpClient.ts`
 - `vite.config.ts`
 
-Comportamiento actual:
+Comportamiento:
 
-- REST usa `VITE_API_PREFIX` con default `/api`
-- por defecto el frontend trabaja same-origin
-- si `VITE_USE_DIRECT_BACKEND=true`, puede apuntar a un origin directo
-- el WebSocket se arma desde `VITE_API_WS`, `VITE_SCADA_WS_URL`, `VITE_BACKEND_WS_PORT` o browser origin
-- en dev hay dos modos:
-  - `iis`: REST por `/api`, WS same-host, HMR opcional
-  - `vite`: REST por proxy `/api` y WS proxy `/ws`
+- REST usa `VITE_API_PREFIX` con default `/api`.
+- Por defecto el frontend trabaja same-origin.
+- Si `VITE_USE_DIRECT_BACKEND=true`, puede apuntar a un origin directo.
+- El WebSocket se arma desde `VITE_API_WS`, `VITE_SCADA_WS_URL`, `VITE_BACKEND_WS_PORT` o browser origin.
+- En dev, Vite puede proxyear REST `/api` y WS `/ws`.
 
-## RBAC y lagunas
+## RBAC y Lagunas
 
 Archivos:
 
@@ -60,35 +58,36 @@ Archivos:
 
 Flujo:
 
-1. login obtiene JWT
-2. `LagoonsProvider` llama `GET /api/lagoons`
-3. el frontend normaliza lagunas y aplica filtro `can_view && enable`
-4. `can_edit` y `can_control` gobiernan modal de alarmas y visibilidad de controles
+1. Login obtiene JWT.
+2. `LagoonsProvider` llama `GET /api/lagoons`.
+3. El frontend normaliza lagunas y aplica `can_view && enable`.
+4. `can_edit` habilita guardado de alarmas.
+5. `can_control` controla visibilidad de controles de bombas.
 
-## Resolucion de escena SCADA
+## Resolucion de Escena SCADA
 
 Archivos:
 
 - `src/hooks/useScadaLayoutScene.ts`
-- `src/api/scadaLayoutsApi.ts`
-- `src/scada/layoutSceneResolver.ts`
-- `src/scada/layoutResolver.ts`
 - `src/scada/localSceneRegistry.ts`
+- `src/scada/lagoonSceneBundle.ts`
+- `src/scada/layoutResolver.ts`
+- `src/scada/scadaLayoutPosition.ts`
+- `src/assets/positions/*.json`
 
-Flujo:
+Flujo actual:
 
-1. `GET /api/lagoons/{lagoon_id}/mapping`
-2. `GET /api/layouts/{layout_id}`
-3. `resolveScadaElements()` mezcla layout y mapping
-4. `collector_tags` filtra tarjetas que no deben mostrarse
-5. si existe override local `src/scada/scene/lagoons/<lagoon>.scene.json`, ese layout local puede reemplazar el de backend
+1. `lagoonSceneBundle` descubre `src/assets/positions/*.json` con `import.meta.glob`.
+2. Registra cada escena por nombre de archivo y por `lagoon_id` embebido.
+3. `useScadaLayoutScene(lagoonId)` carga y cachea la escena.
+4. En dev, refresca el JSON local cada `DEV_SCENE_REFRESH_MS` si la pestana esta visible.
+5. La escena se normaliza a `ResolvedScadaScene`.
 
-Caches en memoria:
+Formatos soportados:
 
-- `layoutCache`
-- `mappingCache`
-- `sceneCache`
-- `inFlightRequests`
+- `kpis[]`, `pumps[]`, `valves[]`, `plc_status`, `labels[]`.
+- `elements[]` con `type`.
+- `mapping_json` embebido para sobrescribir `tag`, `label`, `svg_target`, `unit`, `icon_type`, `panel` o `always_visible`.
 
 Layouts soportados en `svgRegistry`:
 
@@ -118,7 +117,7 @@ Autenticacion:
    - `crystal-scada.v1`
    - `bearer.<jwt>`
 
-Estado expuesto por el hook:
+Estado expuesto:
 
 - `tags`
 - `pumpLastOn`
@@ -137,9 +136,9 @@ Salud:
 - `degraded`
 - `disconnected`
 
-`degraded` aparece cuando pasan 30s sin mensaje nuevo.
+`degraded` aparece cuando pasan 30 segundos sin mensaje nuevo.
 
-## Contenedor principal de laguna
+## Contenedor Principal
 
 Archivo:
 
@@ -147,14 +146,12 @@ Archivo:
 
 Responsabilidades:
 
-- pedir escena
-- abrir WebSocket
-- esperar hasta 7s por realtime antes de mostrar `--`
-- renderizar banner de salud
-- componer:
-  - `ScadaMapPanel`
-  - `PumpStatusSection`
-  - `HistorySection`
+- pedir escena local;
+- abrir WebSocket;
+- esperar hasta 7 segundos por realtime antes de mostrar `--`;
+- renderizar banner de salud;
+- resolver SVG desde `svgRegistry`;
+- componer `ScadaMapPanel`, `PumpStatusKpi` e historico.
 
 ## Historico
 
@@ -183,7 +180,7 @@ Filtro de tags no ploteables:
 - contiene `_BOOL`
 - contiene `RETRO`
 
-## Bombas y eventos
+## Bombas y Eventos
 
 Archivos:
 
@@ -197,7 +194,7 @@ Endpoint:
 
 Fallback:
 
-- si falla el endpoint, la UI puede usar `pump_last_on` del WebSocket
+- si falla el endpoint, la UI puede usar `pump_last_on` del WebSocket.
 
 ## Alarmas PT/FIT
 
@@ -207,26 +204,23 @@ Archivos:
 - `src/hooks/useAlarmThresholds.ts`
 - `src/services/alarm-thresholds.api.ts`
 
-Endpoint:
+Endpoints:
 
 - `GET /api/alarms/{lagoon_id}/thresholds/pt-fit/view`
 - `PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`
 
 Comportamiento:
 
-- mezcla filas configuradas de backend con tags PT/FIT detectados por realtime
-- valida min/max, severity y prefijo PT/FIT
-- puede trabajar en modo solo lectura si `can_edit=false`
+- mezcla filas configuradas del backend con tags PT/FIT detectados por realtime;
+- valida min/max, severity y prefijo PT/FIT;
+- puede trabajar en modo solo lectura si `can_edit=false`.
 
-## Labels y estados SVG
+## Labels y Estados SVG
 
-Archivos:
+Labels:
 
-- `src/scada/labels/layouts/*.base.json`
-- `src/scada/labels/lagoons/*.json`
-- `src/scada/equipment-state/layouts/*.equipment.json`
-- `src/containers/ScadaTextOverlay.tsx`
-- `src/containers/ScadaEquipmentStateOverlay.tsx`
+- vienen desde `labels[]` dentro de cada JSON en `src/assets/positions`.
+- se renderizan con `ScadaTextOverlay` y `ScadaSvgEquipmentLabelsOverlay`.
 
 Estados discretos:
 
@@ -236,8 +230,11 @@ Estados discretos:
 - `3` amarillo
 - sin dato gris
 
-## Riesgos visibles
+La aplicacion de color se hace en `src/scada/svgEquipmentState.ts` sobre cada `svg_target` definido en la escena.
 
-- el bundle sigue creciendo y conviene vigilar `manualChunks`
-- los SVG grandes son sensibles a cambios de IDs
-- la escena puede divergir si backend y override local representan layouts distintos
+## Riesgos Visibles
+
+- Los SVG grandes son sensibles a cambios de IDs.
+- Si una laguna no tiene JSON en `src/assets/positions`, no habra escena SCADA.
+- Si `svg_component` no existe en `svgRegistry`, la vista no puede renderizar el plano.
+- El bundle sigue creciendo y conviene vigilar `manualChunks`.

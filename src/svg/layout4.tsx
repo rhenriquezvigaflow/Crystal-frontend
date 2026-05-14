@@ -1673,7 +1673,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.71287586}
       inkscape:transform-center-y={0.15686443}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6"
@@ -1693,7 +1692,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.16299178}
       inkscape:transform-center-y={0.71474151}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_185-8-1-9"
@@ -1750,7 +1748,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <g id="layer1-2" transform="matrix(1.0022233,0,0,1,297.7769,198.02758)">
       <path
@@ -2099,7 +2096,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.68432527}
       inkscape:transform-center-y={0.13463644}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       style={{
@@ -2136,7 +2132,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-5-8-0"
@@ -2156,7 +2151,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-5-8-0-0"
@@ -2176,7 +2170,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       style={{
@@ -2268,7 +2261,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-5-8-0-4-3"
@@ -2288,7 +2280,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <g
       id="Group_32-5-67-9-8-4"
@@ -2401,7 +2392,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-7"
@@ -2421,7 +2411,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       style={{
@@ -2504,7 +2493,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.70083929}
       inkscape:transform-center-y={-0.1743453}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-5-8-0-0-1"
@@ -2524,7 +2512,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={-0.15189813}
       inkscape:transform-center-y={-0.70621008}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-77"
@@ -2544,7 +2531,6 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.70083929}
       inkscape:transform-center-y={-0.1743453}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <rect
       style={{
@@ -2872,3 +2858,4 @@ const SVGComponent = (props) => (
   </svg>
 );
 export default SVGComponent;
+

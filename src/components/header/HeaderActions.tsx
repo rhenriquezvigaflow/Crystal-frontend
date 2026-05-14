@@ -71,26 +71,26 @@ export default function HeaderActions({
     <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
       {!compact ? (
         <span className="hidden text-xs font-medium text-sky-800/75 xl:inline">
-          {canEdit ? "Editor" : "Solo lectura"}
+          {canEdit ? "Edit mode" : "Read only"}
         </span>
       ) : null}
 
       <button
         type="button"
         onClick={onOpenAlarms}
-        aria-label="Alarmas"
-        title="Alarmas"
+        aria-label="Alarms"
+        title="Alarms"
         className={[BUTTON_BASE, textButtonClass, "border-sky-100 text-sky-800 hover:border-sky-200 hover:bg-sky-50"].join(" ")}
       >
         <BellIcon />
-        {!compact ? <span className="text-xs font-semibold tracking-wide">Alarmas</span> : null}
+        {!compact ? <span className="text-xs font-semibold tracking-wide">Alarms</span> : null}
       </button>
 
       <button
         type="button"
         onClick={onLogout}
-        aria-label="Cerrar sesion"
-        title="Cerrar sesion"
+        aria-label="Log out"
+        title="Log out"
         className={[
           BUTTON_BASE,
           textButtonClass,
@@ -99,15 +99,15 @@ export default function HeaderActions({
       >
         <LogoutIcon />
         {!compact ? (
-          <span className="text-xs font-semibold tracking-wide">Cerrar sesion</span>
+          <span className="text-xs font-semibold tracking-wide">Log out</span>
         ) : null}
       </button>
 
       {canEdit ? (
         <button
           type="button"
-          aria-label="Configuracion"
-          title="Configuracion"
+          aria-label="Settings"
+          title="Settings"
           className={[BUTTON_BASE, "w-11 border-sky-100 text-sky-800 hover:border-sky-200 hover:bg-sky-50"].join(" ")}
         >
           <GearIcon />

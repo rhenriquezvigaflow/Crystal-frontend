@@ -36,10 +36,10 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
         if (cancelled) return;
         setEvents([]);
         if (err instanceof ApiError && err.status === 403) {
-          setError("Acceso no permitido");
+          setError("Access not allowed");
           return;
         }
-        setError("Sin datos históricos");
+        setError("No historical data");
       })
       .finally(() => {
         if (cancelled) return;

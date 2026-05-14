@@ -34,14 +34,14 @@ export default function Sidebar({
           Lagoons
         </div>
         <div className="mt-2 text-xs text-sky-900/70">
-          Monitoreo visual de lagunas y estaciones SCADA.
+          Visual monitoring for lagoons and SCADA stations.
         </div>
       </div>
 
       <nav className="relative space-y-2">
         {!visibleLagoons.length && (
           <div className="rounded-[14px] border border-slate-200 bg-white/75 px-4 py-3 text-sm text-slate-600">
-            Sin lagunas disponibles.
+            No lagoons available.
           </div>
         )}
 

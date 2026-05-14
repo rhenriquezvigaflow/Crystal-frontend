@@ -2,15 +2,17 @@
 
 Frontend SCADA para monitoreo de lagunas Crystal con React, Vite y TypeScript.
 
-## Objetivo
+## Estado Actual
 
-Mostrar en una sola vista:
-
-- mapa SCADA backend-driven
-- estado realtime por WebSocket
-- KPIs de bombas y equipos
-- historico por rango
-- configuracion de alarmas PT/FIT
+- Autenticacion por JWT contra `POST /api/auth/login`.
+- Selector de lagunas desde `GET /api/lagoons`, filtrado por `enable` y `can_view`.
+- Vista SCADA por laguna en `/lagoon/:lagoonId`.
+- Escenas SCADA locales desde `src/assets/positions/*.json`.
+- SVGs React registrados en `src/scada/svgRegistry.ts`.
+- Realtime por `WS /ws/scada/{lagoon_id}`.
+- Historico por `GET /api/scada/{lagoon_id}/history`.
+- Eventos de bombas por `GET /api/scada/{lagoon_id}/pump-events/last-3`.
+- Configuracion de umbrales PT/FIT por `GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`.
 
 ## Stack
 
@@ -22,7 +24,7 @@ Mostrar en una sola vista:
 - ApexCharts
 - Axios
 
-## Quick start
+## Quick Start
 
 ```powershell
 npm install
@@ -35,27 +37,13 @@ Build:
 npm run build
 ```
 
-## Rutas de la app
+## Rutas de la App
 
 - `/login`
 - `/dashboard`
 - `/lagoon/:lagoonId`
 
-## Como se conecta al backend
-
-REST:
-
-- usa `src/api/httpClient.ts`
-- por defecto consume rutas browser-relative bajo `VITE_API_PREFIX=/api`
-- el proxy de Vite o IIS reescribe `/api/*` al backend real
-
-WebSocket:
-
-- usa `src/hooks/useScadaRealtime.ts`
-- intenta primero autenticacion legacy por query string
-- si no recibe snapshot, hace fallback a subprotocol `crystal-scada.v1`
-
-## Variables de entorno relevantes
+## Variables de Entorno
 
 - `VITE_API_HTTP`
 - `VITE_API_WS`
@@ -71,27 +59,33 @@ WebSocket:
 - `VITE_DEV_BACKEND_HTTP_TARGET`
 - `VITE_DEV_BACKEND_WS_TARGET`
 
-## Estructura importante
+Por defecto REST usa rutas browser-relative bajo `/api`. Vite o IIS deben reenviar `/api/*` al backend real.
 
+## Estructura Importante
+
+- `src/App.tsx`: routing, providers y refresh horario.
 - `src/pages/lagoonsView.tsx`: shell principal.
-- `src/components/lagoonContainer.tsx`: compone SCADA, historico y bombas.
-- `src/hooks/useScadaRealtime.ts`: socket y salud de realtime.
-- `src/hooks/useScadaLayoutScene.ts`: layout + mapping + cache.
+- `src/components/lagoonContainer.tsx`: compone mapa SCADA, bombas e historico.
+- `src/assets/positions/*.json`: escenas por laguna, fuente actual de posiciones, tags, labels y `svg_target`.
+- `src/scada/lagoonSceneBundle.ts`: carga y normaliza escenas locales.
+- `src/hooks/useScadaLayoutScene.ts`: cache y refresh de escenas.
+- `src/hooks/useScadaRealtime.ts`: WebSocket, snapshot, reconexion y salud realtime.
 - `src/hooks/useHistory.ts`: historico.
-- `src/hooks/useAlarmThresholds.ts`: modal PT/FIT.
-- `src/api/*.ts`: clientes HTTP.
-- `src/scada/*`: resolucion de layouts, aliases, labels y estados SVG.
+- `src/hooks/useAlarmThresholds.ts`: umbrales PT/FIT.
+- `src/scada/svgRegistry.ts`: layouts SVG soportados.
 - `src/svg/*`: SVG React por layout.
 
-## Flujo SCADA actual
+## Flujo SCADA Actual
 
 ```text
 Browser
   -> /lagoon/:lagoonId
-  -> LagoonsProvider -> GET /api/lagoons
+  -> LagoonsProvider
+       -> GET /api/lagoons
   -> useScadaLayoutScene
-       -> GET /api/lagoons/{lagoon_id}/mapping
-       -> GET /api/layouts/{layout_id}
+       -> src/assets/positions/{lagoon_id}.json
+  -> svgRegistry
+       -> src/svg/layout*.tsx
   -> useScadaRealtime
        -> WS /ws/scada/{lagoon_id}
   -> useHistory
@@ -102,7 +96,22 @@ Browser
        -> GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit
 ```
 
-## Documentacion relacionada
+## Lagunas con Escena Local
+
+Las escenas se descubren automaticamente con `import.meta.glob("../assets/positions/*.json")`. El nombre del archivo o el campo `lagoon_id` embebido registran la laguna.
+
+Ejemplos actuales:
+
+- `aquavista`
+- `aquaterra`
+- `ary`
+- `ava_lagoons`
+- `costa_del_lago`
+- `laguna_santa_rosalia`
+- `central_hub_dubai`
+- `kirah`
+
+## Documentacion Relacionada
 
 - `docs/ARCHITECTURE.md`
 - `docs/API_CONTRACTS.md`

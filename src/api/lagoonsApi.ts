@@ -1,4 +1,5 @@
 import { normalizeScadaLayoutName, type ScadaLayoutId } from "../scada/layoutResolver";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import { httpClient } from "./httpClient";
 import {
   hasWritePrivilegesForProduct,
@@ -79,7 +80,7 @@ function normalizeLagoon(
   raw: RawLagoon,
   scope: UserScope,
 ): LagoonAccess | null {
-  const lagoonId = asCleanString(raw.lagoon_id ?? raw.id);
+  const lagoonId = normalizeLagoonId(asCleanString(raw.lagoon_id ?? raw.id));
   const lagoonName = asCleanString(raw.lagoon_name ?? raw.name);
   if (!lagoonId || !lagoonName) return null;
   const apiLayout = normalizeScadaLayoutName(

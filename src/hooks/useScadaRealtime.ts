@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { API_WS } from "../config/api";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import {
   REALTIME_AGE_TICK_MS,
   REALTIME_INITIAL_RECONNECT_DELAY_MS,
@@ -42,6 +43,7 @@ function createRealtimeSocket(
 
 export function useScadaRealtime(lagoonId: string, accessToken?: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
 
   const [tags, setTags] = useState<Record<string, unknown>>({});
   const [pumpLastOn, setPumpLastOn] = useState<Record<string, unknown>>({});
@@ -117,7 +119,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
     setLastDataAgeSec(null);
     setConnectionState("idle");
 
-    if (!lagoonId || lagoonId === "undefined" || !accessToken) {
+    if (!normalizedLagoonId || normalizedLagoonId === "undefined" || !accessToken) {
       return;
     }
 
@@ -148,7 +150,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
       setConnectionState(reconnectCount > 0 ? "reconnecting" : "connecting");
       setConnectionError(null);
 
-      const ws = createRealtimeSocket(lagoonId, accessToken, mode);
+      const ws = createRealtimeSocket(normalizedLagoonId, accessToken, mode);
       let receivedSnapshotOnSocket = false;
       wsRef.current = ws;
 
@@ -217,7 +219,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
           hasEverReceivedSnapshot ? "reconnecting" : "disconnected",
         );
         setConnectionError(
-          closeReason || "Tiempo real no disponible. Reintentando conexion.",
+          closeReason || "Real-time data unavailable. Reconnecting.",
         );
         scheduleReconnect();
       };
@@ -234,7 +236,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
         wsRef.current = null;
       }
     };
-  }, [lagoonId, accessToken]);
+  }, [normalizedLagoonId, accessToken]);
 
   const isRealtimeStale =
     typeof lastDataAgeSec === "number" &&

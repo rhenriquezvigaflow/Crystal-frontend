@@ -1,4 +1,5 @@
 import { httpClient } from "./httpClient";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 
 export interface PumpEvent {
   lagoon_id: string;
@@ -36,7 +37,7 @@ function getReportFilename(disposition: unknown, fallback: string): string {
 export async function fetchPumpEventsLast3(
   lagoonId: string,
 ): Promise<PumpEventsLast3Response> {
-  const normalizedLagoonId = lagoonId.trim();
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
   if (!normalizedLagoonId) {
     return {
       lagoon_id: lagoonId,
@@ -58,7 +59,7 @@ export async function fetchPumpEventsLast3(
 export async function downloadPumpEventsReport(
   lagoonId: string,
 ): Promise<PumpEventsReportDownload> {
-  const normalizedLagoonId = lagoonId.trim();
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
   const fallbackFilename = `reporte_bombas_${normalizedLagoonId || "laguna"}.xlsx`;
 
   if (!normalizedLagoonId) {

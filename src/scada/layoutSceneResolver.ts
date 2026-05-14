@@ -129,13 +129,13 @@ export function getDiscreteStateColor(value: unknown): string {
 
   switch (state) {
     case 0:
-      return "#ef4444";
+      return "#ff0000";
     case 1:
-      return "#22c55e";
+      return "#00ff00";
     case 2:
-      return "#3b82f6";
+      return "#0000ff";
     case 3:
-      return "#f59e0b";
+      return "#ffff00";
     default:
       return "#94a3b8";
   }

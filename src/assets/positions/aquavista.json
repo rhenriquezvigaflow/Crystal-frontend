@@ -90,57 +90,67 @@
       "tag": "P002_STS_SCADA",
       "label": "Bomba Retrolavado",
       "svg_target": "BOMBA-RETROLAVADO",
-      "panel": "pump-status"
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P006_STS_SCADA",
       "label": "Bomba Filtracion",
       "svg_target": "BOMBA-FILTRACION",
-      "panel": "pump-status"
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P007_STS_SCADA",
       "label": "Bomba Retorno Clarificado",
       "svg_target": "BOMBA-RETORNO-CLARIFICADO",
-      "panel": "pump-status"
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P015_STS_SCADA",
       "label": "P-015",
-      "svg_target": "P-015"
+      "svg_target": "P-015",
+      "type": "pump"
     },
     {
       "tag": "P016_STS_SCADA",
       "label": "P-016",
-      "svg_target": "P-016"
+      "svg_target": "P-016",
+      "type": "pump"
     },
     {
       "tag": "RETRO_SCADA",
       "label": "Retrolavado Filtros",
       "panel": "pump-status",
-      "always_visible": true
+      "always_visible": true,
+      "type": "pump"
     }
   ],
   "valves": [
     {
       "tag": "VE288_ST",
       "label": "VE-288",
-      "svg_target": "VE-288"
+      "svg_target": "VE-288",
+      "type": "valve"
     },
     {
       "tag": "VE322_ST",
       "label": "VE-322",
-      "svg_target": "VE-322"
+      "svg_target": "VE-322",
+      "type": "valve"
     },
     {
       "tag": "VE320_ST",
       "label": "VE-320",
-      "svg_target": "VE-320"
+      "svg_target": "VE-320",
+      "type": "valve"
     },
     {
       "tag": "VE318_ST",
       "label": "VE-318",
-      "svg_target": "VE-318"
+      "svg_target": "VE-318",
+      "type": "valve"
     }
   ],
   "labels": [
@@ -239,6 +249,80 @@
     "position": {
       "top": "12%",
       "left": "14%"
+    }
+  },
+  "render_rules": {
+    "tank": {
+      "mode": "binary_level",
+      "states": {
+        "0": {
+          "level": 0,
+          "color": "#9ad9e8"
+        },
+        "1": {
+          "level": 100,
+          "color": "#0077b6"
+        }
+      },
+      "animation": {
+        "type": "smooth",
+        "duration_ms": 600
+      }
+    },
+    "valve": {
+      "mode": "pulse",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      },
+      "animation": {
+        "pulse": true,
+        "duration_ms": 800
+      }
+    },
+    "pump": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
+    },
+    "chemical": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
     }
   }
 }

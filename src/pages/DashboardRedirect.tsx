@@ -39,11 +39,11 @@ export default function DashboardRedirect() {
   };
 
   if (loading) {
-    return <FullscreenMessage message="Cargando lagunas..." />;
+    return <FullscreenMessage message="Loading lagoons..." />;
   }
 
   if (errorStatus === 403) {
-    return <FullscreenMessage message="Acceso no permitido" />;
+    return <FullscreenMessage message="Access not allowed" />;
   }
 
   if (error) {
@@ -53,8 +53,8 @@ export default function DashboardRedirect() {
   if (!lagoons.length) {
     return (
       <FullscreenMessage
-        message="No hay lagunas disponibles para tu usuario."
-        actionLabel="Cerrar sesión"
+        message="No lagoons are available for your user."
+        actionLabel="Log out"
         onAction={handleLogout}
       />
     );

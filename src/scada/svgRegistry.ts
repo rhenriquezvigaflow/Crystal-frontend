@@ -1,10 +1,6 @@
 import type { ComponentType, SVGProps } from "react";
 
-import Layout1 from "../svg/layout1";
-import Layout2 from "../svg/layout2";
-import Layout3 from "../svg/layout3";
-import Layout4 from "../svg/layout4";
-import type { ScadaLayoutId } from "./layoutResolver";
+import { normalizeScadaLayoutName, type ScadaLayoutId } from "./layoutResolver";
 
 export type ScadaSvgProps = SVGProps<SVGSVGElement>;
 
@@ -13,21 +9,61 @@ export interface ScadaSvgRegistryEntry {
   aspectRatio: string;
 }
 
-export const svgRegistry: Record<ScadaLayoutId, ScadaSvgRegistryEntry> = {
-  layout1: {
-    component: Layout1,
-    aspectRatio: "1393.0437 / 1150",
-  },
-  layout2: {
-    component: Layout2,
-    aspectRatio: "1400 / 1150",
-  },
-  layout3: {
-    component: Layout3,
-    aspectRatio: "1393.0437 / 1150",
-  },
-  layout4: {
-    component: Layout4,
-    aspectRatio: "1393.0437 / 1150",
-  },
+const BUILTIN_ASPECT_RATIOS: Record<ScadaLayoutId, string> = {
+  layout1: "1393.0437 / 1150",
+  layout2: "1400 / 1150",
+  layout3: "1393.0437 / 1150",
+  layout4: "1393.0437 / 1150",
 };
+
+const rawSvgModules = import.meta.glob("../svg/*.tsx", {
+  eager: true,
+  import: "default",
+}) as Record<string, ComponentType<ScadaSvgProps>>;
+
+function getFileStem(modulePath: string): string {
+  const fileName = modulePath.split("/").pop() ?? "";
+  return fileName.replace(/\.(tsx|jsx)$/i, "").trim().toLowerCase();
+}
+
+function normalizeSvgComponentToken(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\.(tsx|jsx|svg)$/i, "")
+    .replace(/[\s-]+/g, "_");
+}
+
+function looksLikeBuiltinLayoutAlias(value: string): boolean {
+  return /^(layout[1-4]|layout_[1-4]|layout_small|small)$/.test(value);
+}
+
+export const svgRegistry: Record<string, ScadaSvgRegistryEntry> = Object.fromEntries(
+  Object.entries(rawSvgModules).map(([modulePath, component]) => {
+    const id = getFileStem(modulePath);
+
+    return [
+      id,
+      {
+        component,
+        aspectRatio: BUILTIN_ASPECT_RATIOS[id as ScadaLayoutId] ?? "1400 / 1150",
+      } satisfies ScadaSvgRegistryEntry,
+    ];
+  }),
+);
+
+export function resolveScadaSvgRegistryEntry(
+  componentId: string | null | undefined,
+): ScadaSvgRegistryEntry | null {
+  const normalizedComponentId = normalizeSvgComponentToken(componentId);
+  if (normalizedComponentId && svgRegistry[normalizedComponentId]) {
+    return svgRegistry[normalizedComponentId];
+  }
+
+  if (!looksLikeBuiltinLayoutAlias(normalizedComponentId)) {
+    return null;
+  }
+
+  const layoutKey = normalizeScadaLayoutName(componentId);
+  return svgRegistry[layoutKey] ?? null;
+}

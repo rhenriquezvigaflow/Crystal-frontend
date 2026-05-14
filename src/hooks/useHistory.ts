@@ -35,10 +35,10 @@ export function useHistory({ lagoonId, startDate, endDate, view }: Props) {
       })
       .catch((err: unknown) => {
         if (err instanceof ApiError && err.status === 403) {
-          setError("Acceso no permitido");
+          setError("Access not allowed");
           return;
         }
-        setError("Error cargando histórico");
+        setError("Error loading history");
       })
       .finally(() => setLoading(false));
   }, [lagoonId, startDate, endDate, view]);

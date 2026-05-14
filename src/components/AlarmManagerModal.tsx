@@ -74,7 +74,7 @@ export default function AlarmManagerModal({
   const requestClose = useCallback(() => {
     if (manager.hasUnsavedChanges) {
       const shouldClose = window.confirm(
-        "Hay cambios sin guardar. Deseas cerrar el gestor de alarmas?",
+        "There are unsaved changes. Do you want to close the alarm manager?",
       );
       if (!shouldClose) return;
     }
@@ -105,7 +105,7 @@ export default function AlarmManagerModal({
     if (manager.selectedTagId === tagId) return;
     if (manager.hasUnsavedChanges) {
       const shouldContinue = window.confirm(
-        "Tienes cambios sin guardar. Deseas descartarlos para abrir otra alarma?",
+        "You have unsaved changes. Do you want to discard them and open another alarm?",
       );
       if (!shouldContinue) return;
     }
@@ -124,18 +124,18 @@ export default function AlarmManagerModal({
       <section
         role="dialog"
         aria-modal="true"
-        aria-label="Gestion de alarmas"
+        aria-label="Alarm manager"
         className="relative max-h-[92vh] w-full max-w-[960px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_34px_80px_-38px_rgba(15,23,42,0.55)]"
       >
         <header className="flex items-center justify-between border-b border-slate-200 px-4 py-3 sm:px-5">
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 text-base font-semibold text-slate-900 sm:text-lg">
               <AlarmIcon />
-              Gestion de alarmas
+              Alarm manager
             </h2>
             <p className="mt-1 text-xs text-slate-600">
-              Laguna: <span className="font-semibold">{lagoonId}</span>. Fase actual:
-              umbrales PT/FIT.
+              Lagoon: <span className="font-semibold">{lagoonId}</span>. Current phase:
+              PT/FIT thresholds.
             </p>
           </div>
 
@@ -143,7 +143,7 @@ export default function AlarmManagerModal({
             type="button"
             onClick={requestClose}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
-            aria-label="Cerrar gestor de alarmas"
+            aria-label="Close alarm manager"
           >
             <CloseIcon />
           </button>
@@ -155,7 +155,7 @@ export default function AlarmManagerModal({
               type="search"
               value={manager.searchTerm}
               onChange={(event) => manager.setSearchTerm(event.target.value)}
-              placeholder="Buscar por tag_id"
+              placeholder="Search by tag_id"
               className="h-10 min-w-[240px] flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100"
             />
 
@@ -175,20 +175,20 @@ export default function AlarmManagerModal({
                   }}
                   className="mt-2 inline-flex h-8 items-center rounded-md border border-rose-300 bg-white px-3 text-xs font-semibold text-rose-700 hover:bg-rose-100"
                 >
-                  Reintentar
+                  Retry
                 </button>
               </div>
             )}
 
             {!manager.loading && !manager.error && !hasAnyRows && (
               <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
-                No hay alarmas configuradas ni candidatos PT/FIT para esta laguna.
+                There are no configured alarms or PT/FIT candidates for this lagoon.
               </div>
             )}
 
             {!manager.loading && !manager.error && hasAnyRows && manager.filteredRows.length === 0 && (
               <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
-                No hay resultados para el filtro actual.
+                There are no results for the current filter.
               </div>
             )}
 
@@ -199,8 +199,8 @@ export default function AlarmManagerModal({
                   <span>Min</span>
                   <span>Max</span>
                   <span>Severity</span>
-                  <span>Activa</span>
-                  <span className="text-right">Guardar</span>
+                  <span>Enabled</span>
+                  <span className="text-right">Save</span>
                 </div>
 
                 {manager.filteredRows.map((row) => {
@@ -367,7 +367,7 @@ export default function AlarmManagerModal({
                             ].join(" ")}
                           >
                             <span className="sr-only">
-                              {row.enabled ? "Desactivar alarma" : "Activar alarma"}
+                              {row.enabled ? "Disable alarm" : "Enable alarm"}
                             </span>
                             <span
                               aria-hidden="true"
@@ -410,7 +410,7 @@ export default function AlarmManagerModal({
                           disabled={manager.saving || !canEdit}
                           className="inline-flex h-9 items-center justify-center rounded-md bg-sky-600 px-3 text-xs font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-sky-300 sm:justify-self-end"
                         >
-                          {isSavingTag ? "Guardando..." : "Guardar"}
+                          {isSavingTag ? "Saving..." : "Save"}
                         </button>
                       </div>
 
@@ -437,7 +437,7 @@ export default function AlarmManagerModal({
                 type="button"
                 onClick={manager.dismissToast}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-xs font-semibold"
-                aria-label="Cerrar toast"
+                aria-label="Close toast"
               >
                 x
               </button>

@@ -20,7 +20,7 @@ const KPI_BACKGROUND = "#f4f6f8";
 const KPI_BORDER_COLOR = "#9aa3ad";
 
 function formatValue(value: unknown): string {
-  if (value === undefined || value === null || value === "") return "N/A";
+  if (value === undefined || value === null || value === "") return "- -";
   if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(2);
   if (typeof value === "boolean") return value ? "ON" : "OFF";
   return String(value);

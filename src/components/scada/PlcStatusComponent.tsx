@@ -26,7 +26,7 @@ function PlcStatusComponent({ status, localTime, timezone, position, scale = 1, 
   if (!overlayStyle) return null;
 
   const isOnline = status === "online";
-  const statusLabel = isOnline ? "En linea" : "Desconectado";
+  const statusLabel = isOnline ? "Online" : "Offline";
 
   if (effectiveScale < 0.75) {
     return (
@@ -72,7 +72,8 @@ function PlcStatusComponent({ status, localTime, timezone, position, scale = 1, 
           {localTime ?? "--:--:--"}
         </div>
         <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">{timezone ?? ""}</div>
-        <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">Hora Local</div>
+        <div className="mt-1 text-[clamp(9px,0.7vw,11px)] font-medium text-slate-500">Local time
+        </div>
       </div>
     </div>
   );

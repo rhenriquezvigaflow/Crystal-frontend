@@ -13,7 +13,7 @@ export default function HeaderBrand({ compact = false }: Props) {
             : "text-[10px] tracking-[0.28em]",
         ].join(" ")}
       >
-        Monitoreo en vivo
+        Live monitoring
       </div>
       <div
         className={[

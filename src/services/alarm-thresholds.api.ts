@@ -1,14 +1,11 @@
 import { ApiError } from "../auth/authApi";
 import { httpClient } from "../api/httpClient";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import type {
   ThresholdConfigRequest,
   ThresholdConfigResponse,
   ThresholdViewResponse,
 } from "../types/alarm-thresholds";
-
-function normalizeLagoonId(lagoonId: string): string {
-  return lagoonId.trim();
-}
 
 function encodeLagoonId(lagoonId: string): string {
   return encodeURIComponent(normalizeLagoonId(lagoonId));

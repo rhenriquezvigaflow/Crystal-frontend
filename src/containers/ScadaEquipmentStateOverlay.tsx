@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import type { RefObject } from "react";
 
 import {
@@ -7,18 +7,26 @@ import {
   getScadaEquipmentStateBindings,
 } from "../scada/layoutEquipmentState";
 import type { ScadaEquipmentStateBinding } from "../scada/layoutEquipmentState";
-import { applyScadaEquipmentState } from "../scada/svgEquipmentState";
-import type { RealtimeTagLookup, ResolvedScadaElement } from "../types/scada-layouts";
+import {
+  createScadaEquipmentRenderer,
+  type ScadaEquipmentRenderer,
+} from "../scada/svgEquipmentState";
+import type {
+  RealtimeTagLookup,
+  ResolvedScadaElement,
+  ScadaRenderRules,
+} from "../types/scada-layouts";
 
 interface Props {
   layoutId: string;
   elements: ResolvedScadaElement[];
+  renderRules: ScadaRenderRules;
   tagLookup: RealtimeTagLookup;
   stageRef: RefObject<HTMLDivElement | null>;
 }
 
 function getBindingKey(binding: ScadaEquipmentStateBinding): string {
-  return `${binding.role}:${binding.svg_target.trim().toUpperCase()}`;
+  return `${binding.type}:${binding.svg_target.trim().toUpperCase()}`;
 }
 
 function mergeBindings(
@@ -32,30 +40,74 @@ function mergeBindings(
   ];
 }
 
-function ScadaEquipmentStateOverlay({ layoutId, elements, tagLookup, stageRef }: Props) {
+function ScadaEquipmentStateOverlay({
+  layoutId,
+  elements,
+  renderRules,
+  tagLookup,
+  stageRef,
+}: Props) {
   const bindings = useMemo(() => {
     const explicitBindings = getScadaEquipmentStateBindings(layoutId);
     const elementBindings = getScadaEquipmentStateBindingsFromElements(elements);
     return mergeBindings(explicitBindings, elementBindings);
   }, [elements, layoutId]);
+  const rendererMapRef = useRef<Map<string, ScadaEquipmentRenderer>>(new Map());
 
   useEffect(() => {
-    if (!stageRef.current || !bindings.length) return;
+    const stage = stageRef.current;
+    if (!stage) return undefined;
 
-    const cleanups = bindings.map((binding) =>
-      applyScadaEquipmentState(
-        stageRef.current as HTMLDivElement,
-        binding.svg_target,
-        binding.role,
-        binding.label,
-        getScadaEquipmentBindingValue(binding, tagLookup),
-      ),
-    );
+    const nextKeys = new Set(bindings.map(getBindingKey));
+    const rendererMap = rendererMapRef.current;
 
-    return () => {
-      cleanups.forEach((cleanup) => cleanup());
-    };
-  }, [bindings, stageRef, tagLookup]);
+    Array.from(rendererMap.entries()).forEach(([key, renderer]) => {
+      if (nextKeys.has(key)) return;
+      renderer.dispose();
+      rendererMap.delete(key);
+    });
+
+    bindings.forEach((binding) => {
+      const key = getBindingKey(binding);
+      const existingRenderer = rendererMap.get(key);
+
+      if (!existingRenderer) {
+        const renderer = createScadaEquipmentRenderer(
+          stage,
+          binding,
+          renderRules[binding.type],
+        );
+
+        if (renderer) {
+          rendererMap.set(key, renderer);
+        }
+      }
+    });
+
+    return undefined;
+  }, [bindings, renderRules, stageRef]);
+
+  useEffect(() => {
+    const rendererMap = rendererMapRef.current;
+
+    bindings.forEach((binding) => {
+      const key = getBindingKey(binding);
+      const renderer = rendererMap.get(key);
+      if (!renderer) return;
+
+      renderer.update(getScadaEquipmentBindingValue(binding, tagLookup));
+    });
+  }, [bindings, tagLookup]);
+
+  useEffect(
+    () => () => {
+      rendererMapRef.current.forEach((renderer) => {
+        renderer.dispose();
+      });
+      rendererMapRef.current.clear();
+    },
+    [],
+  );
 
   return null;
 }

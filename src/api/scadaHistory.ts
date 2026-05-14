@@ -1,5 +1,6 @@
 import { httpClient } from "./httpClient";
 import type { HistoryResponse } from "../components/charts/HistoryChart/types";
+import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 
 export type HistoryView = "hourly" | "daily" | "weekly";
 
@@ -15,7 +16,7 @@ export const fetchHistory = async (
   params: HistoryParams,
 ): Promise<HistoryResponse> => {
   const { view = "hourly", tags, lagoon_id, ...rest } = params;
-  const normalizedLagoonId = lagoon_id.trim();
+  const normalizedLagoonId = normalizeLagoonId(lagoon_id);
 
   if (!normalizedLagoonId) {
     return {

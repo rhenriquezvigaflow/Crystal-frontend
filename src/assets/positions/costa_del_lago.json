@@ -54,16 +54,7 @@
       },
       "icon_type": "pressure"
     },
-    {
-      "tag": "FIT003_R_SCADA",
-      "label": "FIT003_R_SCADA",
-      "unit": "l/s",
-      "position": {
-        "top": "51.5%",
-        "left": "21.3%"
-      },
-      "icon_type": "flow"
-    },
+
     {
       "tag": "WM01_TOT_SCADA",
       "label": "WM01_TOT_SCADA",
@@ -88,66 +79,82 @@
   "pumps": [
     {
       "tag": "P002_STS_SCADA",
-      "label": "Bomba Retrolavado",
-      "svg_target": "BOMBA-RETROLAVADO",
-      "panel": "pump-status"
+      "label": "Backwash Pump",
+      "svg_target": "PUMP-03",
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P006_STS_SCADA",
-      "label": "Bomba Filtracion",
-      "svg_target": "BOMBA-FILTRACION",
-      "panel": "pump-status"
+      "label": "Filtration Pump",
+      "svg_target": "PUMP-02",
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P007_STS_SCADA",
-      "label": "Bomba Retorno Clarificado",
-      "svg_target": "BOMBA-RETORNO-CLARIFICADO",
-      "panel": "pump-status"
+      "label": "Clarified Return Pump",
+      "svg_target": "PUMP-04",
+      "panel": "pump-status",
+      "type": "pump"
+    },
+    {
+      "tag": "P017_STS_SCADA",
+      "label": "PUMP \n CL-FLO12",
+      "svg_target": "PUMP-01",
+      "type": "pump"
     },
     {
       "tag": "P015_STS_SCADA",
       "label": "P-015",
-      "svg_target": "P-015"
+      "svg_target": "PUMP-05",
+      "type": "pump"
     },
     {
       "tag": "P016_STS_SCADA",
       "label": "P-016",
-      "svg_target": "P-016"
+      "svg_target": "PUMP-06",
+      "type": "pump"
     },
     {
       "tag": "RETRO_SCADA",
-      "label": "Retrolavado Filtros",
+      "label": "Filter Backwash",
       "panel": "pump-status",
-      "always_visible": true
+      "always_visible": true,
+      "type": "pump"
     }
   ],
   "valves": [
     {
       "tag": "VE288_ST",
-      "label": "VE-288",
-      "svg_target": "VE-288"
+      "label": "VALVE01",
+      "svg_target": "VALVE01",
+      "type": "valve"
     },
     {
       "tag": "VE322_ST",
-      "label": "VE-322",
-      "svg_target": "VE-322"
+      "label": "VALVE02",
+      "svg_target": "VALVE02",
+      "type": "valve"
     },
     {
       "tag": "VE320_ST",
-      "label": "VE-320",
-      "svg_target": "VE-320"
+      "label": "VALVE03",
+      "svg_target": "VALVE03",
+      "type": "valve"
     },
     {
       "tag": "VE318_ST",
-      "label": "VE-318",
-      "svg_target": "VE-318"
+      "label": "VALVE04",
+      "svg_target": "VALVE04",
+      "type": "valve"
     }
   ],
   "labels": [
     {
       "id": "pump-title-bomba-retrolavado",
-      "text": "Bomba Retrolavado",
-      "source_svg_target": "BOMBA-RETROLAVADO",
+      "text": "BACKWASH \n PUMP",
+      "source_svg_target": "PUMP-03",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -156,8 +163,18 @@
     },
     {
       "id": "pump-title-bomba-filtracion",
-      "text": "Bomba Filtracion",
-      "source_svg_target": "BOMBA-FILTRACION",
+      "text": "FILTRATION \n PUMP",
+      "source_svg_target": "PUMP-02",
+      "source_element_type": "pump",
+      "position": {
+        "top": "81%",
+        "left": "22.6%"
+      }
+    },
+    {
+      "id": "pump-title-bomba-retorno-clarificado",
+      "text": "Clarified Return Pump",
+      "source_svg_target": "PUMP-04",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -165,19 +182,29 @@
       }
     },
     {
-      "id": "pump-title-bomba-retorno-clarificado",
-      "text": "Bomba Retorno Clarificado",
-      "source_svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "id": "pump-title-p-017",
+      "text": "PUMP \n CL-FLO12",
+      "source_svg_target": "PUMP-01",
       "source_element_type": "pump",
       "position": {
-        "top": "",
-        "left": ""
+        "top": "47.3%",
+        "left": "9.8%"
+      }
+    },
+    {
+      "id": "pump-title-p-020",
+      "text": "CL-FLO12",
+      "source_svg_target": "PUMP-01",
+      "source_element_type": "pump",
+      "position": {
+        "top": "48.5%",
+        "left": "3%"
       }
     },
     {
       "id": "pump-title-p-015",
       "text": "P-015",
-      "source_svg_target": "P-015",
+      "source_svg_target": "PUMP-05",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -187,7 +214,7 @@
     {
       "id": "pump-title-p-016",
       "text": "P-016",
-      "source_svg_target": "P-016",
+      "source_svg_target": "PUMP-06",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -195,9 +222,9 @@
       }
     },
     {
-      "id": "valve-title-ve-288",
-      "text": "VE-288",
-      "source_svg_target": "VE-288",
+      "id": "valve-title-valve01",
+      "text": "VALVE01",
+      "source_svg_target": "VALVE01",
       "source_element_type": "valve",
       "position": {
         "top": "",
@@ -205,9 +232,9 @@
       }
     },
     {
-      "id": "valve-title-ve-322",
-      "text": "VE-322",
-      "source_svg_target": "VE-322",
+      "id": "valve-title-valve02",
+      "text": "VALVE02",
+      "source_svg_target": "VALVE02",
       "source_element_type": "valve",
       "position": {
         "top": "",
@@ -215,9 +242,9 @@
       }
     },
     {
-      "id": "valve-title-ve-320",
-      "text": "VE-320",
-      "source_svg_target": "VE-320",
+      "id": "valve-title-valve03",
+      "text": "VALVE03",
+      "source_svg_target": "VALVE03",
       "source_element_type": "valve",
       "position": {
         "top": "",
@@ -225,13 +252,43 @@
       }
     },
     {
-      "id": "valve-title-ve-318",
-      "text": "VE-318",
-      "source_svg_target": "VE-318",
+      "id": "valve-title-valve04",
+      "text": "VALVE04",
+      "source_svg_target": "VALVE04",
       "source_element_type": "valve",
       "position": {
         "top": "",
         "left": ""
+      }
+    },
+    {
+      "id": "tank-title-tk01",
+      "text": "DEEP\n CLEANING",
+      "source_svg_target": "TK01",
+      "source_element_type": "tank",
+      "position": {
+        "top": "63%",
+        "left": "4.7%"
+      }
+    },
+    {
+      "id": "tank-title-tk02",
+      "text": "LAGOON",
+      "source_svg_target": "TK02",
+      "source_element_type": "tank",
+      "position": {
+        "top": "87%",
+        "left": "8.8%"
+      }
+    },
+    {
+      "id": "tank-title-tk03",
+      "text": "TK03",
+      "source_svg_target": "TK03",
+      "source_element_type": "tank",
+      "position": {
+        "top": "42.5%",
+        "left": "92.1%"
       }
     }
   ],
@@ -239,6 +296,80 @@
     "position": {
       "top": "12%",
       "left": "14%"
+    }
+  },
+  "render_rules": {
+    "tank": {
+      "mode": "binary_level",
+      "states": {
+        "0": {
+          "level": 0,
+          "color": "#9ad9e8"
+        },
+        "1": {
+          "level": 100,
+          "color": "#0077b6"
+        }
+      },
+      "animation": {
+        "type": "smooth",
+        "duration_ms": 600
+      }
+    },
+    "valve": {
+      "mode": "pulse",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      },
+      "animation": {
+        "pulse": true,
+        "duration_ms": 800
+      }
+    },
+    "pump": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
+    },
+    "chemical": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
     }
   }
 }

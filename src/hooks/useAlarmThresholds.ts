@@ -132,10 +132,10 @@ function areRowsEquivalent(left: AlarmThresholdRow, right: AlarmThresholdRow): b
 function toApiErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof ApiError) {
     if (error.status === 401 || error.status === 403) {
-      return "No autorizado o sin permisos para configurar alarmas.";
+      return "Unauthorized or missing permissions to configure alarms.";
     }
     if (error.status === 422) {
-      return error.message || "Error de validacion al guardar alarma.";
+      return error.message || "Validation error while saving the alarm.";
     }
     return error.message || fallback;
   }
@@ -151,11 +151,11 @@ function validateRow(row: AlarmThresholdRow): AlarmThresholdValidationErrors {
   const errors: AlarmThresholdValidationErrors = {};
 
   if (!isPtFitTag(row.tag_id)) {
-    errors.tag_id = "El tag debe iniciar con PT o FIT.";
+    errors.tag_id = "The tag must start with PT or FIT.";
   }
 
   if (row.min_value === null && row.max_value === null) {
-    const message = "Debe definir al menos Min o Max.";
+    const message = "Define at least Min or Max.";
     errors.min_value = message;
     errors.max_value = message;
   }
@@ -165,12 +165,12 @@ function validateRow(row: AlarmThresholdRow): AlarmThresholdValidationErrors {
     row.max_value !== null &&
     row.min_value >= row.max_value
   ) {
-    errors.min_value = "Min debe ser menor que Max.";
-    errors.max_value = "Max debe ser mayor que Min.";
+    errors.min_value = "Min must be lower than Max.";
+    errors.max_value = "Max must be higher than Min.";
   }
 
   if (!ALARM_SEVERITIES.includes(row.severity)) {
-    errors.severity = "Severity invalida.";
+    errors.severity = "Invalid severity.";
   }
 
   return errors;
@@ -196,7 +196,7 @@ function toConfigItem(row: AlarmThresholdRow): ThresholdConfigItem {
 
 function buildToastMessage(response: ThresholdConfigResponse): string {
   void response;
-  return "Alarma guardada";
+  return "Alarm saved";
 }
 
 export function useAlarmThresholds({
@@ -361,7 +361,7 @@ export function useAlarmThresholds({
         if (targetRows.length === 1) {
           setToast({
             kind: "error",
-            message: "Completa los campos requeridos antes de guardar la alarma.",
+            message: "Complete the required fields before saving the alarm.",
           });
         }
 
@@ -387,7 +387,7 @@ export function useAlarmThresholds({
 
         return { ok: true, response };
       } catch (err: unknown) {
-        const message = toApiErrorMessage(err, "No se pudo guardar la alarma.");
+        const message = toApiErrorMessage(err, "Could not save the alarm.");
         setToast({ kind: "error", message });
         setError(message);
         return { ok: false, response: null };
@@ -428,7 +428,7 @@ export function useAlarmThresholds({
         setError(
           toApiErrorMessage(
             err,
-            "No se pudieron cargar umbrales de alarma para la laguna.",
+            "Could not load alarm thresholds for the lagoon.",
           ),
         );
       } finally {
@@ -503,7 +503,7 @@ export function useAlarmThresholds({
 
   const saveDirty = useCallback(async (): Promise<SaveResult> => {
     const dirtyRows = rows.filter((row) => row.dirty);
-    return saveRows(dirtyRows, "No hay cambios pendientes para guardar.");
+    return saveRows(dirtyRows, "There are no pending changes to save.");
   }, [rows, saveRows]);
 
   const toggleEnabled = useCallback(

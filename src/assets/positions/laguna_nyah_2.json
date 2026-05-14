@@ -1,0 +1,20 @@
+{
+  "lagoon_id": "nyah",
+  "layout_id": "nyah_map2",
+  "svg_component": "nyah_map2",
+  "aspect_ratio": "1400 / 1150",
+  "map_name": "Skid Cleaning Fund 02",
+  "map_order": 2,
+  "kpis": [],
+  "pumps": [],
+  "valves": [],
+  "tanks": [],
+  "chemicals": [],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  },
+  "labels": []
+}

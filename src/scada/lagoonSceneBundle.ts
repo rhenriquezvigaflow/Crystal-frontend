@@ -1,7 +1,11 @@
 import type {
+  ResolvedEmbeddedScadaMapDefinition,
   ResolvedScadaElement,
   ResolvedScadaScene,
   ResolvedScadaTextLabel,
+  ScadaRenderRule,
+  ScadaRenderRules,
+  ScadaTankStateTags,
 } from "../types/scada-layouts";
 import { normalizeScadaLayoutName } from "./layoutResolver";
 import { normalizeScadaPosition } from "./scadaLayoutPosition";
@@ -15,7 +19,54 @@ type JsonRecord = Record<string, unknown>;
 interface LagoonSceneRegistryEntry {
   lagoonId: string;
   modulePath: string;
+  fileStem: string;
 }
+
+const DEFAULT_RENDER_RULES: ScadaRenderRules = {
+  tank: {
+    mode: "multi_level",
+    states: {
+      LOW: { level: 20, color: "#9ad9e8" },
+      MEDIUM: { level: 55, color: "#4fb3d8" },
+      HIGH: { level: 100, color: "#0077b6" },
+    },
+    animation: {
+      type: "smooth",
+      duration_ms: 600,
+    },
+  },
+  valve: {
+    mode: "pulse",
+    states: {
+      "0": { color: "#FF0000" },
+      "1": { color: "#00FF00" },
+      "2": { color: "#0099FF" },
+      "3": { color: "#FFFF00" },
+    },
+    animation: {
+      pulse: true,
+      duration_ms: 800,
+    },
+  },
+  pump: {
+    mode: "color",
+    states: {
+      "0": { color: "#FF0000" },
+      "1": { color: "#00FF00" },
+      "2": { color: "#0099FF" },
+      "3": { color: "#FFFF00" },
+    },
+  },
+  chemical: {
+    mode: "color",
+    states: {
+      "0": { color: "#FF0000" },
+      "1": { color: "#00FF00" },
+      "2": { color: "#0099FF" },
+      "3": { color: "#FFFF00" },
+    },
+  },
+};
 
 const rawLagoonSceneModules = import.meta.glob("../assets/positions/*.json", {
   eager: true,
@@ -54,6 +105,21 @@ function asBoolean(value: unknown): boolean | null {
   return null;
 }
 
+function asFiniteNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = Number(value);
+    if (Number.isFinite(normalized)) {
+      return normalized;
+    }
+  }
+
+  return null;
+}
+
 function pickFirstString(...values: unknown[]): string | null {
   for (const value of values) {
     const normalized = asString(value);
@@ -66,6 +132,15 @@ function pickFirstString(...values: unknown[]): string | null {
 function pickFirstBoolean(...values: unknown[]): boolean | null {
   for (const value of values) {
     const normalized = asBoolean(value);
+    if (normalized !== null) return normalized;
+  }
+
+  return null;
+}
+
+function pickFirstNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const normalized = asFiniteNumber(value);
     if (normalized !== null) return normalized;
   }
 
@@ -120,7 +195,11 @@ function looksLikeSceneRecord(record: JsonRecord): boolean {
     "kpis",
     "pumps",
     "valves",
+    "tanks",
+    "hipoclorito",
+    "chemicals",
     "plc_status",
+    "render_rules",
     "layout_id",
     "svg_component",
     "aspect_ratio",
@@ -151,51 +230,91 @@ function registerLagoonSceneEntry(
   registry.set(normalizedKey, entry);
 }
 
-function buildLagoonSceneRegistry(): Map<string, LagoonSceneRegistryEntry> {
-  const registry = new Map<string, LagoonSceneRegistryEntry>();
+function registerLagoonSceneCollectionEntry(
+  registry: Map<string, LagoonSceneRegistryEntry[]>,
+  key: string,
+  entry: LagoonSceneRegistryEntry,
+): void {
+  const normalizedKey = normalizeLagoonId(key);
+  if (!normalizedKey) return;
+
+  const currentEntries = registry.get(normalizedKey) ?? [];
+  if (currentEntries.some((candidate) => candidate.modulePath === entry.modulePath)) {
+    return;
+  }
+
+  registry.set(normalizedKey, [...currentEntries, entry]);
+}
+
+function buildLagoonSceneRegistry(): {
+  primary: Map<string, LagoonSceneRegistryEntry>;
+  grouped: Map<string, LagoonSceneRegistryEntry[]>;
+} {
+  const primary = new Map<string, LagoonSceneRegistryEntry>();
+  const grouped = new Map<string, LagoonSceneRegistryEntry[]>();
 
   Object.entries(rawLagoonSceneModules).forEach(([modulePath, raw]) => {
     const entry = {
       lagoonId: getFileStem(modulePath),
       modulePath,
+      fileStem: getFileStem(modulePath),
     } satisfies LagoonSceneRegistryEntry;
 
-    registerLagoonSceneEntry(registry, entry.lagoonId, entry);
+    registerLagoonSceneEntry(primary, entry.lagoonId, entry);
+    registerLagoonSceneCollectionEntry(grouped, entry.lagoonId, entry);
 
     const embeddedLagoonId = getEmbeddedLagoonId(raw);
     if (embeddedLagoonId) {
-      registerLagoonSceneEntry(registry, embeddedLagoonId, entry);
+      registerLagoonSceneEntry(primary, embeddedLagoonId, entry);
+      registerLagoonSceneCollectionEntry(grouped, embeddedLagoonId, entry);
     }
   });
 
-  return registry;
+  return {
+    primary,
+    grouped,
+  };
 }
 
 const lagoonSceneRegistry = buildLagoonSceneRegistry();
 
-async function loadRawLagoonScene(
+async function loadRawLagoonScenes(
   lagoonId: string,
   forceFresh: boolean,
-): Promise<unknown | null> {
-  const entry = lagoonSceneRegistry.get(normalizeLagoonId(lagoonId));
-  if (!entry) return null;
+) {
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
+  const primaryEntry = lagoonSceneRegistry.primary.get(normalizedLagoonId) ?? null;
+  const entries = lagoonSceneRegistry.grouped.get(normalizedLagoonId) ?? (primaryEntry ? [primaryEntry] : []);
+  if (!entries.length) return [];
 
   if (forceFresh && import.meta.env.DEV) {
-    const devPath = entry.modulePath.replace(/^\.\.\//, "/src/");
-    const response = await fetch(`${devPath}?t=${Date.now()}`, {
-      cache: "no-store",
-    });
+    return Promise.all(
+      entries.map(async (entry) => {
+        const devPath = entry.modulePath.replace(/^\.\.\//, "/src/");
+        const response = await fetch(`${devPath}?t=${Date.now()}`, {
+          cache: "no-store",
+        });
 
-    if (!response.ok) {
-      throw new Error(
-        `No se pudo refrescar la escena local para "${normalizeLagoonId(lagoonId)}".`,
-      );
-    }
+        if (!response.ok) {
+          throw new Error(
+            `Unable to refresh the local scene for "${normalizedLagoonId}".`,
+          );
+        }
 
-    return response.json();
+        return {
+          entry,
+          raw: await response.json(),
+        };
+      }),
+    );
   }
 
-  return rawLagoonSceneModules[entry.modulePath] ?? null;
+  return entries
+    .map((entry) => ({
+      entry,
+      raw: rawLagoonSceneModules[entry.modulePath] ?? null,
+    }))
+    .filter(({ raw }) => raw !== null);
 }
 
 function selectSceneRecord(raw: unknown): JsonRecord | null {
@@ -252,12 +371,7 @@ function inferLayoutId(sceneRecord: JsonRecord, raw: unknown): string {
     );
   });
 
-  return normalizeScadaLayoutName(
-    candidates.find((value) => {
-      const normalized = asString(value);
-      return Boolean(normalized && normalized.toLowerCase().includes("layout"));
-    }) ?? candidates[0],
-  );
+  return normalizeSceneAssetId(pickFirstString(...candidates), "layout1");
 }
 
 function inferSvgComponent(sceneRecord: JsonRecord, raw: unknown, layoutId: string): string {
@@ -268,7 +382,7 @@ function inferSvgComponent(sceneRecord: JsonRecord, raw: unknown, layoutId: stri
   });
 
   const svgComponent = pickFirstString(...candidates);
-  return svgComponent ? normalizeScadaLayoutName(svgComponent) : layoutId;
+  return normalizeSceneAssetId(svgComponent, layoutId);
 }
 
 function inferAspectRatio(sceneRecord: JsonRecord, raw: unknown): string | null {
@@ -289,6 +403,104 @@ function sanitizeElementId(value: string): string {
     .replace(/^_+|_+$/g, "");
 
   return sanitized || "element";
+}
+
+function normalizeSceneAssetId(
+  value: string | null,
+  fallback: string,
+): string {
+  const normalizedValue = asString(value)?.replace(/\.(tsx|jsx|svg)$/i, "") ?? "";
+  if (!normalizedValue) return fallback;
+
+  const normalizedToken = normalizedValue
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+
+  if (/^(layout[1-4]|layout_[1-4]|layout_small|small)$/.test(normalizedToken)) {
+    return normalizeScadaLayoutName(normalizedToken);
+  }
+
+  return normalizedToken;
+}
+
+function inferMapOrder(raw: unknown, fileStem: string): number {
+  const candidates: unknown[] = [];
+
+  getCandidateRecords(raw).forEach((record) => {
+    candidates.push(
+      record.map_order,
+      record.mapOrder,
+      record.order,
+      record.map_index,
+      record.mapIndex,
+    );
+  });
+
+  const explicitOrder = pickFirstNumber(...candidates);
+  if (explicitOrder !== null) {
+    return explicitOrder;
+  }
+
+  const suffixMatch = fileStem.match(/_(\d+)$/);
+  if (suffixMatch) {
+    const suffixOrder = Number(suffixMatch[1]);
+    if (Number.isFinite(suffixOrder) && suffixOrder > 0) {
+      return suffixOrder;
+    }
+  }
+
+  return 1;
+}
+
+function inferMapName(raw: unknown, order: number): string {
+  const candidates: unknown[] = [];
+
+  getCandidateRecords(raw).forEach((record) => {
+    candidates.push(
+      record.map_name,
+      record.mapName,
+      record.name,
+      record.scene_name,
+      record.sceneName,
+      record.title,
+    );
+  });
+
+  return pickFirstString(...candidates) ?? `Map ${order}`;
+}
+
+function inferMapId(
+  raw: unknown,
+  fileStem: string,
+  scene: ResolvedScadaScene,
+): string {
+  const candidates: unknown[] = [];
+
+  getCandidateRecords(raw).forEach((record) => {
+    candidates.push(
+      record.map_id,
+      record.mapId,
+      record.layout_id,
+      record.layoutId,
+      record.svg_component,
+      record.svgComponent,
+    );
+  });
+
+  return sanitizeElementId(
+    pickFirstString(...candidates) ?? scene.layout_id ?? scene.svg_component ?? fileStem,
+  );
+}
+
+function inferDefaultMap(raw: unknown, order: number): boolean {
+  const candidates: unknown[] = [];
+
+  getCandidateRecords(raw).forEach((record) => {
+    candidates.push(record.default_map, record.defaultMap, record.default);
+  });
+
+  return pickFirstBoolean(...candidates) ?? order <= 1;
 }
 
 function createElementIdFactory() {
@@ -315,9 +527,199 @@ function normalizeElementType(value: unknown): ResolvedScadaElement["type"] | nu
   if (normalized === "kpi") return "kpi";
   if (normalized === "pump") return "pump";
   if (normalized === "valve") return "valve";
+  if (normalized === "tank") return "tank";
+  if (normalized === "chemical" || normalized === "hipoclorito") return "chemical";
   if (normalized === "plc_status" || normalized === "plc-status") return "plc_status";
 
   return null;
+}
+
+function getDefaultRenderRules(): ScadaRenderRules {
+  return {
+    tank: {
+      ...DEFAULT_RENDER_RULES.tank,
+      states: { ...DEFAULT_RENDER_RULES.tank.states },
+      animation: { ...DEFAULT_RENDER_RULES.tank.animation },
+    },
+    valve: {
+      ...DEFAULT_RENDER_RULES.valve,
+      states: { ...DEFAULT_RENDER_RULES.valve.states },
+      animation: { ...DEFAULT_RENDER_RULES.valve.animation },
+    },
+    pump: {
+      ...DEFAULT_RENDER_RULES.pump,
+      states: { ...DEFAULT_RENDER_RULES.pump.states },
+      animation: DEFAULT_RENDER_RULES.pump.animation
+        ? { ...DEFAULT_RENDER_RULES.pump.animation }
+        : null,
+    },
+    chemical: {
+      ...DEFAULT_RENDER_RULES.chemical,
+      states: { ...DEFAULT_RENDER_RULES.chemical.states },
+      animation: DEFAULT_RENDER_RULES.chemical.animation
+        ? { ...DEFAULT_RENDER_RULES.chemical.animation }
+        : null,
+    },
+  };
+}
+
+function normalizeRenderRuleState(value: unknown): ScadaRenderRule["states"][string] | null {
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const color = pickFirstString(record.color, record.fill);
+  const rawLevel = typeof record.level === "number" && Number.isFinite(record.level)
+    ? record.level
+    : null;
+
+  if (!color && rawLevel === null) return null;
+
+  return {
+    color,
+    level: rawLevel,
+  };
+}
+
+function normalizeRenderRuleAnimation(value: unknown): ScadaRenderRule["animation"] | null {
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const durationMs =
+    typeof record.duration_ms === "number" && Number.isFinite(record.duration_ms)
+      ? record.duration_ms
+      : typeof record.durationMs === "number" && Number.isFinite(record.durationMs)
+        ? record.durationMs
+        : null;
+
+  return {
+    type: pickFirstString(record.type),
+    duration_ms: durationMs,
+    pulse: pickFirstBoolean(record.pulse),
+    scale: pickFirstBoolean(record.scale),
+  };
+}
+
+function normalizeTagCollection(value: unknown): string[] | null {
+  if (typeof value === "string" || typeof value === "number") {
+    const normalized = asString(value);
+    return normalized ? [normalized] : null;
+  }
+
+  if (!Array.isArray(value)) return null;
+
+  const normalized = value
+    .map((entry) => asString(entry))
+    .filter((entry): entry is string => Boolean(entry));
+
+  return normalized.length ? normalized : null;
+}
+
+function normalizeTankStateTags(
+  rawElement: JsonRecord,
+  mappingEntry: JsonRecord | null,
+): ScadaTankStateTags | null {
+  const candidates = [
+    asRecord(mappingEntry?.state_tags),
+    asRecord(mappingEntry?.stateTags),
+    asRecord(rawElement.state_tags),
+    asRecord(rawElement.stateTags),
+    asRecord(rawElement.level_tags),
+    asRecord(rawElement.levelTags),
+    asRecord(rawElement.sensor_tags),
+    asRecord(rawElement.sensorTags),
+  ].filter((candidate): candidate is JsonRecord => candidate !== null);
+
+  const merged: ScadaTankStateTags = {};
+
+  candidates.forEach((candidate) => {
+    const low = normalizeTagCollection(candidate.LOW ?? candidate.low ?? candidate.lsl ?? candidate.LSL);
+    const medium = normalizeTagCollection(
+      candidate.MEDIUM ?? candidate.medium ?? candidate.lsm ?? candidate.LSM,
+    );
+    const high = normalizeTagCollection(candidate.HIGH ?? candidate.high ?? candidate.lsh ?? candidate.LSH);
+
+    if (low?.length) merged.LOW = low;
+    if (medium?.length) merged.MEDIUM = medium;
+    if (high?.length) merged.HIGH = high;
+  });
+
+  if (!merged.LOW && !merged.MEDIUM && !merged.HIGH) {
+    return null;
+  }
+
+  return merged;
+}
+
+function mergeRenderRule(
+  fallbackRule: ScadaRenderRule,
+  overrideValue: unknown,
+): ScadaRenderRule {
+  const overrideRecord = asRecord(overrideValue);
+  if (!overrideRecord) {
+    return {
+      ...fallbackRule,
+      states: { ...fallbackRule.states },
+      animation: fallbackRule.animation ? { ...fallbackRule.animation } : null,
+    };
+  }
+
+  const overrideStates = asRecord(overrideRecord.states);
+  const mergedStates = { ...fallbackRule.states };
+
+  Object.entries(overrideStates ?? {}).forEach(([stateKey, stateValue]) => {
+    const normalizedState = normalizeRenderRuleState(stateValue);
+    if (!normalizedState) return;
+    mergedStates[stateKey] = {
+      ...(mergedStates[stateKey] ?? {}),
+      ...normalizedState,
+    };
+  });
+
+  const animation = normalizeRenderRuleAnimation(overrideRecord.animation);
+  const overrideMode = pickFirstString(overrideRecord.mode);
+  const mode =
+    overrideMode === "binary_level" ||
+    overrideMode === "multi_level" ||
+    overrideMode === "pulse" ||
+    overrideMode === "color"
+      ? overrideMode
+      : fallbackRule.mode;
+
+  return {
+    mode,
+    states: mergedStates,
+    animation: animation
+      ? {
+          ...(fallbackRule.animation ?? {}),
+          ...animation,
+        }
+      : fallbackRule.animation
+        ? { ...fallbackRule.animation }
+        : null,
+  };
+}
+
+function buildRenderRules(raw: unknown, sceneRecord: JsonRecord): ScadaRenderRules {
+  const mergedRules = getDefaultRenderRules();
+  const candidateRecords = [
+    sceneRecord,
+    ...getCandidateRecords(raw),
+  ];
+
+  candidateRecords.forEach((record) => {
+    const renderRulesRecord = asRecord(record.render_rules ?? record.renderRules);
+    if (!renderRulesRecord) return;
+
+    mergedRules.tank = mergeRenderRule(mergedRules.tank, renderRulesRecord.tank);
+    mergedRules.valve = mergeRenderRule(mergedRules.valve, renderRulesRecord.valve);
+    mergedRules.pump = mergeRenderRule(mergedRules.pump, renderRulesRecord.pump);
+    mergedRules.chemical = mergeRenderRule(
+      mergedRules.chemical,
+      renderRulesRecord.chemical ?? renderRulesRecord.hipoclorito,
+    );
+  });
+
+  return mergedRules;
 }
 
 function resolveElementLabel(
@@ -399,6 +801,7 @@ function normalizeResolvedElement(
       mappingEntry?.always_visible,
     ),
     fallback_tag: fallbackTag,
+    state_tags: normalizeTankStateTags(rawElement, mappingEntry),
   };
 }
 
@@ -454,6 +857,9 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
   appendElements(asArray(sceneRecord.kpis), "kpi");
   appendElements(asArray(sceneRecord.pumps), "pump");
   appendElements(asArray(sceneRecord.valves), "valve");
+  appendElements(asArray(sceneRecord.tanks), "tank");
+  appendElements(asArray(sceneRecord.chemicals), "chemical");
+  appendElements(asArray(sceneRecord.hipoclorito), "chemical");
 
   const plcStatusRecord = asRecord(sceneRecord.plc_status);
   if (plcStatusRecord) {
@@ -545,15 +951,72 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
     .filter((label): label is ResolvedScadaTextLabel => label !== null);
 }
 
+export async function loadLagoonSceneMapDefinitions(
+  lagoonId: string,
+  options: LoadLagoonSceneOptions = {},
+): Promise<ResolvedEmbeddedScadaMapDefinition[]> {
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
+  if (!normalizedLagoonId) return [];
+
+  const rawSceneEntries = await loadRawLagoonScenes(
+    normalizedLagoonId,
+    Boolean(options.forceFresh),
+  );
+  if (!rawSceneEntries.length) return [];
+
+  const mapIdFactory = createElementIdFactory();
+  const resolvedDefinitions = rawSceneEntries
+    .map(({ entry, raw }) => {
+      const scene = resolveLagoonSceneDefinition(raw, normalizedLagoonId);
+      if (!scene) {
+        throw new Error(
+          `Unable to resolve the local SCADA scene for "${normalizedLagoonId}" (${entry.fileStem}).`,
+        );
+      }
+
+      const order = inferMapOrder(raw, entry.fileStem);
+
+      return {
+        id: mapIdFactory(
+          inferMapId(raw, entry.fileStem, scene),
+          entry.fileStem,
+        ),
+        name: inferMapName(raw, order),
+        default: inferDefaultMap(raw, order),
+        order,
+        scene,
+      } satisfies ResolvedEmbeddedScadaMapDefinition;
+    })
+    .sort((left, right) => {
+      if (left.order !== right.order) return left.order - right.order;
+      if (left.default !== right.default) return left.default ? -1 : 1;
+      return left.id.localeCompare(right.id);
+    });
+
+  if (!resolvedDefinitions.some((definition) => definition.default) && resolvedDefinitions[0]) {
+    resolvedDefinitions[0] = {
+      ...resolvedDefinitions[0],
+      default: true,
+    };
+  }
+
+  return resolvedDefinitions;
+}
+
 export async function loadLagoonSceneBundle(
   lagoonId: string,
   options: LoadLagoonSceneOptions = {},
 ): Promise<ResolvedScadaScene | null> {
-  const normalizedLagoonId = normalizeLagoonId(lagoonId);
-  if (!normalizedLagoonId) return null;
+  const scenes = await loadLagoonSceneMapDefinitions(lagoonId, options);
+  return scenes.find((scene) => scene.default)?.scene ?? scenes[0]?.scene ?? null;
+}
 
-  const raw = await loadRawLagoonScene(normalizedLagoonId, Boolean(options.forceFresh));
-  if (!raw) return null;
+export function resolveLagoonSceneDefinition(
+  raw: unknown,
+  lagoonId: string,
+): ResolvedScadaScene | null {
+  const normalizedLagoonId = normalizeLagoonId(lagoonId);
+  if (!normalizedLagoonId || !raw) return null;
 
   const sceneRecord = selectSceneRecord(raw);
   if (!sceneRecord) return null;
@@ -572,6 +1035,7 @@ export async function loadLagoonSceneBundle(
     ),
     aspect_ratio: inferAspectRatio(sceneRecord, raw),
     warnings: buildWarnings(raw),
+    render_rules: buildRenderRules(raw, sceneRecord),
     elements: rawElements
       ? buildElementsFromResolvedArray(rawElements, mappingLookup)
       : buildElementsFromFlatConfig(sceneRecord),

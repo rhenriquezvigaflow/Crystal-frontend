@@ -58,7 +58,7 @@ function normalizeDayUtc(ts: string | Date) {
 
 function normalizeWeekUtc(ts: string | Date) {
   const d = new Date(ts);
-  const day = d.getUTCDay(); // 0=domingo, 1=lunes...
+  const day = d.getUTCDay(); // 0=Sunday, 1=Monday...
   const diffToMonday = (day + 6) % 7;
   return Date.UTC(
     d.getUTCFullYear(),
@@ -90,7 +90,7 @@ export default function LagoonLineChart({
 }: Props) {
   const sourceSeries: HistorySeries[] = useMemo(() => data?.series ?? [], [data?.series]);
 
-  // Timezone planta (IANA). Backend recomendado: data.timezone
+  // Plant timezone (IANA). Recommended backend field: data.timezone
   const lagoonTz: string = useMemo(() => {
     return (
       timezone ||
@@ -101,7 +101,7 @@ export default function LagoonLineChart({
     );
   }, [timezone, data]);
 
-  // Helpers de formato SIEMPRE en timezone de planta
+  // Formatting helpers always resolved in the plant timezone
   const fmtDate = useMemo(() => {
     return (valueMs: number, options: Intl.DateTimeFormatOptions) => {
       try {
@@ -110,7 +110,7 @@ export default function LagoonLineChart({
           ...options,
         }).format(new Date(valueMs));
       } catch {
-        // Fallback si viene un timezone inválido
+        // Fallback in case the timezone value is invalid
         return new Intl.DateTimeFormat(undefined, options).format(
           new Date(valueMs),
         );
@@ -167,7 +167,7 @@ export default function LagoonLineChart({
             : null;
         const prev = map.get(t);
 
-        // Evita que un null tardío borre un valor numérico ya capturado.
+        // Prevent a late null from overwriting a numeric value already captured.
         if (next !== null || prev == null) {
           map.set(t, next);
         }
@@ -241,7 +241,7 @@ export default function LagoonLineChart({
         hideEmptySeries: false,
         x: {
           formatter: (value: number) => {
-            // Fecha+hora en TZ planta
+            // Date + time in the plant timezone
             return fmtDate(value, {
               year: "numeric",
               month: "2-digit",
@@ -274,7 +274,7 @@ export default function LagoonLineChart({
   if (!sourceSeries.length) {
     return (
       <Box className="flex items-center justify-center h-full text-xs text-slate-400">
-        Sin datos históricos
+        No historical data
       </Box>
     );
   }
@@ -282,7 +282,7 @@ export default function LagoonLineChart({
   if (!series.length) {
     return (
       <Box className="flex items-center justify-center h-full text-xs text-slate-400">
-        Selecciona al menos un TAG para visualizar el gráfico
+        Select at least one TAG to display the chart
       </Box>
     );
   }

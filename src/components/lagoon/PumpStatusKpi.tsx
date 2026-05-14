@@ -58,7 +58,7 @@ function getStateConfig(state: number | null) {
   switch (state) {
     case 0:
       return {
-        label: "DETENIDA",
+        label: "STOPPED",
         dot: "bg-red-500",
         text: "text-red-600",
         bg: "bg-red-50/70",
@@ -66,7 +66,7 @@ function getStateConfig(state: number | null) {
       };
     case 1:
       return {
-        label: "FUNCIONANDO",
+        label: "WORKING",
         dot: "bg-emerald-500",
         text: "text-emerald-600",
         bg: "bg-emerald-50/70",
@@ -74,7 +74,7 @@ function getStateConfig(state: number | null) {
       };
     case 2:
       return {
-        label: "MOVIENDOSE",
+        label: "MOVING",
         dot: "bg-blue-500",
         text: "text-blue-600",
         bg: "bg-blue-50/70",
@@ -82,7 +82,7 @@ function getStateConfig(state: number | null) {
       };
     case 3:
       return {
-        label: "FALLA",
+        label: "FAULT",
         dot: "bg-yellow-500",
         text: "text-yellow-600",
         bg: "bg-yellow-50/70",
@@ -90,7 +90,7 @@ function getStateConfig(state: number | null) {
       };
     default:
       return {
-        label: "SIN DATO",
+        label: "NO DATA",
         dot: "bg-slate-400",
         text: "text-slate-600",
         bg: "bg-slate-50/70",
@@ -139,9 +139,9 @@ export default function PumpStatusKpi({
       saveBlob(report.blob, report.filename);
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 403) {
-        setReportError("Acceso no permitido para descargar el reporte.");
+        setReportError("Access not permitted to download the report");
       } else {
-        setReportError("No se pudo descargar el reporte.");
+        setReportError("The report could not be downloaded.");
       }
     } finally {
       setReportDownloading(false);
@@ -153,17 +153,17 @@ export default function PumpStatusKpi({
       <div className="px-4 py-3 border-b border-slate-200">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-700">Estado de Bombas</div>
-            <div className="text-xs text-slate-500 mt-0.5">Ultimos 3 eventos por bomba</div>
+            <div className="text-sm font-semibold text-slate-700">Bomb Status</div>
+            <div className="text-xs text-slate-500 mt-0.5">Last 3 events per bomb</div>
           </div>
 
           <button
             type="button"
             onClick={handleDownloadReport}
             disabled={!lagoonId || reportDownloading}
-            title="Descargar reporte"
-            aria-label="Descargar reporte"
-            className="inline-flex h-9 min-w-[6.75rem] shrink-0 items-center justify-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+            title="Download report"
+            aria-label="Download report"
+            className="inline-flex h-9 min-w-27 shrink-0 items-center justify-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <svg
               aria-hidden="true"
@@ -174,7 +174,7 @@ export default function PumpStatusKpi({
               <path d="M10 2a1 1 0 0 1 1 1v7.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42L9 10.59V3a1 1 0 0 1 1-1Z" />
               <path d="M4 14a1 1 0 0 1 1 1v1h10v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z" />
             </svg>
-            <span>{reportDownloading ? "Generando" : "Reporte"}</span>
+            <span>{reportDownloading ? "Generating" : "Report"}</span>
           </button>
         </div>
 
@@ -191,7 +191,7 @@ export default function PumpStatusKpi({
           return (
             <article
               key={id}
-              className={`rounded-lg border ${config.border} ${config.bg} p-3 sm:p-4 min-h-[190px] sm:min-h-[210px] flex flex-col transition-colors`}
+              className={`rounded-lg border ${config.border} ${config.bg} p-3 sm:p-4 min-h-47.5 sm:min-h-52.5 flex flex-col transition-colors`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -209,12 +209,12 @@ export default function PumpStatusKpi({
 
               <div className="mt-3 pt-3 border-t border-slate-200/80 flex-1 flex flex-col">
                 <div className="text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                  Eventos recientes
+                  Recent events
                 </div>
 
                 {eventsLoading && (
                   <div className="mt-2 text-xs text-slate-500">
-                    Cargando eventos...
+                    Loading events...
                   </div>
                 )}
 

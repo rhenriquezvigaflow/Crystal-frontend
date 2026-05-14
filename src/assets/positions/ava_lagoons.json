@@ -88,86 +88,176 @@
   "pumps": [
     {
       "tag": "P002_STS_SCADA",
-      "label": "Bomba Retrolavado",
-      "svg_target": "BOMBA-RETROLAVADO",
-      "panel": "pump-status"
+      "label": "Backwash Pump",
+      "svg_target": "PUMP-03",
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P006_STS_SCADA",
-      "label": "Bomba Filtracion",
-      "svg_target": "BOMBA-FILTRACION",
-      "panel": "pump-status"
+      "label": "Filtration Pump",
+      "svg_target": "PUMP-02",
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P007_STS_SCADA",
-      "label": "Bomba Retorno Clarificado",
-      "svg_target": "BOMBA-RETORNO-CLARIFICADO",
-      "panel": "pump-status"
+      "label": "Clarified Return Pump",
+      "svg_target": "PUMP04",
+      "panel": "pump-status",
+      "type": "pump"
     },
     {
       "tag": "P015_STS_SCADA",
       "label": "P-015",
-      "svg_target": "P-015"
+      "svg_target": "PUMP-05",
+      "type": "pump"
     },
     {
       "tag": "P016_STS_SCADA",
       "label": "P-016",
-      "svg_target": "P-016"
+      "svg_target": "PUMP-06",
+      "type": "pump"
     },
     {
       "tag": "RETRO_SCADA",
-      "label": "Retrolavado Filtros",
+      "label": "Filter Backwash",
       "panel": "pump-status",
-      "always_visible": true
+      "always_visible": true,
+      "type": "pump"
     }
   ],
   "valves": [
     {
       "tag": "VE288_ST",
       "label": "VE-288",
-      "svg_target": "VE-288"
+      "svg_target": "VE-288",
+      "type": "valve"
     },
     {
       "tag": "VE322_ST",
       "label": "VE-322",
-      "svg_target": "VE-322"
+      "svg_target": "VE-322",
+      "type": "valve"
     },
     {
       "tag": "VE320_ST",
       "label": "VE-320",
-      "svg_target": "VE-320"
+      "svg_target": "VE-320",
+      "type": "valve"
     },
     {
       "tag": "VE318_ST",
       "label": "VE-318",
-      "svg_target": "VE-318"
+      "svg_target": "VE-318",
+      "type": "valve"
     }
   ],
   "labels": [
     {
-      "id": "pump-title-bomba-retrolavado",
-      "text": "Bomba Retrolavado",
-      "source_svg_target": "BOMBA-RETROLAVADO",
+      "id": "pump-title-backwash-pump",
+      "text": "BACKWASH \n PUMP",
+      "source_svg_target": "PUMP-03",
       "source_element_type": "pump",
       "position": {
-        "top": "",
-        "left": ""
+        "top": "96.4%",
+        "left": "18.3%"
       }
     },
     {
-      "id": "pump-title-bomba-filtracion",
-      "text": "Bomba Filtracion",
-      "source_svg_target": "BOMBA-FILTRACION",
+      "id": "tank-title-tk01",
+      "text": "DEEP \n CLEANING",
+      "source_svg_target": "TK01",
+      "source_element_type": "tank",
+      "position": {
+        "top": "63%",
+        "left": "4.3%"
+      }
+    },
+    {
+      "id": "tank-title-tk02",
+      "text": "LAGOON",
+      "source_svg_target": "TK02",
+      "source_element_type": "tank",
+      "position": {
+        "top": "87%",
+        "left": "10%"
+      }
+    },
+    {
+      "id": "tank-title-tk03",
+      "text": "TK \n DECANTATION",
+      "source_svg_target": "TK03",
+      "source_element_type": "tank",
+      "position": {
+        "top": "50.8%",
+        "left": "91.7%"
+      }
+    },
+    {
+      "id": "pump-title-pump-filtration",
+      "text": "PUMP \n FILTRATION",
+      "source_svg_target": "PUMP-02",
       "source_element_type": "pump",
       "position": {
-        "top": "",
-        "left": ""
+        "top": "80.7%",
+        "left": "22.7%"
+      }
+    },
+        {
+      "id": "pump-title-vector-185-8-4",
+      "text": "PUMP \n A-C1LO",
+      "source_svg_target": "CLFLO12",
+      "source_element_type": "pump",
+      "position": {
+        "top": "27%",
+        "left": "92.5%"
+      }
+    },
+        {
+      "id": "pump-title-vector-185-8-4-2",
+      "text": "PUMP \n F-H1LO",
+      "source_svg_target": "FH1LO",
+      "source_element_type": "pump",
+      "position": {
+      "top": "27%",
+      "left": "98.3%"
+      }
+    },
+    {
+      "id": "pump-title-pump03",
+      "text": "CLARIFIED \n RETURN PUMP",
+      "source_svg_target": "PUMP04",
+      "source_element_type": "pump",
+      "position": {
+        "top": "75.1%",
+        "left": "92.5%"
+      }
+    },
+    {
+      "id": "pump-title-pump01",
+      "text": "PUMP\nCL-FLO12",
+      "source_svg_target": "PUMP01",
+      "source_element_type": "pump",
+      "position": {
+        "top": "47.5%",
+        "left": "10%"
+      }
+    },
+    {
+      "id": "pump-title-cl-flo-012",
+      "text": "CL-FLO-012",
+      "source_svg_target": "CL-FLO-012",
+      "source_element_type": "pump",
+      "position": {
+        "top": "48.5%",
+        "left": "3%"
       }
     },
     {
       "id": "pump-title-bomba-retorno-clarificado",
-      "text": "Bomba Retorno Clarificado",
-      "source_svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "text": "Clarified Return Pump",
+      "source_svg_target": "PUMP04",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -177,7 +267,7 @@
     {
       "id": "pump-title-p-015",
       "text": "P-015",
-      "source_svg_target": "P-015",
+      "source_svg_target": "PUMP-05",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -187,11 +277,50 @@
     {
       "id": "pump-title-p-016",
       "text": "P-016",
-      "source_svg_target": "P-016",
+      "source_svg_target": "PUMP-06",
       "source_element_type": "pump",
       "position": {
         "top": "",
         "left": ""
+      }
+    },
+      {
+      "id": "FIS-001",
+      "text": "FIS-001",
+      "source_svg_target": "FIS-001",
+      "source_element_type": "pump",
+      "color": "#FFFFFF",
+      "font_size": 22,
+      "text_shadow": "0 1px 2px rgba(0, 0, 0, 0.85)",
+      "position": {
+      "top": "42%",
+      "left": "42.5%"
+      }
+    },
+          {
+      "id": "FIS-002",
+      "text": "FIS-002",
+      "source_svg_target": "FIS-002",
+      "source_element_type": "pump",
+      "color": "#FFFFFF",
+      "font_size": 22,
+      "text_shadow": "0 1px 2px rgba(0, 0, 0, 0.85)",
+      "position": {
+      "top": "42%",
+      "left": "56%"
+      }
+    },
+              {
+      "id": "FIS-002",
+      "text": "FIS-002",
+      "source_svg_target": "FIS-002",
+      "source_element_type": "pump",
+      "color": "#FFFFFF",
+      "font_size": 22,
+      "text_shadow": "0 1px 2px rgba(0, 0, 0, 0.85)",
+      "position": {
+      "top": "42%",
+      "left": "69%"
       }
     },
     {
@@ -239,6 +368,80 @@
     "position": {
       "top": "12%",
       "left": "14%"
+    }
+  },
+  "render_rules": {
+    "tank": {
+      "mode": "binary_level",
+      "states": {
+        "0": {
+          "level": 0,
+          "color": "#9ad9e8"
+        },
+        "1": {
+          "level": 100,
+          "color": "#0077b6"
+        }
+      },
+      "animation": {
+        "type": "smooth",
+        "duration_ms": 600
+      }
+    },
+    "valve": {
+      "mode": "pulse",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      },
+      "animation": {
+        "pulse": true,
+        "duration_ms": 800
+      }
+    },
+    "pump": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
+    },
+    "chemical": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
     }
   }
 }

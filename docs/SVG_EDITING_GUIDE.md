@@ -1,8 +1,8 @@
-# Guia de edicion de SVGs
+# Guia de Edicion de SVGs y Escenas SCADA
 
 Guia practica para modificar layouts SCADA sin romper overlays ni bindings.
 
-## Archivos involucrados
+## Archivos Involucrados
 
 SVG React:
 
@@ -15,132 +15,157 @@ Registro:
 
 - `src/scada/svgRegistry.ts`
 
-Scene y resolucion:
+Escenas por laguna:
+
+- `src/assets/positions/*.json`
+
+Resolucion:
 
 - `src/scada/layoutResolver.ts`
-- `src/scada/layoutSceneResolver.ts`
+- `src/scada/lagoonSceneBundle.ts`
 - `src/scada/localSceneRegistry.ts`
+- `src/scada/scadaLayoutPosition.ts`
 
-Labels:
+Render:
 
-- `src/scada/labels/layouts/*.base.json`
-- `src/scada/labels/lagoons/*.json`
+- `src/containers/ScadaOverlay.tsx`
+- `src/containers/ScadaTextOverlay.tsx`
+- `src/containers/ScadaSvgEquipmentLabelsOverlay.tsx`
+- `src/containers/ScadaEquipmentStateOverlay.tsx`
 
-Estados SVG:
+## Regla Principal
 
-- `src/scada/equipment-state/layouts/*.equipment.json`
-- `src/scada/svgEquipmentState.ts`
+La fuente de verdad visual actual es el JSON local de la laguna en `src/assets/positions`.
 
-## Regla principal
+El backend no entrega layout/mapping visual en el flujo actual. Entrega:
 
-La fuente de verdad de posiciones y elementos es backend, salvo que exista un override local por laguna.
+- lista de lagunas y permisos;
+- realtime por WebSocket;
+- historico;
+- eventos;
+- alarmas.
 
-Orden efectivo:
-
-1. backend mapping/layout
-2. override local `src/scada/scene/lagoons/<lagoon>.scene.json`
-3. render final de overlays
-
-## Antes de editar
+## Antes de Editar
 
 Identificar:
 
-- `layout_id`
-- `svg_component`
-- elementos que dependen de `svg_target`
-- labels asociados
-- equipment-state asociado
+- `lagoon_id`;
+- `layout_id`;
+- `svg_component`;
+- `aspect_ratio`;
+- tags usados por KPIs, bombas y valvulas;
+- `svg_target` de cada bomba o valvula que debe cambiar de color;
+- labels fijos sobre el plano.
 
-## Buenas practicas
+## Buenas Practicas SVG
 
-- conservar `viewBox`
-- mantener IDs estables
-- no renombrar nodos usados por `svg_target`
-- evitar filtros o metadata innecesaria
-- si cambia proporcion, ajustar `aspectRatio` en `svgRegistry` para que coincida con el `viewBox`
+- conservar `viewBox`;
+- mantener IDs estables en los nodos usados por `svg_target`;
+- evitar renombrar bombas o valvulas ya referenciadas por JSON;
+- evitar filtros o metadata innecesaria;
+- si cambia la proporcion, ajustar `aspectRatio` en `svgRegistry.ts` y/o `aspect_ratio` en la escena.
 
-## Ajustar cards y elementos
-
-Las cards no dependen del SVG para su posicion final.
-
-La posicion sale de:
-
-- backend `layout.json_definition.elements[].position`
-- o override local de escena si existe
+## Ajustar KPI Cards
 
 Ejemplo:
 
 ```json
 {
-  "id": "pressure_1",
-  "type": "kpi",
-  "position": { "x": 0.213, "y": 0.403 }
+  "tag": "PT117_R",
+  "label": "PT_117",
+  "unit": "bar",
+  "position": {
+    "top": "29%",
+    "left": "37.4%"
+  },
+  "icon_type": "pressure"
 }
 ```
 
-## Ajustar labels
+`position` acepta:
 
-Base por layout:
+- `{ "top": "29%", "left": "37.4%" }`
+- `{ "x": 0.374, "y": 0.29 }`
 
-```json
-{
-  "id": "FIS001",
-  "text": "FISS - 001",
-  "position": { "x": 0.425, "y": 0.415 },
-  "align": "center",
-  "color": "#ffffff"
-}
-```
+## Ajustar Bombas y Valvulas
 
-Override por laguna:
-
-- usar solo diferencias en `src/scada/labels/lagoons/<lagoon>.json`
-
-## Ajustar estados de equipos
-
-Ejemplo fijo:
+Ejemplo bomba con panel de eventos:
 
 ```json
 {
-  "id": "layout2_static_circle26",
-  "svg_target": "circle26",
-  "role": "pump",
-  "state": 0
-}
-```
-
-Ejemplo dinamico:
-
-```json
-{
-  "id": "layout2_pump_005",
+  "tag": "P005_ST",
+  "label": "Bomba Filtro",
   "svg_target": "circle26-4",
-  "role": "pump",
-  "tag": "P005_STS_SCADA"
+  "panel": "pump-status"
 }
 ```
 
-Colores:
+Ejemplo valvula:
+
+```json
+{
+  "tag": "VE246_ST",
+  "label": "VE-401",
+  "svg_target": "VE-401"
+}
+```
+
+Colores por estado:
 
 - `0` rojo
 - `1` verde
 - `2` azul
 - `3` amarillo
 
-## Overrides locales de escena
+## Ajustar Labels
 
-Si necesitas un layout puntual sin tocar backend:
+Ejemplo:
 
-- crear `src/scada/scene/lagoons/<lagoon_id>.scene.json`
+```json
+{
+  "id": "valve-title-ve-401",
+  "text": "VX-254",
+  "source_svg_target": "VE-401",
+  "source_element_type": "valve",
+  "position": {
+    "top": "86%",
+    "left": "16.5%"
+  },
+  "align": "center",
+  "color": "#ffffff"
+}
+```
 
-Ese archivo puede definir:
+Campos opcionales:
 
-- `layout.id`
-- `layout.json_definition`
+- `max_width`
+- `font_size`
+- `font_weight`
+- `text_shadow`
+- `hidden`
 
-El hook `useScadaLayoutScene` usara el layout local y seguira mezclando `collector_tags` del backend cuando existan.
+## Agregar una Laguna
 
-## Validacion minima
+1. Crear `src/assets/positions/<lagoon_id>.json`.
+2. Usar un `svg_component` existente (`layout1` a `layout4`) o agregar uno nuevo.
+3. Si agregas SVG nuevo:
+   - crear `src/svg/layoutN.tsx`;
+   - registrar en `src/scada/svgRegistry.ts`;
+   - agregar el nuevo valor en `src/scada/layoutResolver.ts`.
+4. Confirmar que el backend devuelve la laguna en `GET /api/lagoons`.
+5. Confirmar que el collector envia tags con los mismos nombres usados por la escena.
+
+## Debug Visual
+
+Agregar query string:
+
+```text
+?scadaDebug=1
+```
+
+Esto muestra grilla de coordenadas sobre el plano.
+
+## Validacion Minima
 
 1. `npm run build`
 2. revisar vista desktop y mobile

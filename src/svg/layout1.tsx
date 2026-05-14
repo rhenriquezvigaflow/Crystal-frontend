@@ -1,7 +1,5 @@
 import * as React from "react";
-
-const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
-  return (
+const SVGComponent = (props) => (
   <svg
     id="Capa_1"
     x="0px"
@@ -28,12 +26,12 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={1.0000001}
-      inkscape:cx={889.49991}
-      inkscape:cy={743.49993}
+      inkscape:zoom={0.50000005}
+      inkscape:cx={686.99993}
+      inkscape:cy={776.99992}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
-      inkscape:window-x={1912}
+      inkscape:window-x={-8}
       inkscape:window-y={-8}
       inkscape:window-maximized={1}
       inkscape:current-layer="Capa_1"
@@ -519,7 +517,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       className="st26"
       width={124.8}
       height={58.181511}
-      id="rect37"
+      id="TK01"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
@@ -614,7 +612,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         cx={311.10001}
         cy={397.10001}
         r={8}
-        id="circle26"
+        id="PUMP-01"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -645,7 +643,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       className="st26"
       width={124.8}
       height={58.181511}
-      id="rect37-8"
+      id="TK03"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1,
@@ -746,7 +744,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         cx={311.10001}
         cy={397.10001}
         r={8}
-        id="circle26-4"
+        id="PUMP-02"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -807,7 +805,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         cx={311.10001}
         cy={397.10001}
         r={8}
-        id="BOMBA-RETORNO-CLARIFICADO"
+        id="PUMP-04"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -826,17 +824,6 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         strokeMiterlimit: 10,
       }}
       id="path1-38"
-    />
-    <path
-      className="st32"
-      d="m 508.0694,297.28806 v 68.83237"
-      id="path67-5"
-      style={{
-        fill: "none",
-        stroke: "#2f3e49",
-        strokeWidth: 3.67337,
-        strokeMiterlimit: 10,
-      }}
     />
     <style id="style1-8">
       {
@@ -1019,7 +1006,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       className="st26"
       width={120.62868}
       height={58.181511}
-      id="rect37-9"
+      id="TK02"
       style={{
         fill: "#0e76e7",
         strokeWidth: 1.00114,
@@ -1092,7 +1079,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         cx={311.10001}
         cy={397.10001}
         r={8}
-        id="circle26-4-8"
+        id="PUMP-03"
         style={{
           opacity: 0.15,
           fill: "#0e76e7",
@@ -1141,7 +1128,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         }}
         transform="scale(0.91170403,1.0968472)"
       >
-        {"     LAGUNA  "}
+        {"LAGOON"}
       </text>
       <g
         id="Group_12-6-4-7-8-9"
@@ -1363,7 +1350,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       }}
     >
       <path
-        id="Vector_65-4-6-9"
+        id="VALVE01"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
         fill="#323e48"
         style={{
@@ -1441,7 +1428,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       }}
     >
       <path
-        id="Vector_65-4-6-9-7"
+        id="VALVE02"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
         fill="#323e48"
         style={{
@@ -1539,7 +1526,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       }}
     >
       <path
-        id="Vector_65-4-6-9-1"
+        id="VALVE03"
         d="m 596.73062,571.88782 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
         fill="#323e48"
         style={{
@@ -1670,7 +1657,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       onclick="12&#10;"
     />
     <path
-      id="Vector_185-8-1-9"
+      id="PUMP-06"
       d="m 1327.3802,345.096 h 18.9127 c 1.0808,0 2.0265,-0.9138 2.0265,-1.95809 V 324.8621 c 0,-1.04429 -0.9457,-1.9581 -2.0265,-1.9581 h -18.9127 c -1.0807,0 -2.0263,0.91381 -2.0263,1.9581 v 18.27581 c 0,1.04429 0.9456,1.95809 2.0263,1.95809 z"
       fill="#2f3e49"
       style={{
@@ -2020,6 +2007,16 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         }}
       />
     </g>
+    <path
+      d="M 513.09004,367.00001 513,306.35527"
+      style={{
+        fill: "none",
+        stroke: "#2f3e49",
+        strokeWidth: 2.23914,
+        strokeMiterlimit: 10,
+      }}
+      id="path1-38-4"
+    />
     <path
       style={{
         opacity: 1,
@@ -2693,7 +2690,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       }}
     >
       <path
-        id="VE-318"
+        id="VALVE04"
         d="m 596.6,586 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
         fill="#323e48"
         style={{
@@ -2856,7 +2853,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       transform="matrix(-0.01134034,-0.9999357,-0.9999506,0.00993934,0,0)"
     />
     <path
-      id="Vector_185-8-1"
+      id="PUMP-05"
       d="m 1246.0608,345.096 h 18.9127 c 1.0808,0 2.0265,-0.9138 2.0265,-1.9581 v -18.27581 c 0,-1.04428 -0.9457,-1.9581 -2.0265,-1.9581 h -18.9127 c -1.0807,0 -2.0263,0.91382 -2.0263,1.9581 v 18.27581 c 0,1.04429 0.9456,1.9581 2.0263,1.9581 z"
       fill="#2f3e49"
       style={{
@@ -2981,20 +2978,20 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1164.5813}
+      x={1149.9917}
       y={97.87925}
       id="text12-1"
     >
       <tspan
         sodipodi:role="line"
         id="tspan12-5"
-        x={1164.5813}
+        x={1149.9917}
         y={97.87925}
         style={{
           fontSize: 16,
         }}
       >
-        {"Moviendose"}
+        {"Moving"}
       </tspan>
     </text>
     <path
@@ -3087,14 +3084,14 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       }}
       transform="translate(-38.656589,-11.635832)"
     >
-      <tspan x={1136.9932} y={49} id="tspan4">
+      <tspan x={1158.2432} y={49} id="tspan4">
         <tspan
           style={{
             fill: "#2c2c2c",
           }}
           id="tspan3"
         >
-          {"Funcionamiento de Equipos"}
+          {"Equipment Operations"}
         </tspan>
       </tspan>
     </text>
@@ -3141,20 +3138,20 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1165.886}
+      x={1153.6479}
       y={70.901566}
       id="text12"
     >
       <tspan
         sodipodi:role="line"
         id="tspan12"
-        x={1165.886}
+        x={1153.6479}
         y={70.901566}
         style={{
           fontSize: 16,
         }}
       >
-        {"Funcionando"}
+        {"Working"}
       </tspan>
     </text>
     <text
@@ -3177,12 +3174,12 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1139.016}
+      x={1147.3823}
       y={125.70233}
       id="text13"
     >
-      <tspan sodipodi:role="line" id="tspan13" x={1139.016} y={125.70233}>
-        {"Falla"}
+      <tspan sodipodi:role="line" id="tspan13" x={1147.3823} y={125.70233}>
+        {"Failure"}
       </tspan>
     </text>
     <text
@@ -3209,7 +3206,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       id="text13-6"
     >
       <tspan sodipodi:role="line" id="tspan13-1" x={1153.4255} y={151.26404}>
-        {"Detenida"}
+        {"Stopped"}
       </tspan>
     </text>
     <path
@@ -3242,7 +3239,5 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => {
       id="path4"
     />
   </svg>
-  );
-};
-export default React.memo(SVGComponent);
-
+);
+export default SVGComponent;

@@ -3,6 +3,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { fetchLagoons, type LagoonAccess } from "../api/lagoonsApi";
 import { useAuth } from "../auth/AuthContext";
 import { ApiError } from "../auth/authApi";
+import { normalizeLagoonId } from "./lagoonAliases";
 
 interface LagoonsState {
   lagoons: LagoonAccess[];
@@ -21,16 +22,16 @@ const LagoonsContext = createContext<LagoonsContextValue | null>(null);
 function getLagoonsError(err: unknown): { message: string; status: number | null } {
   if (err instanceof ApiError) {
     if (err.status === 403) {
-      return { message: "Acceso no permitido", status: 403 };
+      return { message: "Access not allowed", status: 403 };
     }
-    return { message: err.message || "Error cargando lagunas", status: err.status };
+    return { message: err.message || "Error loading lagoons", status: err.status };
   }
 
   if (err instanceof Error) {
-    return { message: err.message || "Error cargando lagunas", status: null };
+    return { message: err.message || "Error loading lagoons", status: null };
   }
 
-  return { message: "Error cargando lagunas", status: null };
+  return { message: "Error loading lagoons", status: null };
 }
 
 export function LagoonsProvider({ children }: { children: React.ReactNode }) {
@@ -85,7 +86,7 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
       ...state,
       refresh,
       getLagoonById: (lagoonId: string) =>
-        state.lagoons.find((lagoon) => lagoon.lagoon_id === lagoonId) ?? null,
+        state.lagoons.find((lagoon) => lagoon.lagoon_id === normalizeLagoonId(lagoonId)) ?? null,
     }),
     [refresh, state],
   );
@@ -95,6 +96,6 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
 
 export function useLagoons() {
   const context = useContext(LagoonsContext);
-  if (!context) throw new Error("useLagoons debe usarse dentro de LagoonsProvider");
+  if (!context) throw new Error("useLagoons must be used within LagoonsProvider");
   return context;
 }

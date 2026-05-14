@@ -18,25 +18,24 @@ import PumpStatusKpi from "./lagoon/PumpStatusKpi";
 import ScadaMapPanel from "./lagoon/ScadaMapPanel";
 import { getHistorySeriesTagKey } from "./charts/historySeries";
 
+import { useScadaMapBundle } from "../hooks/useScadaMapBundle";
 import { useScadaRealtime } from "../hooks/useScadaRealtime";
 import { useHistory } from "../hooks/useHistory";
-import { useScadaLayoutScene } from "../hooks/useScadaLayoutScene";
 import { usePumpEventsLast3 } from "../hooks/usePumpEventsLast3";
 import { useAuth } from "../auth/AuthContext";
 import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
 import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
-import { normalizeScadaLayoutName } from "../scada/layoutResolver";
 import {
   buildRealtimeTagLookup,
   getRealtimeValue,
 } from "../scada/layoutSceneResolver";
 import { getPumpEventSortTime } from "../scada/pumpEventTime";
-import { svgRegistry } from "../scada/svgRegistry";
 import type {
   RealtimeTagLookup,
+  ResolvedScadaMap,
   ResolvedScadaElement,
-  ResolvedScadaTextLabel,
+  ScadaTankStateTags,
 } from "../types/scada-layouts";
 
 interface Props {
@@ -99,6 +98,47 @@ const quickRanges = [
   { label: "185D", days: 185 },
   { label: "365D", days: 365 },
 ];
+
+const SCADA_MAP_STORAGE_KEY_PREFIX = "crystal:scada:map";
+
+function getScadaMapStorageKey(lagoonId: string): string {
+  return `${SCADA_MAP_STORAGE_KEY_PREFIX}:${String(lagoonId ?? "").trim().toLowerCase()}`;
+}
+
+function readStoredMapId(lagoonId: string): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const value = window.localStorage.getItem(getScadaMapStorageKey(lagoonId));
+    return value?.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredMapId(lagoonId: string, mapId: string): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(getScadaMapStorageKey(lagoonId), mapId);
+  } catch {
+    // Best-effort persistence only.
+  }
+}
+
+function resolveInitialMapIndex(maps: ResolvedScadaMap[], lagoonId: string): number {
+  if (!maps.length) return 0;
+
+  const storedMapId = readStoredMapId(lagoonId);
+  if (storedMapId) {
+    const storedIndex = maps.findIndex((map) => map.id === storedMapId);
+    if (storedIndex >= 0) return storedIndex;
+  }
+
+  const defaultIndex = maps.findIndex((map) => map.default);
+  return defaultIndex >= 0 ? defaultIndex : 0;
+}
+
 function formatRealtimeTimestamp(
   value: string | null,
   timezone?: string | null,
@@ -160,7 +200,7 @@ function RealtimeHealthBanner({
   if (connectionState === "connecting") {
     return (
       <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
-        Conectando tiempo real...
+        Connecting real-time data...
       </div>
     );
   }
@@ -168,7 +208,7 @@ function RealtimeHealthBanner({
   if (connectionState === "reconnecting") {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Reconectando tiempo real{lastUpdateLabel ? `, ultimo dato ${lastUpdateLabel}` : ""}.
+        Reconnecting real-time data{lastUpdateLabel ? `, last data ${lastUpdateLabel}` : ""}.
       </div>
     );
   }
@@ -176,14 +216,14 @@ function RealtimeHealthBanner({
   if (connectionState === "degraded") {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Datos congelados{typeof lastDataAgeSec === "number" ? ` hace ${lastDataAgeSec}s` : ""}{lastUpdateLabel ? ` (ultima actualizacion ${lastUpdateLabel})` : ""}.
+        Frozen data{typeof lastDataAgeSec === "number" ? ` ${lastDataAgeSec}s ago` : ""}{lastUpdateLabel ? ` (last update ${lastUpdateLabel})` : ""}.
       </div>
     );
   }
 
   return (
     <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-      Tiempo real no disponible{lastUpdateLabel ? `, ultimo dato ${lastUpdateLabel}` : ""}.
+      Real-time data unavailable{lastUpdateLabel ? `, last data ${lastUpdateLabel}` : ""}.
       {error ? ` ${error}` : ""}
     </div>
   );
@@ -201,6 +241,60 @@ function extractEventTimestamp(value: unknown): string | null {
   }
 
   return null;
+}
+
+function normalizeSceneTagList(value: string | string[] | null | undefined): string[] {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed ? [trimmed] : [];
+  }
+
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((entry) => String(entry ?? "").trim())
+    .filter(Boolean);
+}
+
+function collectSceneTagIds(
+  elements: ResolvedScadaElement[],
+  options: { includeTankStateTags?: boolean } = {},
+): string[] {
+  const includeTankStateTags = options.includeTankStateTags ?? true;
+  const tagIds = new Set<string>();
+
+  elements.forEach((element) => {
+    [element.tag, element.fallback_tag]
+      .map((tagId) => String(tagId ?? "").trim())
+      .filter(Boolean)
+      .forEach((tagId) => tagIds.add(tagId));
+
+    if (!includeTankStateTags || element.type !== "tank") return;
+
+    const stateTags = (element.state_tags ?? {}) as ScadaTankStateTags;
+    [stateTags.LOW, stateTags.MEDIUM, stateTags.HIGH]
+      .flatMap((value) => normalizeSceneTagList(value))
+      .forEach((tagId) => tagIds.add(tagId));
+  });
+
+  return Array.from(tagIds);
+}
+
+function filterTagsForScene(
+  tags: Record<string, unknown>,
+  allowedTagIds: string[],
+): Record<string, unknown> {
+  if (!allowedTagIds.length) return {};
+
+  const allowed = new Set(
+    allowedTagIds.map((tagId) => String(tagId).trim().toUpperCase()),
+  );
+
+  return Object.fromEntries(
+    Object.entries(tags).filter(([tagId]) =>
+      allowed.has(String(tagId).trim().toUpperCase()),
+    ),
+  );
 }
 
 function normalizePumpEvents(value: unknown): string[] {
@@ -441,7 +535,7 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
   return (
     <section className="lagoon-panel rounded-[16px] p-4 sm:p-5">
       <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: 1, color: "#4f7fa2", mb: 2, display: "block" }}>
-        HISTORICO - VISTA {view.toUpperCase()}
+        HISTORICAL - VIEW {view.toUpperCase()}
       </Typography>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "minmax(0, 260px) minmax(0, 1fr) auto" }, alignItems: "center", gap: 2, mb: 3 }}>
@@ -454,15 +548,15 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
             input={<OutlinedInput label="TAG" />}
             renderValue={(selected) => {
               const list = selected as string[];
-              if (!list.length) return "Seleccionar TAG";
-              if (list.length === availableTags.length) return "Todos los TAG";
+              if (!list.length) return "Select TAG";
+              if (list.length === availableTags.length) return "All TAG";
               return list.join(", ");
             }}
             MenuProps={MENU_PROPS}
           >
             <MenuItem value={ALL_TAGS_VALUE}>
               <Checkbox size="small" checked={allTagsSelected} indeterminate={someTagsSelected} />
-              <ListItemText primary="Seleccionar todo" />
+              <ListItemText primary="Select all" />
             </MenuItem>
 
             {availableTags.map((tag) => (
@@ -513,26 +607,54 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
 
 export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: Props) {
   const { accessToken } = useAuth();
-  const { scene, loading: sceneLoading, error: sceneError } = useScadaLayoutScene(
+  const { bundle, loading: mapsLoading, error: mapsError } = useScadaMapBundle(
     lagoon.lagoon_id,
   );
 
   const lagoonId = lagoon.lagoon_id;
   const lagoonName = lagoon.lagoon_name;
-  const lagoonHeading = lagoon.timezone ?? "SCADA";
+  const maps = useMemo(() => bundle?.maps ?? [], [bundle]);
+  const [activeMapIndex, setActiveMapIndex] = useState(0);
 
-  const sceneLayoutId = scene ? normalizeScadaLayoutName(scene.layout_id) : "";
-  const svgKey = scene ? normalizeScadaLayoutName(scene.svg_component || sceneLayoutId) : "";
-  const svgEntry = svgKey ? svgRegistry[svgKey] ?? null : null;
-  const SvgComponent = svgEntry?.component ?? null;
-  const aspectRatio = svgEntry?.aspectRatio ?? scene?.aspect_ratio ?? "1400 / 1150";
+  useEffect(() => {
+    if (!maps.length) {
+      setActiveMapIndex(0);
+      return;
+    }
+
+    setActiveMapIndex((currentIndex) => {
+      const currentMap = maps[currentIndex];
+      if (currentMap) return currentIndex;
+      return resolveInitialMapIndex(maps, lagoonId);
+    });
+  }, [lagoonId, maps]);
+
+  const activeMap = maps[activeMapIndex] ?? maps[resolveInitialMapIndex(maps, lagoonId)] ?? null;
+  const scene = activeMap?.scene ?? null;
   const resolvedElements = useMemo(() => scene?.elements ?? [], [scene]);
-  const resolvedTextLabels = useMemo<ResolvedScadaTextLabel[]>(
-    () => scene?.labels ?? [],
-    [scene],
-  );
+
+  useEffect(() => {
+    if (!activeMap) return;
+    writeStoredMapId(lagoonId, activeMap.id);
+  }, [activeMap, lagoonId]);
+
   const pumpElements = useMemo(
     () => resolvedElements.filter((element) => element.type === "pump" && element.panel === "pump-status"),
+    [resolvedElements],
+  );
+  const overlayElements = useMemo(
+    () => resolvedElements.filter((element) => element.type === "kpi" || element.type === "plc_status"),
+    [resolvedElements],
+  );
+  const equipmentElements = useMemo(
+    () =>
+      resolvedElements.filter(
+        (element) =>
+          element.type === "pump" ||
+          element.type === "valve" ||
+          element.type === "tank" ||
+          element.type === "chemical",
+      ),
     [resolvedElements],
   );
 
@@ -548,15 +670,40 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     local_time,
     timezone,
   } = useScadaRealtime(lagoonId, accessToken);
-  const tagLookup = useMemo(() => buildRealtimeTagLookup(tags), [tags]);
+  const lagoonHeading = lagoon.timezone ?? "SCADA";
+  const overlayTagIds = useMemo(
+    () => collectSceneTagIds(overlayElements, { includeTankStateTags: false }),
+    [overlayElements],
+  );
+  const equipmentTagIds = useMemo(
+    () => collectSceneTagIds(equipmentElements, { includeTankStateTags: true }),
+    [equipmentElements],
+  );
+  const overlayTags = useMemo(
+    () => filterTagsForScene(tags, overlayTagIds),
+    [overlayTagIds, tags],
+  );
+  const equipmentTags = useMemo(
+    () => filterTagsForScene(tags, equipmentTagIds),
+    [equipmentTagIds, tags],
+  );
+  const overlayTagLookup = useMemo(
+    () => buildRealtimeTagLookup(overlayTags),
+    [overlayTags],
+  );
+  const equipmentTagLookup = useMemo(
+    () => buildRealtimeTagLookup(equipmentTags),
+    [equipmentTags],
+  );
   const hasScadaCards = resolvedElements.length > 0;
+  const hasRenderableMap = Boolean(activeMap);
   const [realtimeGraceExpired, setRealtimeGraceExpired] = useState(false);
 
   useEffect(() => {
     const shouldWaitForRealtime =
-      Boolean(SvgComponent) &&
-      !sceneError &&
-      !sceneLoading &&
+      hasRenderableMap &&
+      !mapsError &&
+      !mapsLoading &&
       Boolean(scene) &&
       hasScadaCards &&
       !realtime_ready;
@@ -573,17 +720,19 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     return () => {
       window.clearTimeout(timer);
     };
-  }, [SvgComponent, hasScadaCards, realtime_ready, scene, sceneError, sceneLoading, lagoonId]);
+  }, [hasRenderableMap, hasScadaCards, lagoonId, mapsError, mapsLoading, realtime_ready, scene]);
 
-  const scadaMapLoading = Boolean(SvgComponent) && !sceneError && (
-    sceneLoading ||
-    !scene ||
-    (hasScadaCards && !realtime_ready && !realtimeGraceExpired)
+  const scadaMapLoading = !mapsError && (
+    mapsLoading ||
+    (hasRenderableMap && (
+      !scene ||
+      (hasScadaCards && !realtime_ready && !realtimeGraceExpired)
+    ))
   );
 
   const realtimePtFitTags = useMemo(
-    () => Object.keys(tags).filter(isPtFitTag).sort((left, right) => left.localeCompare(right)),
-    [tags],
+    () => Object.keys(overlayTags).filter(isPtFitTag).sort((left, right) => left.localeCompare(right)),
+    [overlayTags],
   );
 
   useEffect(() => {
@@ -593,21 +742,21 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   return (
     <main className="h-full">
       <div className="space-y-6 px-0 py-1 sm:py-1.5">
-        {sceneError ? (
+        {mapsError ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {sceneError}
+            {mapsError}
           </div>
         ) : null}
 
-        {scene?.warnings?.length ? (
+        {bundle?.warnings?.length ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {scene.warnings.join(" | ")}
+            {bundle.warnings.join(" | ")}
           </div>
         ) : null}
 
-        {sceneLoading && !scene && !scadaMapLoading ? (
+        {mapsLoading && !scene && !scadaMapLoading ? (
           <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
-            Cargando layout SCADA...
+            Loading SCADA layout...
           </div>
         ) : null}
 
@@ -623,22 +772,21 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
         <ScadaMapPanel
           heading={lagoonHeading}
           title={lagoonName}
-          layoutId={sceneLayoutId}
-          elements={resolvedElements}
-          labels={resolvedTextLabels}
-          tagLookup={tagLookup}
+          maps={maps}
+          activeMapIndex={activeMapIndex}
+          onActiveMapIndexChange={setActiveMapIndex}
+          tagLookup={overlayTagLookup}
+          equipmentTagLookup={equipmentTagLookup}
           loading={scadaMapLoading}
           plcStatus={plc_status}
           localTime={local_time}
           timezone={timezone}
-          SvgComponent={SvgComponent}
-          aspectRatio={aspectRatio}
           canControl={lagoon.can_control}
         />
 
         {!lagoon.can_control ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Controles de bombas ocultos por permisos RBAC.
+            Pump controls hidden by RBAC permissions.
           </div>
         ) : null}
 
@@ -647,7 +795,7 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
             <PumpStatusSection
               lagoonId={lagoonId}
               pumpElements={pumpElements}
-              tagLookup={tagLookup}
+              tagLookup={equipmentTagLookup}
               pumpLastOn={pumpLastOn}
               timezone={timezone}
             />

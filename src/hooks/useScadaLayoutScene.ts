@@ -20,7 +20,7 @@ async function loadScene(
 ): Promise<ResolvedScadaScene> {
   const normalizedLagoonId = String(lagoonId ?? "").trim().toLowerCase();
   if (!normalizedLagoonId) {
-    throw new Error("lagoon_id es requerido para cargar la configuracion SCADA.");
+    throw new Error("lagoon_id is required to load the SCADA configuration.");
   }
 
   if (!forceRefetch) {
@@ -40,7 +40,7 @@ async function loadScene(
 
     if (!scene) {
       throw new Error(
-        `No existe configuracion JSON para la laguna "${normalizedLagoonId}".`,
+        `No JSON configuration exists for lagoon "${normalizedLagoonId}".`,
       );
     }
 
@@ -101,7 +101,7 @@ export function useScadaLayoutScene(
         setError(
           err instanceof Error
             ? err.message
-            : "Error cargando configuracion SCADA.",
+            : "Error loading SCADA configuration.",
         );
       })
       .finally(() => {
@@ -138,7 +138,7 @@ export function useScadaLayoutScene(
         setError(
           err instanceof Error
             ? err.message
-            : "Error cargando configuracion SCADA.",
+            : "Error loading SCADA configuration.",
         );
       }
     };
@@ -166,7 +166,7 @@ export function useScadaLayoutScene(
       setError(
         err instanceof Error
           ? err.message
-          : "Error cargando configuracion SCADA.",
+          : "Error loading SCADA configuration.",
       );
     } finally {
       setLoading(false);

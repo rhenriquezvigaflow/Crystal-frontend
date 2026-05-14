@@ -34,16 +34,16 @@ export default function Login() {
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 401) {
-          setError("Credenciales inválidas");
+          setError("Invalid credentials");
         } else if (err.status === 403) {
-          setError("Acceso no permitido");
+          setError("Access not allowed");
         } else {
-          setError("Error al iniciar sesión");
+          setError("Error signing in");
         }
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Error al iniciar sesión");
+        setError("Error signing in");
       }
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export default function Login() {
           <div className="rounded-2xl bg-white/18 backdrop-blur-[6px] border border-white/25 shadow-2xl p-8 text-white">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-semibold tracking-wide">Crystal Lagoons</h1>
-              <p className="text-sm opacity-80 mt-1">Plataforma SCADA</p>
+              <p className="text-sm opacity-80 mt-1">SCADA platform</p>
             </div>
 
             {error && (
@@ -75,7 +75,7 @@ export default function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="text-sm opacity-85">Correo electrónico</label>
+                <label className="text-sm opacity-85">Email</label>
                 <input
                   type="email"
                   autoComplete="username"
@@ -83,12 +83,12 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full mt-1 px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="usuario@empresa.com"
+                  placeholder="user@company.com"
                 />
               </div>
 
               <div>
-                <label className="text-sm opacity-85">Contraseña</label>
+                <label className="text-sm opacity-85">Password</label>
                 <input
                   type="password"
                   autoComplete="current-password"
@@ -105,7 +105,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full py-3 rounded-lg bg-linear-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 transition-all font-semibold shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? "Ingresando..." : "Ingresar"}
+                {loading ? "Signing in..." : "Sign in"}
               </button>
             </form>
 
