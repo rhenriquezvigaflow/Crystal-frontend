@@ -15,17 +15,17 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
   const [events, setEvents] = useState<PumpEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasLagoon = Boolean(lagoonId);
 
   useEffect(() => {
-    if (!lagoonId) {
-      setEvents([]);
-      setError(null);
-      return;
-    }
+    if (!hasLagoon) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+    const loadingTimer = window.setTimeout(() => {
+      if (cancelled) return;
+      setLoading(true);
+      setError(null);
+    }, 0);
 
     fetchPumpEventsLast3(lagoonId)
       .then((res) => {
@@ -48,8 +48,11 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(loadingTimer);
     };
-  }, [lagoonId]);
+  }, [hasLagoon, lagoonId]);
 
-  return { events, loading, error };
+  return hasLagoon
+    ? { events, loading, error }
+    : { events: [], loading: false, error: null };
 }

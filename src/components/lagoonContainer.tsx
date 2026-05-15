@@ -22,7 +22,7 @@ import { useScadaMapBundle } from "../hooks/useScadaMapBundle";
 import { useScadaRealtime } from "../hooks/useScadaRealtime";
 import { useHistory } from "../hooks/useHistory";
 import { usePumpEventsLast3 } from "../hooks/usePumpEventsLast3";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../auth/useAuth";
 import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
 import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
@@ -478,31 +478,29 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
   }, [data]);
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const visibleSelectedTags = useMemo(() => {
+    if (!availableTags.length) return [];
+    if (!selectedTags.length) return availableTags;
 
-  useEffect(() => {
-    if (!availableTags.length) return;
-
-    setSelectedTags((prev) => {
-      if (!prev.length) return availableTags;
-      const valid = prev.filter((tag) => availableTags.includes(tag));
-      return valid.length ? valid : availableTags;
-    });
-  }, [availableTags]);
+    const availableTagSet = new Set(availableTags);
+    const valid = selectedTags.filter((tag) => availableTagSet.has(tag));
+    return valid.length ? valid : availableTags;
+  }, [availableTags, selectedTags]);
 
   const handleTagChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
     const nextValue = typeof value === "string" ? value.split(",") : value;
 
     if (nextValue.includes(ALL_TAGS_VALUE)) {
-      setSelectedTags((prev) => (prev.length === availableTags.length ? [] : availableTags));
+      setSelectedTags(visibleSelectedTags.length === availableTags.length ? [] : availableTags);
       return;
     }
 
     setSelectedTags(nextValue);
   };
 
-  const allTagsSelected = availableTags.length > 0 && selectedTags.length === availableTags.length;
-  const someTagsSelected = selectedTags.length > 0 && selectedTags.length < availableTags.length;
+  const allTagsSelected = availableTags.length > 0 && visibleSelectedTags.length === availableTags.length;
+  const someTagsSelected = visibleSelectedTags.length > 0 && visibleSelectedTags.length < availableTags.length;
 
   const onDateRangeChange = (startValue: string, endValue: string) => {
     const start = new Date(startValue);
@@ -543,7 +541,7 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
           <InputLabel>TAG</InputLabel>
           <Select
             multiple
-            value={selectedTags}
+            value={visibleSelectedTags}
             onChange={handleTagChange}
             input={<OutlinedInput label="TAG" />}
             renderValue={(selected) => {
@@ -561,7 +559,7 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
 
             {availableTags.map((tag) => (
               <MenuItem key={tag} value={tag}>
-                <Checkbox size="small" checked={selectedTags.includes(tag)} />
+                <Checkbox size="small" checked={visibleSelectedTags.includes(tag)} />
                 <ListItemText primary={tag} />
               </MenuItem>
             ))}
@@ -592,7 +590,7 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
             loading={loading}
             visibleStart={visibleStart}
             visibleEnd={visibleEnd}
-            selectedTags={selectedTags}
+            selectedTags={visibleSelectedTags}
             timezone={timezone}
             onRangeChange={(start, end) => {
               setVisibleStart(start);
@@ -615,21 +613,13 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   const lagoonName = lagoon.lagoon_name;
   const maps = useMemo(() => bundle?.maps ?? [], [bundle]);
   const [activeMapIndex, setActiveMapIndex] = useState(0);
+  const resolvedActiveMapIndex = useMemo(() => {
+    if (!maps.length) return 0;
+    if (maps[activeMapIndex]) return activeMapIndex;
+    return resolveInitialMapIndex(maps, lagoonId);
+  }, [activeMapIndex, lagoonId, maps]);
 
-  useEffect(() => {
-    if (!maps.length) {
-      setActiveMapIndex(0);
-      return;
-    }
-
-    setActiveMapIndex((currentIndex) => {
-      const currentMap = maps[currentIndex];
-      if (currentMap) return currentIndex;
-      return resolveInitialMapIndex(maps, lagoonId);
-    });
-  }, [lagoonId, maps]);
-
-  const activeMap = maps[activeMapIndex] ?? maps[resolveInitialMapIndex(maps, lagoonId)] ?? null;
+  const activeMap = maps[resolvedActiveMapIndex] ?? null;
   const scene = activeMap?.scene ?? null;
   const resolvedElements = useMemo(() => scene?.elements ?? [], [scene]);
 
@@ -697,36 +687,37 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   );
   const hasScadaCards = resolvedElements.length > 0;
   const hasRenderableMap = Boolean(activeMap);
-  const [realtimeGraceExpired, setRealtimeGraceExpired] = useState(false);
+  const [realtimeGraceExpired, setRealtimeGraceExpired] = useState<string | null>(null);
+  const shouldWaitForRealtime =
+    hasRenderableMap &&
+    !mapsError &&
+    !mapsLoading &&
+    Boolean(scene) &&
+    hasScadaCards &&
+    !realtime_ready;
+  const realtimeGraceKey = shouldWaitForRealtime
+    ? `${lagoonId}:${activeMap?.id ?? "default"}`
+    : null;
+  const isRealtimeGraceExpired =
+    realtimeGraceKey !== null && realtimeGraceExpired === realtimeGraceKey;
 
   useEffect(() => {
-    const shouldWaitForRealtime =
-      hasRenderableMap &&
-      !mapsError &&
-      !mapsLoading &&
-      Boolean(scene) &&
-      hasScadaCards &&
-      !realtime_ready;
-
-    if (!shouldWaitForRealtime) {
-      setRealtimeGraceExpired(false);
-      return;
-    }
+    if (!realtimeGraceKey) return;
 
     const timer = window.setTimeout(() => {
-      setRealtimeGraceExpired(true);
+      setRealtimeGraceExpired(realtimeGraceKey);
     }, SCADA_REALTIME_GRACE_MS);
 
     return () => {
       window.clearTimeout(timer);
     };
-  }, [hasRenderableMap, hasScadaCards, lagoonId, mapsError, mapsLoading, realtime_ready, scene]);
+  }, [realtimeGraceKey]);
 
   const scadaMapLoading = !mapsError && (
-    mapsLoading ||
-    (hasRenderableMap && (
-      !scene ||
-      (hasScadaCards && !realtime_ready && !realtimeGraceExpired)
+      mapsLoading ||
+      (hasRenderableMap && (
+        !scene ||
+      (hasScadaCards && !realtime_ready && !isRealtimeGraceExpired)
     ))
   );
 
@@ -766,14 +757,14 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           lastTs={ts}
           timezone={timezone}
           error={connection_error}
-          graceExpired={realtimeGraceExpired}
+          graceExpired={isRealtimeGraceExpired}
         />
 
         <ScadaMapPanel
           heading={lagoonHeading}
           title={lagoonName}
           maps={maps}
-          activeMapIndex={activeMapIndex}
+          activeMapIndex={resolvedActiveMapIndex}
           onActiveMapIndexChange={setActiveMapIndex}
           tagLookup={overlayTagLookup}
           equipmentTagLookup={equipmentTagLookup}

@@ -1,23 +1,14 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { fetchLagoons, type LagoonAccess } from "../api/lagoonsApi";
-import { useAuth } from "../auth/AuthContext";
+import { fetchLagoons } from "../api/lagoonsApi";
+import { useAuth } from "../auth/useAuth";
 import { ApiError } from "../auth/authApi";
 import { normalizeLagoonId } from "./lagoonAliases";
-
-interface LagoonsState {
-  lagoons: LagoonAccess[];
-  loading: boolean;
-  error: string | null;
-  errorStatus: number | null;
-}
-
-interface LagoonsContextValue extends LagoonsState {
-  refresh: () => Promise<void>;
-  getLagoonById: (lagoonId: string) => LagoonAccess | null;
-}
-
-const LagoonsContext = createContext<LagoonsContextValue | null>(null);
+import {
+  LagoonsContext,
+  type LagoonsContextValue,
+  type LagoonsState,
+} from "./lagoonsContextValue";
 
 function getLagoonsError(err: unknown): { message: string; status: number | null } {
   if (err instanceof ApiError) {
@@ -78,7 +69,13 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    void refresh();
+    const timer = window.setTimeout(() => {
+      void refresh();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [refresh]);
 
   const value = useMemo<LagoonsContextValue>(
@@ -92,10 +89,4 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <LagoonsContext.Provider value={value}>{children}</LagoonsContext.Provider>;
-}
-
-export function useLagoons() {
-  const context = useContext(LagoonsContext);
-  if (!context) throw new Error("useLagoons must be used within LagoonsProvider");
-  return context;
 }

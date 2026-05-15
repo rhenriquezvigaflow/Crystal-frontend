@@ -1,37 +1,28 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { authApi, type LoginPayload, type LoginResponse } from "./authApi";
 import { getStoredSession, storeSession, clearSession, isTokenValid } from "./session";
+import { AuthContext, type AuthContextValue, type AuthState } from "./authContextValue";
 
-type AuthState = {
-  accessToken: string | null;
-  userEmail: string | null;
+const EMPTY_AUTH_STATE: AuthState = {
+  accessToken: null,
+  userEmail: null,
 };
 
-type AuthContextValue = AuthState & {
-  isAuthenticated: boolean;
-  login: (payload: LoginPayload) => Promise<void>;
-  logout: () => void;
-};
+function getInitialAuthState(): AuthState {
+  const session = getStoredSession();
+  if (session?.accessToken && isTokenValid(session.accessToken)) {
+    return {
+      accessToken: session.accessToken,
+      userEmail: session.userEmail ?? null,
+    };
+  }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+  clearSession();
+  return EMPTY_AUTH_STATE;
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    accessToken: null,
-    userEmail: null,
-  });
-
-  useEffect(() => {
-    const s = getStoredSession();
-    if (s?.accessToken && isTokenValid(s.accessToken)) {
-      setState({
-        accessToken: s.accessToken,
-        userEmail: s.userEmail ?? null,
-      });
-    } else {
-      clearSession();
-    }
-  }, []);
+  const [state, setState] = useState<AuthState>(getInitialAuthState);
 
   const login = async (payload: LoginPayload) => {
     const res: LoginResponse = await authApi.login(payload);
@@ -62,10 +53,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [state]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
-  return ctx;
 }

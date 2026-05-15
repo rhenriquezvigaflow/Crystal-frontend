@@ -19,10 +19,8 @@ interface Props {
 }
 
 function ScadaOverlay({
-  layoutId,
   elements,
   tagLookup,
-  stageRef,
   plc_status,
   local_time,
   timezone,

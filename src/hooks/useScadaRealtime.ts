@@ -60,8 +60,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
 
   useEffect(() => {
     if (lastMessageAt === null) {
-      setLastDataAgeSec(null);
-      return;
+      return undefined;
     }
 
     const updateAge = () => {
@@ -80,6 +79,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
 
   useEffect(() => {
     let disposed = false;
+    let resetTimer: number | null = null;
     let reconnectTimer: number | null = null;
     let reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
     let reconnectCount = 0;
@@ -107,17 +107,27 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
       reconnectTimer = null;
     };
 
-    setTags({});
-    setPumpLastOn({});
-    setTs(null);
-    setPlcStatus(undefined);
-    setLocalTime(null);
-    setTimezone(null);
-    setReconnectAttempt(0);
-    setConnectionError(null);
-    setLastMessageAt(null);
-    setLastDataAgeSec(null);
-    setConnectionState("idle");
+    const clearResetTimer = () => {
+      if (resetTimer === null) return;
+      window.clearTimeout(resetTimer);
+      resetTimer = null;
+    };
+
+    resetTimer = window.setTimeout(() => {
+      if (disposed) return;
+
+      setTags({});
+      setPumpLastOn({});
+      setTs(null);
+      setPlcStatus(undefined);
+      setLocalTime(null);
+      setTimezone(null);
+      setReconnectAttempt(0);
+      setConnectionError(null);
+      setLastMessageAt(null);
+      setLastDataAgeSec(null);
+      setConnectionState("idle");
+    }, 0);
 
     if (!normalizedLagoonId || normalizedLagoonId === "undefined" || !accessToken) {
       return;
@@ -229,6 +239,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
 
     return () => {
       disposed = true;
+      clearResetTimer();
       clearReconnectTimer();
 
       if (wsRef.current) {
@@ -238,9 +249,11 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
     };
   }, [normalizedLagoonId, accessToken]);
 
+  const effectiveLastDataAgeSec = lastMessageAt === null ? null : lastDataAgeSec;
+
   const isRealtimeStale =
-    typeof lastDataAgeSec === "number" &&
-    lastDataAgeSec >= REALTIME_STALE_AFTER_SEC;
+    typeof effectiveLastDataAgeSec === "number" &&
+    effectiveLastDataAgeSec >= REALTIME_STALE_AFTER_SEC;
 
   const effectiveConnectionState =
     connectionState === "connected" && isRealtimeStale
@@ -260,6 +273,6 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
     connection_error: connectionError,
     reconnect_attempt: reconnectAttempt,
     last_message_at: lastMessageAt,
-    last_data_age_sec: lastDataAgeSec,
+    last_data_age_sec: effectiveLastDataAgeSec,
   };
 }

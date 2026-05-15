@@ -4,9 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import Sidebar from "../components/Sidebar";
 import LagoonContainer from "../components/lagoonContainer";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../auth/useAuth";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
-import { useLagoons } from "../lagoons/LagoonsContext";
+import { useLagoons } from "../lagoons/useLagoons";
 
 const AlarmManagerModal = lazy(() => import("../components/AlarmManagerModal"));
 
@@ -78,7 +78,13 @@ export default function LagoonsView() {
   const [realtimePtFitTags, setRealtimePtFitTags] = useState<string[]>([]);
 
   useEffect(() => {
-    setIsMobileNavOpen(false);
+    const timer = window.setTimeout(() => {
+      setIsMobileNavOpen(false);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [lagoonId]);
 
   useEffect(() => {
@@ -91,8 +97,14 @@ export default function LagoonsView() {
   }, [lagoonId, navigate, rawLagoonId]);
 
   useEffect(() => {
-    setIsAlarmModalOpen(false);
-    setRealtimePtFitTags([]);
+    const timer = window.setTimeout(() => {
+      setIsAlarmModalOpen(false);
+      setRealtimePtFitTags([]);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [lagoonId]);
 
   useEffect(() => {

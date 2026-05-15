@@ -15,6 +15,7 @@ import { getDiscreteStateLabel } from "../../scada/layoutSceneResolver";
 import { resolveScadaSvgRegistryEntry } from "../../scada/svgRegistry";
 import type {
   RealtimeTagLookup,
+  ResolvedScadaElement,
   ResolvedScadaMap,
   ResolvedScadaTextLabel,
   ScadaRenderRules,
@@ -40,6 +41,9 @@ const SKELETON_PLACEHOLDERS = [
   { left: "66%", top: "61%", width: 118 },
   { left: "81%", top: "28%", width: 122 },
 ];
+
+const EMPTY_SCADA_ELEMENTS: ResolvedScadaElement[] = [];
+const EMPTY_SCADA_LABELS: ResolvedScadaTextLabel[] = [];
 
 function ScadaMapSkeleton() {
   return (
@@ -182,8 +186,8 @@ export default function ScadaMapRenderer({
   }, []);
 
   const scene = activeMap?.scene ?? null;
-  const elements = scene?.elements ?? [];
-  const labels = scene?.labels ?? [];
+  const elements = scene?.elements ?? EMPTY_SCADA_ELEMENTS;
+  const labels = scene?.labels ?? EMPTY_SCADA_LABELS;
   const layoutId = scene?.layout_id ?? activeMap?.id ?? "default";
   const renderRules = scene?.render_rules ?? ({
     tank: { mode: "binary_level", states: {}, animation: null },

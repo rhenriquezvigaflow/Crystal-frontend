@@ -113,11 +113,11 @@ function ScadaSvgEquipmentLabelsOverlay({
     [elements, manualLabelTargets],
   );
   const [placements, setPlacements] = useState<EquipmentLabelPlacement[]>([]);
+  const hasLabelCandidates = labelCandidates.length > 0;
 
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || !labelCandidates.length) {
-      setPlacements([]);
+    if (!hasLabelCandidates || !stage) {
       return undefined;
     }
 
@@ -159,9 +159,9 @@ function ScadaSvgEquipmentLabelsOverlay({
       resizeObserver?.disconnect();
       window.removeEventListener("resize", updatePlacements);
     };
-  }, [labelCandidates, stageRef]);
+  }, [hasLabelCandidates, labelCandidates, stageRef]);
 
-  if (!placements.length) return null;
+  if (!hasLabelCandidates || !placements.length) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 z-[2]">

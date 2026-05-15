@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { useAuth } from "../auth/AuthContext";
-import { useLagoons } from "../lagoons/LagoonsContext";
+import { useAuth } from "../auth/useAuth";
+import { useLagoons } from "../lagoons/useLagoons";
 
 type FullscreenMessageProps = {
   message: string;

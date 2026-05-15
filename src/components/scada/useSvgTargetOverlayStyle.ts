@@ -96,10 +96,10 @@ export function useSvgTargetOverlayStyle({
   anchor = "center",
 }: UseSvgTargetOverlayStyleOptions): CSSProperties | null {
   const [autoStyle, setAutoStyle] = useState<CSSProperties | null>(null);
+  const hasAutoTarget = !manualStyle && Boolean(svgTarget?.trim());
 
   useEffect(() => {
-    if (manualStyle || !stageRef?.current || !svgTarget?.trim()) {
-      setAutoStyle(null);
+    if (!hasAutoTarget || !stageRef?.current || !svgTarget?.trim()) {
       return undefined;
     }
 
@@ -172,9 +172,13 @@ export function useSvgTargetOverlayStyle({
       resizeObserver?.disconnect();
       window.removeEventListener("resize", updatePlacement);
     };
-  }, [anchor, manualStyle, scale, stageRef, svgTarget]);
+  }, [anchor, hasAutoTarget, scale, stageRef, svgTarget]);
 
-  return useMemo(() => manualStyle ?? autoStyle, [autoStyle, manualStyle]);
+  return useMemo(() => {
+    if (manualStyle) return manualStyle;
+    if (!hasAutoTarget) return null;
+    return autoStyle;
+  }, [autoStyle, hasAutoTarget, manualStyle]);
 }
 
 export function useSvgTargetColor({
@@ -183,10 +187,10 @@ export function useSvgTargetColor({
   fallbackColor,
 }: UseSvgTargetColorOptions): string {
   const [resolvedColor, setResolvedColor] = useState(fallbackColor);
+  const hasColorTarget = Boolean(svgTarget?.trim());
 
   useEffect(() => {
-    if (!stageRef?.current || !svgTarget?.trim()) {
-      setResolvedColor(fallbackColor);
+    if (!hasColorTarget || !stageRef?.current || !svgTarget?.trim()) {
       return undefined;
     }
 
@@ -194,8 +198,13 @@ export function useSvgTargetColor({
     const targetNode = getTargetNode(stage, svgTarget);
 
     if (!targetNode) {
-      setResolvedColor(fallbackColor);
-      return undefined;
+      const animationFrame = window.requestAnimationFrame(() => {
+        setResolvedColor(fallbackColor);
+      });
+
+      return () => {
+        window.cancelAnimationFrame(animationFrame);
+      };
     }
 
     let animationFrame = 0;
@@ -224,7 +233,7 @@ export function useSvgTargetColor({
       window.cancelAnimationFrame(animationFrame);
       mutationObserver.disconnect();
     };
-  }, [fallbackColor, stageRef, svgTarget]);
+  }, [fallbackColor, hasColorTarget, stageRef, svgTarget]);
 
-  return resolvedColor;
+  return hasColorTarget ? resolvedColor : fallbackColor;
 }

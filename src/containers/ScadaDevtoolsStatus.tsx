@@ -20,6 +20,7 @@ interface Props {
 }
 
 function ScadaDevtoolsStatus(_props: Props) {
+  void _props;
   return null;
 }
 
