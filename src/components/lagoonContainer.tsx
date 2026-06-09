@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -26,15 +26,19 @@ import { useAuth } from "../auth/useAuth";
 import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
 import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
+import { useProduct } from "../modules/shared/product/useProduct";
+import type { ProductType } from "../modules/shared/product/types";
 import {
   buildRealtimeTagLookup,
   getRealtimeValue,
 } from "../scada/layoutSceneResolver";
+import { getScadaTankStateTagIds } from "../scada/layoutEquipmentState";
 import { getPumpEventSortTime } from "../scada/pumpEventTime";
 import type {
   RealtimeTagLookup,
-  ResolvedScadaMap,
   ResolvedScadaElement,
+  ResolvedScadaMap,
+  ResolvedScadaTextLabel,
   ScadaTankStateTags,
 } from "../types/scada-layouts";
 
@@ -99,37 +103,55 @@ const quickRanges = [
   { label: "365D", days: 365 },
 ];
 
-const SCADA_MAP_STORAGE_KEY_PREFIX = "crystal:scada:map";
+const SCADA_MAP_STORAGE_KEY_PREFIX = "scada:map";
+const LEGACY_CRYSTAL_SCADA_MAP_STORAGE_KEY_PREFIX = "crystal:scada:map";
 
-function getScadaMapStorageKey(lagoonId: string): string {
-  return `${SCADA_MAP_STORAGE_KEY_PREFIX}:${String(lagoonId ?? "").trim().toLowerCase()}`;
+function getScadaMapStorageKey(productType: ProductType | null | undefined, lagoonId: string): string {
+  const normalizedProduct = productType ?? "crystal";
+  return `${SCADA_MAP_STORAGE_KEY_PREFIX}:${normalizedProduct}:${String(lagoonId ?? "").trim().toLowerCase()}`;
 }
 
-function readStoredMapId(lagoonId: string): string | null {
+function getLegacyCrystalScadaMapStorageKey(lagoonId: string): string {
+  return `${LEGACY_CRYSTAL_SCADA_MAP_STORAGE_KEY_PREFIX}:${String(lagoonId ?? "").trim().toLowerCase()}`;
+}
+
+function readStoredMapId(productType: ProductType | null | undefined, lagoonId: string): string | null {
   if (typeof window === "undefined") return null;
 
   try {
-    const value = window.localStorage.getItem(getScadaMapStorageKey(lagoonId));
-    return value?.trim() || null;
+    const value = window.localStorage.getItem(getScadaMapStorageKey(productType, lagoonId));
+    if (value?.trim()) return value.trim();
+    if (productType === "crystal") {
+      return window.localStorage.getItem(getLegacyCrystalScadaMapStorageKey(lagoonId))?.trim() || null;
+    }
+    return null;
   } catch {
     return null;
   }
 }
 
-function writeStoredMapId(lagoonId: string, mapId: string): void {
+function writeStoredMapId(
+  productType: ProductType | null | undefined,
+  lagoonId: string,
+  mapId: string,
+): void {
   if (typeof window === "undefined") return;
 
   try {
-    window.localStorage.setItem(getScadaMapStorageKey(lagoonId), mapId);
+    window.localStorage.setItem(getScadaMapStorageKey(productType, lagoonId), mapId);
   } catch {
     // Best-effort persistence only.
   }
 }
 
-function resolveInitialMapIndex(maps: ResolvedScadaMap[], lagoonId: string): number {
+function resolveInitialMapIndex(
+  maps: ResolvedScadaMap[],
+  lagoonId: string,
+  productType?: ProductType | null,
+): number {
   if (!maps.length) return 0;
 
-  const storedMapId = readStoredMapId(lagoonId);
+  const storedMapId = readStoredMapId(productType, lagoonId);
   if (storedMapId) {
     const storedIndex = maps.findIndex((map) => map.id === storedMapId);
     if (storedIndex >= 0) return storedIndex;
@@ -243,19 +265,6 @@ function extractEventTimestamp(value: unknown): string | null {
   return null;
 }
 
-function normalizeSceneTagList(value: string | string[] | null | undefined): string[] {
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    return trimmed ? [trimmed] : [];
-  }
-
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .map((entry) => String(entry ?? "").trim())
-    .filter(Boolean);
-}
-
 function collectSceneTagIds(
   elements: ResolvedScadaElement[],
   options: { includeTankStateTags?: boolean } = {},
@@ -271,9 +280,20 @@ function collectSceneTagIds(
 
     if (!includeTankStateTags || element.type !== "tank") return;
 
-    const stateTags = (element.state_tags ?? {}) as ScadaTankStateTags;
-    [stateTags.LOW, stateTags.MEDIUM, stateTags.HIGH]
-      .flatMap((value) => normalizeSceneTagList(value))
+    getScadaTankStateTagIds((element.state_tags ?? {}) as ScadaTankStateTags)
+      .forEach((tagId) => tagIds.add(tagId));
+  });
+
+  return Array.from(tagIds);
+}
+
+function collectSceneLabelTagIds(labels: ResolvedScadaTextLabel[]): string[] {
+  const tagIds = new Set<string>();
+
+  labels.forEach((label) => {
+    [label.tag, label.fallback_tag]
+      .map((tagId) => String(tagId ?? "").trim())
+      .filter(Boolean)
       .forEach((tagId) => tagIds.add(tagId));
   });
 
@@ -359,20 +379,90 @@ function normalizePumpState(value: unknown): number | null {
   return null;
 }
 
+const KIRAH_FILTER_STATUS_TAG = "FILTRACION.ST";
+const KIRAH_FILTER_STATUS_FALLBACK_TAG = "FILTRACION_ST";
+
+const FILTER_STATUS_LABELS: Record<number, string> = {
+  0: "DISABLED",
+  1: "STOPPED",
+  2: "SWITCHING TO SERVICE",
+  3: "STARTING FILTRATION",
+  4: "STARTING FILTRATION PUMP",
+  5: "FILTERING",
+  6: "SWITCHING TO BACKWASH",
+  7: "SWITCHING TO BACKWASH",
+  8: "STARTING BACKWASH",
+  9: "BACKWASHING",
+  10: "BACKWASH COMPLETE",
+  11: "STOPPING BACKWASH",
+};
+
+function normalizeFilterStatus(value: unknown): number | null {
+  if (typeof value === "boolean") return value ? 1 : 0;
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const rounded = Math.round(value);
+    return rounded === value && rounded >= 0 && rounded <= 11 ? rounded : null;
+  }
+
+  if (typeof value !== "string") return null;
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const parsed = Number(trimmed);
+  if (!Number.isFinite(parsed)) return null;
+
+  const rounded = Math.round(parsed);
+  return rounded === parsed && rounded >= 0 && rounded <= 11 ? rounded : null;
+}
+
+function getFilterStatusLabel(tagLookup: RealtimeTagLookup): string {
+  const rawStatus = getRealtimeValue(tagLookup, KIRAH_FILTER_STATUS_TAG, KIRAH_FILTER_STATUS_FALLBACK_TAG);
+  const state = normalizeFilterStatus(rawStatus);
+  return state === null ? "NO DATA" : FILTER_STATUS_LABELS[state] ?? "UNKNOWN STATUS";
+}
+
+function isKirahMapOne(lagoonId: string, activeMap: ResolvedScadaMap | null): boolean {
+  if (String(lagoonId).trim().toLowerCase() !== "kirah") return false;
+  if (!activeMap) return false;
+
+  const mapId = String(activeMap.id ?? "").trim().toLowerCase();
+  const mapName = String(activeMap.name ?? "").trim().toLowerCase();
+  const layoutId = String(activeMap.scene?.layout_id ?? "").trim().toLowerCase();
+  const svgComponent = String(activeMap.scene?.svg_component ?? "").trim().toLowerCase();
+
+  return (
+    activeMap.default ||
+    mapId === "layout4" ||
+    mapName === "map 1" ||
+    layoutId === "layout4" ||
+    svgComponent === "layout4"
+  );
+}
+
 interface PumpStatusSectionProps {
   lagoonId: string;
   pumpElements: ResolvedScadaElement[];
   tagLookup: RealtimeTagLookup;
   pumpLastOn: Record<string, unknown>;
   timezone?: string | null;
+  productType: ProductType;
 }
 
-function PumpStatusSection({ lagoonId, pumpElements, tagLookup, pumpLastOn, timezone }: PumpStatusSectionProps) {
+function PumpStatusSection({
+  lagoonId,
+  pumpElements,
+  tagLookup,
+  pumpLastOn,
+  timezone,
+  productType,
+}: PumpStatusSectionProps) {
   const {
     events: latestPumpEvents,
     loading: pumpEventsLoading,
     error: pumpEventsError,
-  } = usePumpEventsLast3(lagoonId);
+  } = usePumpEventsLast3(lagoonId, productType);
 
   const pumpEventsByTag = useMemo(() => {
     const map = new Map<string, PumpEvent[]>();
@@ -435,6 +525,7 @@ function PumpStatusSection({ lagoonId, pumpElements, tagLookup, pumpLastOn, time
   return (
     <PumpStatusKpi
       lagoonId={lagoonId}
+      productType={productType}
       pumps={resolvedPumps}
       timezone={timezone}
       eventsLoading={pumpEventsLoading}
@@ -447,16 +538,28 @@ function PumpStatusSection({ lagoonId, pumpElements, tagLookup, pumpLastOn, time
 interface HistorySectionProps {
   lagoonId: string;
   timezone?: string | null;
+  productType: ProductType;
 }
 
-function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
+function HistorySection({ lagoonId, timezone, productType }: HistorySectionProps) {
   const now = new Date();
   const oneDayAgo = new Date(now.getTime() - DAY_MS);
 
-  const [startISO, setStartISO] = useState(oneDayAgo.toISOString());
-  const [endISO, setEndISO] = useState(now.toISOString());
   const [visibleStart, setVisibleStart] = useState<Date>(oneDayAgo);
   const [visibleEnd, setVisibleEnd] = useState<Date>(now);
+
+  const commitVisibleRange = useCallback((start: Date, end: Date) => {
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return;
+
+    if (start <= end) {
+      setVisibleStart(new Date(start));
+      setVisibleEnd(new Date(end));
+      return;
+    }
+
+    setVisibleStart(new Date(end));
+    setVisibleEnd(new Date(start));
+  }, []);
 
   const daysVisible = useMemo(() => daysBetween(visibleStart, visibleEnd), [visibleStart, visibleEnd]);
   const view = getViewByDays(daysVisible);
@@ -466,6 +569,7 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
     startDate: visibleStart.toISOString(),
     endDate: visibleEnd.toISOString(),
     view,
+    productType,
   });
 
   const availableTags = useMemo(() => {
@@ -477,22 +581,43 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
     return Array.from(new Set(tags)).sort();
   }, [data]);
 
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[] | null>(null);
+  const ignoreNextTagChangeRef = useRef(false);
   const visibleSelectedTags = useMemo(() => {
     if (!availableTags.length) return [];
-    if (!selectedTags.length) return availableTags;
+    if (selectedTags === null) return availableTags;
 
     const availableTagSet = new Set(availableTags);
-    const valid = selectedTags.filter((tag) => availableTagSet.has(tag));
-    return valid.length ? valid : availableTags;
+    return selectedTags.filter((tag) => availableTagSet.has(tag));
   }, [availableTags, selectedTags]);
 
+  const toggleAllTags = () => {
+    ignoreNextTagChangeRef.current = true;
+    setSelectedTags((currentTags) => {
+      if (!availableTags.length) return currentTags;
+      if (currentTags === null) return [];
+
+      const availableTagSet = new Set(availableTags);
+      const validSelectedCount = currentTags.filter((tag) => availableTagSet.has(tag)).length;
+      return validSelectedCount === availableTags.length ? [] : null;
+    });
+
+    window.setTimeout(() => {
+      ignoreNextTagChangeRef.current = false;
+    }, 0);
+  };
+
   const handleTagChange = (event: SelectChangeEvent<string[]>) => {
+    if (ignoreNextTagChangeRef.current) {
+      ignoreNextTagChangeRef.current = false;
+      return;
+    }
+
     const value = event.target.value;
     const nextValue = typeof value === "string" ? value.split(",") : value;
 
     if (nextValue.includes(ALL_TAGS_VALUE)) {
-      setSelectedTags(visibleSelectedTags.length === availableTags.length ? [] : availableTags);
+      toggleAllTags();
       return;
     }
 
@@ -501,33 +626,13 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
 
   const allTagsSelected = availableTags.length > 0 && visibleSelectedTags.length === availableTags.length;
   const someTagsSelected = visibleSelectedTags.length > 0 && visibleSelectedTags.length < availableTags.length;
-
-  const onDateRangeChange = (startValue: string, endValue: string) => {
-    const start = new Date(startValue);
-    const end = new Date(endValue);
-    if (start > end) return;
-
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    setStartISO(start.toISOString());
-    setEndISO(end.toISOString());
-    setVisibleStart(start);
-    setVisibleEnd(end);
-  };
+  const chartSelectedTags = selectedTags === null ? undefined : visibleSelectedTags;
 
   const quickRange = (days: number) => {
     const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const start = new Date(end.getTime() - days * DAY_MS);
 
-    const start = new Date();
-    start.setDate(start.getDate() - days);
-    start.setHours(0, 0, 0, 0);
-
-    setStartISO(start.toISOString());
-    setEndISO(end.toISOString());
-    setVisibleStart(start);
-    setVisibleEnd(end);
+    commitVisibleRange(start, end);
   };
 
   return (
@@ -552,9 +657,9 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
             }}
             MenuProps={MENU_PROPS}
           >
-            <MenuItem value={ALL_TAGS_VALUE}>
+            <MenuItem value={ALL_TAGS_VALUE} onClick={toggleAllTags}>
               <Checkbox size="small" checked={allTagsSelected} indeterminate={someTagsSelected} />
-              <ListItemText primary="Select all" />
+              <ListItemText primary={allTagsSelected ? "Deselect all" : "Select all"} />
             </MenuItem>
 
             {availableTags.map((tag) => (
@@ -579,7 +684,12 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
-          <DateRangePicker startISO={startISO} endISO={endISO} onChange={onDateRangeChange} />
+          <DateRangePicker
+            start={visibleStart}
+            end={visibleEnd}
+            timezone={timezone}
+            onChange={commitVisibleRange}
+          />
         </Box>
       </Box>
 
@@ -590,12 +700,9 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
             loading={loading}
             visibleStart={visibleStart}
             visibleEnd={visibleEnd}
-            selectedTags={visibleSelectedTags}
+            selectedTags={chartSelectedTags}
             timezone={timezone}
-            onRangeChange={(start, end) => {
-              setVisibleStart(start);
-              setVisibleEnd(end);
-            }}
+            onRangeChange={commitVisibleRange}
           />
         </div>
       </div>
@@ -605,6 +712,8 @@ function HistorySection({ lagoonId, timezone }: HistorySectionProps) {
 
 export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: Props) {
   const { accessToken } = useAuth();
+  const product = useProduct();
+  const productType = lagoon.product_type ?? product.id;
   const { bundle, loading: mapsLoading, error: mapsError } = useScadaMapBundle(
     lagoon.lagoon_id,
   );
@@ -616,17 +725,18 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   const resolvedActiveMapIndex = useMemo(() => {
     if (!maps.length) return 0;
     if (maps[activeMapIndex]) return activeMapIndex;
-    return resolveInitialMapIndex(maps, lagoonId);
-  }, [activeMapIndex, lagoonId, maps]);
+    return resolveInitialMapIndex(maps, lagoonId, productType);
+  }, [activeMapIndex, lagoonId, maps, productType]);
 
   const activeMap = maps[resolvedActiveMapIndex] ?? null;
   const scene = activeMap?.scene ?? null;
   const resolvedElements = useMemo(() => scene?.elements ?? [], [scene]);
+  const resolvedLabels = useMemo(() => scene?.labels ?? [], [scene]);
 
   useEffect(() => {
     if (!activeMap) return;
-    writeStoredMapId(lagoonId, activeMap.id);
-  }, [activeMap, lagoonId]);
+    writeStoredMapId(productType, lagoonId, activeMap.id);
+  }, [activeMap, lagoonId, productType]);
 
   const pumpElements = useMemo(
     () => resolvedElements.filter((element) => element.type === "pump" && element.panel === "pump-status"),
@@ -659,11 +769,16 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     plc_status,
     local_time,
     timezone,
-  } = useScadaRealtime(lagoonId, accessToken);
+  } = useScadaRealtime(lagoonId, accessToken, productType);
   const lagoonHeading = lagoon.timezone ?? "SCADA";
+  const historyTimezone = timezone ?? lagoon.timezone;
   const overlayTagIds = useMemo(
-    () => collectSceneTagIds(overlayElements, { includeTankStateTags: false }),
-    [overlayElements],
+    () =>
+      Array.from(new Set([
+        ...collectSceneTagIds(overlayElements, { includeTankStateTags: false }),
+        ...collectSceneLabelTagIds(resolvedLabels),
+      ])),
+    [overlayElements, resolvedLabels],
   );
   const equipmentTagIds = useMemo(
     () => collectSceneTagIds(equipmentElements, { includeTankStateTags: true }),
@@ -676,6 +791,10 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   const equipmentTags = useMemo(
     () => filterTagsForScene(tags, equipmentTagIds),
     [equipmentTagIds, tags],
+  );
+  const realtimeTagLookup = useMemo(
+    () => buildRealtimeTagLookup(tags),
+    [tags],
   );
   const overlayTagLookup = useMemo(
     () => buildRealtimeTagLookup(overlayTags),
@@ -725,6 +844,10 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     () => Object.keys(overlayTags).filter(isPtFitTag).sort((left, right) => left.localeCompare(right)),
     [overlayTags],
   );
+  const filterStatus = useMemo(
+    () => (isKirahMapOne(lagoonId, activeMap) ? getFilterStatusLabel(realtimeTagLookup) : null),
+    [activeMap, lagoonId, realtimeTagLookup],
+  );
 
   useEffect(() => {
     onRealtimePtFitTagsChange?.(realtimePtFitTags);
@@ -772,6 +895,7 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           plcStatus={plc_status}
           localTime={local_time}
           timezone={timezone}
+          filterStatus={filterStatus}
           canControl={lagoon.can_control}
         />
 
@@ -789,10 +913,15 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
               tagLookup={equipmentTagLookup}
               pumpLastOn={pumpLastOn}
               timezone={timezone}
+              productType={productType}
             />
           ) : null}
 
-          <HistorySection lagoonId={lagoonId} timezone={timezone} />
+          <HistorySection
+            lagoonId={lagoonId}
+            timezone={historyTimezone}
+            productType={productType}
+          />
         </div>
       </div>
     </main>

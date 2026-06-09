@@ -2,6 +2,9 @@ import type {
   RealtimeTagLookup,
   ResolvedScadaElement,
   ScadaRenderableElementType,
+  ScadaTankStateTagCondition,
+  ScadaTankStateTagEntry,
+  ScadaTankStateTagSelector,
   ScadaTankStateKey,
   ScadaTankStateTags,
 } from "../types/scada-layouts";
@@ -60,17 +63,47 @@ export function getScadaEquipmentStateBindingsFromElements(
     .filter((binding): binding is ScadaEquipmentStateBinding => binding !== null);
 }
 
-function normalizeTagList(value: string | string[] | null | undefined): string[] {
+function normalizeTagCondition(
+  value: ScadaTankStateTagEntry | null | undefined,
+): ScadaTankStateTagCondition | null {
   if (typeof value === "string") {
     const trimmed = value.trim();
-    return trimmed ? [trimmed] : [];
+    return trimmed ? { tag: trimmed, active_state: 1 } : null;
   }
 
-  if (!Array.isArray(value)) return [];
+  if (!value || typeof value !== "object") return null;
 
-  return value
-    .map((entry) => String(entry ?? "").trim())
-    .filter(Boolean);
+  const tag = String(value.tag ?? "").trim();
+  if (!tag) return null;
+
+  return {
+    tag,
+    active_state: value.active_state ?? 1,
+  };
+}
+
+function normalizeTagConditions(
+  value: ScadaTankStateTagSelector | undefined,
+): ScadaTankStateTagCondition[] {
+  const entries = Array.isArray(value) ? value : [value];
+
+  return entries
+    .map((entry) => normalizeTagCondition(entry))
+    .filter((entry): entry is ScadaTankStateTagCondition => entry !== null);
+}
+
+function resolveExpectedState(value: ScadaTankStateTagCondition["active_state"]): number {
+  return normalizeDiscreteState(value ?? 1) ?? 1;
+}
+
+export function getScadaTankStateTagIds(
+  stateTags: ScadaTankStateTags | null | undefined,
+): string[] {
+  return [
+    ...normalizeTagConditions(stateTags?.LOW),
+    ...normalizeTagConditions(stateTags?.MEDIUM),
+    ...normalizeTagConditions(stateTags?.HIGH),
+  ].map((condition) => condition.tag);
 }
 
 function resolveTankStateFromTags(
@@ -78,7 +111,10 @@ function resolveTankStateFromTags(
   tagLookup: RealtimeTagLookup,
 ): ScadaTankStateKey | "UNKNOWN" {
   const hasActiveState = (key: keyof ScadaTankStateTags): boolean =>
-    normalizeTagList(stateTags[key]).some((tag) => normalizeDiscreteState(getRealtimeValue(tagLookup, tag)) === 1);
+    normalizeTagConditions(stateTags[key]).some((condition) =>
+      normalizeDiscreteState(getRealtimeValue(tagLookup, condition.tag)) ===
+        resolveExpectedState(condition.active_state),
+    );
 
   if (hasActiveState("HIGH")) return "HIGH";
   if (hasActiveState("MEDIUM")) return "MEDIUM";

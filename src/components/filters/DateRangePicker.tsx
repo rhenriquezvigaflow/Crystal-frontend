@@ -1,34 +1,56 @@
+import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 
+import {
+  formatDateForInput,
+  getZonedDayBounds,
+} from "../../lib/datetime/zonedDateRange";
+
 interface Props {
-  startISO: string;
-  endISO: string;
-  onChange: (start: string, end: string) => void;
+  start: Date;
+  end: Date;
+  timezone?: string | null;
+  onChange: (start: Date, end: Date) => void;
 }
 
-function toDateOnly(iso: string) {
-  if (!iso) return "";
-  return iso.slice(0, 10); // YYYY-MM-DD
+interface DateRangePickerFieldsProps {
+  startValue: string;
+  endValue: string;
+  timezone?: string | null;
+  onChange: (start: Date, end: Date) => void;
 }
 
-function toISODate(dateStr: string) {
-  // Generamos ISO limpio en UTC a las 00:00
-  return new Date(`${dateStr}T00:00:00`).toISOString();
-}
-
-export default function DateRangePicker({
-  startISO,
-  endISO,
+function DateRangePickerFields({
+  startValue,
+  endValue,
+  timezone,
   onChange,
-}: Props) {
-  const handleStartChange = (value: string) => {
-    if (!value) return;
-    onChange(toISODate(value), endISO);
-  };
+}: DateRangePickerFieldsProps) {
+  const [draftStart, setDraftStart] = useState(startValue);
+  const [draftEnd, setDraftEnd] = useState(endValue);
 
-  const handleEndChange = (value: string) => {
-    if (!value) return;
-    onChange(startISO, toISODate(value));
+  const draftStartBounds = useMemo(
+    () => (draftStart ? getZonedDayBounds(draftStart, timezone) : null),
+    [draftStart, timezone],
+  );
+  const draftEndBounds = useMemo(
+    () => (draftEnd ? getZonedDayBounds(draftEnd, timezone) : null),
+    [draftEnd, timezone],
+  );
+  const isRangeInverted =
+    !!draftStartBounds &&
+    !!draftEndBounds &&
+    draftStartBounds.start > draftEndBounds.end;
+  const hasPendingChanges = draftStart !== startValue || draftEnd !== endValue;
+  const canApply =
+    !!draftStartBounds &&
+    !!draftEndBounds &&
+    !isRangeInverted &&
+    hasPendingChanges;
+
+  const handleApply = () => {
+    if (!canApply || !draftStartBounds || !draftEndBounds) return;
+    onChange(draftStartBounds.start, draftEndBounds.end);
   };
 
   return (
@@ -54,14 +76,15 @@ export default function DateRangePicker({
 
         <input
           type="date"
-          value={toDateOnly(startISO)}
-          onChange={(e) => handleStartChange(e.target.value)}
+          value={draftStart}
+          aria-invalid={isRangeInverted}
+          onChange={(e) => setDraftStart(e.target.value)}
           style={{
             fontFamily: "Inter, system-ui, sans-serif",
             fontSize: 14,
             padding: "6px 10px",
             borderRadius: 8,
-            border: "1px solid #CBD5E1",
+            border: `1px solid ${isRangeInverted ? "#FB7185" : "#CBD5E1"}`,
             outline: "none",
           }}
         />
@@ -81,18 +104,59 @@ export default function DateRangePicker({
 
         <input
           type="date"
-          value={toDateOnly(endISO)}
-          onChange={(e) => handleEndChange(e.target.value)}
+          value={draftEnd}
+          aria-invalid={isRangeInverted}
+          onChange={(e) => setDraftEnd(e.target.value)}
           style={{
             fontFamily: "Inter, system-ui, sans-serif",
             fontSize: 14,
             padding: "6px 10px",
             borderRadius: 8,
-            border: "1px solid #CBD5E1",
+            border: `1px solid ${isRangeInverted ? "#FB7185" : "#CBD5E1"}`,
             outline: "none",
           }}
         />
       </Box>
+
+      <button
+        type="button"
+        disabled={!canApply}
+        onClick={handleApply}
+        style={{
+          fontFamily: "Inter, system-ui, sans-serif",
+          fontSize: 13,
+          fontWeight: 700,
+          padding: "7px 12px",
+          borderRadius: 8,
+          border: canApply ? "1px solid #0EA5E9" : "1px solid #CBD5E1",
+          color: canApply ? "#FFFFFF" : "#94A3B8",
+          background: canApply ? "#0284C7" : "#F8FAFC",
+          cursor: canApply ? "pointer" : "not-allowed",
+          transition: "background 120ms ease, border-color 120ms ease",
+        }}
+      >
+        Apply
+      </button>
     </Box>
+  );
+}
+
+export default function DateRangePicker({
+  start,
+  end,
+  timezone,
+  onChange,
+}: Props) {
+  const startValue = formatDateForInput(start, timezone);
+  const endValue = formatDateForInput(end, timezone);
+
+  return (
+    <DateRangePickerFields
+      key={`${startValue}:${endValue}:${timezone ?? ""}`}
+      startValue={startValue}
+      endValue={endValue}
+      timezone={timezone}
+      onChange={onChange}
+    />
   );
 }

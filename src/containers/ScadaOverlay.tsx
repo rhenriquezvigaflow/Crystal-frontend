@@ -15,6 +15,7 @@ interface Props {
   plc_status?: "online" | "offline";
   local_time?: string | null;
   timezone?: string | null;
+  filter_status?: string | null;
   placements?: ScadaPlacementLookup;
 }
 
@@ -24,6 +25,7 @@ function ScadaOverlay({
   plc_status,
   local_time,
   timezone,
+  filter_status,
   placements = {},
 }: Props) {
   if (!elements.length) return null;
@@ -54,6 +56,7 @@ function ScadaOverlay({
               status={plc_status}
               localTime={local_time}
               timezone={timezone}
+              filterStatus={filter_status}
               position={element.position}
               placement={placements[element.id]}
             />

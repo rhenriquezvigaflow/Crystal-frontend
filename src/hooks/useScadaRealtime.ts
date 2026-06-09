@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { API_WS } from "../config/api";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
+import { productWsPath } from "../modules/shared/api/productEndpoints";
+import type { ProductType } from "../modules/shared/product/types";
 import {
   REALTIME_AGE_TICK_MS,
   REALTIME_INITIAL_RECONNECT_DELAY_MS,
@@ -20,28 +22,35 @@ export type RealtimeConnectionState =
 
 type WebSocketAuthMode = "query" | "subprotocol";
 
-const WS_COMPAT_SUBPROTOCOL = "crystal-scada.v1";
+const WS_SUBPROTOCOL = "scada.v1";
 
-function buildLegacyQueryUrl(lagoonId: string, accessToken: string) {
-  return `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}?token=${encodeURIComponent(accessToken)}`;
+function buildQueryUrl(
+  lagoonId: string,
+  accessToken: string,
+  productType: ProductType,
+) {
+  return `${API_WS}${productWsPath(productType, lagoonId)}?token=${encodeURIComponent(accessToken)}`;
 }
 
 function createRealtimeSocket(
   lagoonId: string,
   accessToken: string,
   mode: WebSocketAuthMode,
+  endpointProductType: ProductType,
 ) {
+  const wsPath = `${API_WS}${productWsPath(endpointProductType, lagoonId)}`;
   if (mode === "subprotocol") {
-    return new WebSocket(
-      `${API_WS}/ws/scada/${encodeURIComponent(lagoonId)}`,
-      [WS_COMPAT_SUBPROTOCOL, `bearer.${accessToken}`],
-    );
+    return new WebSocket(wsPath, [WS_SUBPROTOCOL, `bearer.${accessToken}`]);
   }
 
-  return new WebSocket(buildLegacyQueryUrl(lagoonId, accessToken));
+  return new WebSocket(buildQueryUrl(lagoonId, accessToken, endpointProductType));
 }
 
-export function useScadaRealtime(lagoonId: string, accessToken?: string | null) {
+export function useScadaRealtime(
+  lagoonId: string,
+  accessToken?: string | null,
+  productType: ProductType,
+) {
   const wsRef = useRef<WebSocket | null>(null);
   const normalizedLagoonId = normalizeLagoonId(lagoonId);
 
@@ -140,7 +149,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
 
       reconnectCount += 1;
       setReconnectAttempt(reconnectCount);
-      setConnectionState(hasEverReceivedSnapshot ? "reconnecting" : "connecting");
+        setConnectionState(hasEverReceivedSnapshot ? "reconnecting" : "connecting");
 
       reconnectTimer = window.setTimeout(() => {
         reconnectTimer = null;
@@ -160,7 +169,12 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
       setConnectionState(reconnectCount > 0 ? "reconnecting" : "connecting");
       setConnectionError(null);
 
-      const ws = createRealtimeSocket(normalizedLagoonId, accessToken, mode);
+      const ws = createRealtimeSocket(
+        normalizedLagoonId,
+        accessToken,
+        mode,
+        productType,
+      );
       let receivedSnapshotOnSocket = false;
       wsRef.current = ws;
 
@@ -247,7 +261,7 @@ export function useScadaRealtime(lagoonId: string, accessToken?: string | null) 
         wsRef.current = null;
       }
     };
-  }, [normalizedLagoonId, accessToken]);
+  }, [normalizedLagoonId, accessToken, productType]);
 
   const effectiveLastDataAgeSec = lastMessageAt === null ? null : lastDataAgeSec;
 

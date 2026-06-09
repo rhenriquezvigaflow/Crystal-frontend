@@ -83,7 +83,7 @@ Revisar:
 2. existencia de `elements`
 3. posiciones validas en la escena local
 
-## Colores de Bombas o Valvulas no Cambian
+## Colores de Pumps o Valvulas no Cambian
 
 Revisar:
 
@@ -116,14 +116,14 @@ Tags que el frontend descarta:
 - contiene `_BOOL`
 - contiene `RETRO`
 
-## Eventos de Bombas no Aparecen
+## Eventos de Pumps no Aparecen
 
 Revisar:
 
 1. `GET /api/scada/{lagoon_id}/pump-events/last-3`
 2. `tag_id` de cada evento
 3. fallback `pump_last_on` del WS
-4. que la bomba tenga `panel: "pump-status"`
+4. que el pump tenga `panel: "pump-status"`
 
 ## Alarmas PT/FIT no Cargan o no Guardan
 

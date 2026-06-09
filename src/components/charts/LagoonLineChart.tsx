@@ -103,23 +103,26 @@ export default function LagoonLineChart({
 
   // Formatting helpers always resolved in the plant timezone
   const fmtDate = useMemo(() => {
-    return (valueMs: number, options: Intl.DateTimeFormatOptions) => {
+    return (value: Date | number | string, options: Intl.DateTimeFormatOptions) => {
+      const date = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+
       try {
         return new Intl.DateTimeFormat(undefined, {
           timeZone: lagoonTz,
           ...options,
-        }).format(new Date(valueMs));
+        }).format(date);
       } catch {
         // Fallback in case the timezone value is invalid
         return new Intl.DateTimeFormat(undefined, options).format(
-          new Date(valueMs),
+          date,
         );
       }
     };
   }, [lagoonTz]);
 
   const selectedTagSet = useMemo(() => {
-    if (!selectedTags?.length) return null;
+    if (selectedTags === undefined) return null;
     return new Set(selectedTags);
   }, [selectedTags]);
 
@@ -181,6 +184,10 @@ export default function LagoonLineChart({
       return { name: tag, data: points };
     });
   }, [filteredSeries, view, alignedTimeline]);
+  const hasTimelinePoints = useMemo(
+    () => series.some((item) => item.data.length > 0),
+    [series],
+  );
 
   const options: ApexCharts.ApexOptions = useMemo(
     () => ({
@@ -209,7 +216,15 @@ export default function LagoonLineChart({
         events: {
           zoomed: (_ctx, { xaxis }) => {
             if (xaxis?.min != null && xaxis?.max != null) {
-              onRangeChange(new Date(xaxis.min), new Date(xaxis.max));
+              const nextStart = new Date(xaxis.min);
+              const nextEnd = new Date(xaxis.max);
+
+              if (
+                !Number.isNaN(nextStart.getTime()) &&
+                !Number.isNaN(nextEnd.getTime())
+              ) {
+                onRangeChange(nextStart, nextEnd);
+              }
             }
           },
         },
@@ -222,17 +237,18 @@ export default function LagoonLineChart({
         min: visibleStart.getTime(),
         max: visibleEnd.getTime(),
         labels: {
-          formatter: (value: number) => {
-            return fmtDate(value, {
+          formatter: (value: string, timestamp?: number) => {
+            return fmtDate(timestamp ?? Number(value), {
               day: "2-digit",
               month: "short",
-            });
+            }) || value;
           },
         },
       },
       yaxis: {
         labels: {
-          formatter: (v: number) => v.toFixed(2),
+          formatter: (v?: number) =>
+            typeof v === "number" && Number.isFinite(v) ? v.toFixed(2) : "--",
         },
       },
       tooltip: {
@@ -283,6 +299,14 @@ export default function LagoonLineChart({
     return (
       <Box className="flex items-center justify-center h-full text-xs text-slate-400">
         Select at least one TAG to display the chart
+      </Box>
+    );
+  }
+
+  if (!hasTimelinePoints) {
+    return (
+      <Box className="flex items-center justify-center h-full text-xs text-slate-400">
+        No historical data in this date range
       </Box>
     );
   }

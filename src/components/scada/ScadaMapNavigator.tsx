@@ -15,6 +15,7 @@ interface Props {
   plcStatus?: "online" | "offline";
   localTime?: string | null;
   timezone?: string | null;
+  filterStatus?: string | null;
   canControl?: boolean;
 }
 
@@ -42,6 +43,7 @@ export default function ScadaMapNavigator({
   plcStatus,
   localTime,
   timezone,
+  filterStatus,
   canControl = true,
 }: Props) {
   const activeMap = maps[activeMapIndex] ?? maps[0] ?? null;
@@ -89,6 +91,7 @@ export default function ScadaMapNavigator({
         plcStatus={plcStatus}
         localTime={localTime}
         timezone={timezone}
+        filterStatus={filterStatus}
         canControl={canControl}
       />
     </>

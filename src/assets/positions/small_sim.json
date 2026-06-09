@@ -1,0 +1,85 @@
+{
+  "lagoon_id": "small_sim",
+  "layout_id": "small_layout_1",
+  "svg_component": "small_layout_1",
+  "aspect_ratio": "1393.0437 / 1000",
+  "map_name": "Small Simulator",
+  "map_order": 1,
+  "default_map": true,
+  "images": [
+    {
+      "id": "small-lagoons-image",
+      "type": "image",
+      "src": "small_lagoons.webp",
+      "alt": "Small Lagoons",
+      "position": {
+        "top": "42%",
+        "left": "16%"
+      },
+      "width": "48%",
+      "height": "40%",
+      "object_fit": "contain"
+    }
+  ],
+  "kpis": [
+    {
+      "tag": "PT-123",
+      "label": "PT-123",
+      "unit": "Bar",
+      "position": {
+        "top": "34%",
+        "left": "35%"
+      },
+      "always_visible": true
+    },
+    {
+      "tag": "AE-100",
+      "label": "AE-100",
+      "unit": "mV",
+      "position": {
+        "top": "34%",
+        "left": "54%"
+      },
+      "always_visible": true
+    },
+    {
+      "tag": "AE-022",
+      "label": "AE-022",
+      "unit": "pH",
+      "position": {
+        "top": "34%",
+        "left": "70%"
+      },
+      "always_visible": true
+    }
+  ],
+  "lagoon_metrics_overlay": {
+    "position": {
+      "top": "41.5%",
+      "left": "16.5%"
+    },
+    "width": "24%",
+    "z_index": 2,
+    "metrics": [
+      {
+        "key": "temperature",
+        "tag": "TEMP",
+        "label": "TEMP",
+        "unit": "C"
+      },
+      {
+        "key": "orp",
+        "tag": "ORP",
+        "label": "ORP",
+        "unit": "mV"
+      },
+      {
+        "key": "dosage",
+        "tag": "Dosif",
+        "label": "Dosif",
+        "unit": "ppm"
+      }
+    ]
+  },
+  "labels": []
+}

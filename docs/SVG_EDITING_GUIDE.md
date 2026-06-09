@@ -53,15 +53,15 @@ Identificar:
 - `layout_id`;
 - `svg_component`;
 - `aspect_ratio`;
-- tags usados por KPIs, bombas y valvulas;
-- `svg_target` de cada bomba o valvula que debe cambiar de color;
+- tags usados por KPIs, pumps y valvulas;
+- `svg_target` de cada pump o valvula que debe cambiar de color;
 - labels fijos sobre el plano.
 
 ## Buenas Practicas SVG
 
 - conservar `viewBox`;
 - mantener IDs estables en los nodos usados por `svg_target`;
-- evitar renombrar bombas o valvulas ya referenciadas por JSON;
+- evitar renombrar pumps o valvulas ya referenciadas por JSON;
 - evitar filtros o metadata innecesaria;
 - si cambia la proporcion, ajustar `aspectRatio` en `svgRegistry.ts` y/o `aspect_ratio` en la escena.
 
@@ -87,14 +87,14 @@ Ejemplo:
 - `{ "top": "29%", "left": "37.4%" }`
 - `{ "x": 0.374, "y": 0.29 }`
 
-## Ajustar Bombas y Valvulas
+## Ajustar Pumps y Valvulas
 
-Ejemplo bomba con panel de eventos:
+Ejemplo pump con panel de eventos:
 
 ```json
 {
   "tag": "P005_ST",
-  "label": "Bomba Filtro",
+  "label": "Pump Filtro",
   "svg_target": "circle26-4",
   "panel": "pump-status"
 }

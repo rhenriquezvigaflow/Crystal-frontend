@@ -4,6 +4,7 @@ import {
   type PumpEvent,
 } from "../api/scadaPumpEvents";
 import { ApiError } from "../auth/authApi";
+import type { ProductType } from "../modules/shared/product/types";
 
 interface UsePumpEventsLast3Result {
   events: PumpEvent[];
@@ -11,7 +12,10 @@ interface UsePumpEventsLast3Result {
   error: string | null;
 }
 
-export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
+export function usePumpEventsLast3(
+  lagoonId: string,
+  productType: ProductType,
+): UsePumpEventsLast3Result {
   const [events, setEvents] = useState<PumpEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +31,7 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
       setError(null);
     }, 0);
 
-    fetchPumpEventsLast3(lagoonId)
+    fetchPumpEventsLast3(lagoonId, productType)
       .then((res) => {
         if (cancelled) return;
         setEvents(res.events ?? []);
@@ -50,7 +54,7 @@ export function usePumpEventsLast3(lagoonId: string): UsePumpEventsLast3Result {
       cancelled = true;
       window.clearTimeout(loadingTimer);
     };
-  }, [hasLagoon, lagoonId]);
+  }, [hasLagoon, lagoonId, productType]);
 
   return hasLagoon
     ? { events, loading, error }

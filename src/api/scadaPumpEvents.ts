@@ -1,5 +1,7 @@
 import { httpClient } from "./httpClient";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
+import { productApiPath } from "../modules/shared/api/productEndpoints";
+import type { ProductType } from "../modules/shared/product/types";
 
 export interface PumpEvent {
   lagoon_id: string;
@@ -36,6 +38,7 @@ function getReportFilename(disposition: unknown, fallback: string): string {
 
 export async function fetchPumpEventsLast3(
   lagoonId: string,
+  productType: ProductType,
 ): Promise<PumpEventsLast3Response> {
   const normalizedLagoonId = normalizeLagoonId(lagoonId);
   if (!normalizedLagoonId) {
@@ -45,7 +48,10 @@ export async function fetchPumpEventsLast3(
     };
   }
 
-  const endpoint = `/scada/${encodeURIComponent(normalizedLagoonId)}/pump-events/last-3`;
+  const endpoint = productApiPath(
+    productType,
+    `/lagoons/${encodeURIComponent(normalizedLagoonId)}/pump-events/last-3`,
+  );
 
   const { data } = await httpClient.get<PumpEventsLast3Response>(endpoint);
   const events = Array.isArray(data?.events) ? data.events : [];
@@ -58,9 +64,10 @@ export async function fetchPumpEventsLast3(
 
 export async function downloadPumpEventsReport(
   lagoonId: string,
+  productType: ProductType,
 ): Promise<PumpEventsReportDownload> {
   const normalizedLagoonId = normalizeLagoonId(lagoonId);
-  const fallbackFilename = `reporte_bombas_${normalizedLagoonId || "laguna"}.xlsx`;
+  const fallbackFilename = `reporte_pumps_${normalizedLagoonId || "laguna"}.xlsx`;
 
   if (!normalizedLagoonId) {
     return {
@@ -71,7 +78,10 @@ export async function downloadPumpEventsReport(
     };
   }
 
-  const endpoint = `/scada/${encodeURIComponent(normalizedLagoonId)}/pump-events/report.xlsx`;
+  const endpoint = productApiPath(
+    productType,
+    `/lagoons/${encodeURIComponent(normalizedLagoonId)}/pump-events/report.xlsx`,
+  );
   const response = await httpClient.get<Blob>(endpoint, {
     responseType: "blob",
   });

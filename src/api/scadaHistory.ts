@@ -1,6 +1,8 @@
 import { httpClient } from "./httpClient";
 import type { HistoryResponse } from "../components/charts/HistoryChart/types";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
+import { productApiPath } from "../modules/shared/api/productEndpoints";
+import type { ProductType } from "../modules/shared/product/types";
 
 export type HistoryView = "hourly" | "daily" | "weekly";
 
@@ -14,6 +16,7 @@ export interface HistoryParams {
 
 export const fetchHistory = async (
   params: HistoryParams,
+  productType: ProductType,
 ): Promise<HistoryResponse> => {
   const { view = "hourly", tags, lagoon_id, ...rest } = params;
   const normalizedLagoonId = normalizeLagoonId(lagoon_id);
@@ -24,18 +27,20 @@ export const fetchHistory = async (
     };
   }
 
-  const endpoint = `/scada/${encodeURIComponent(normalizedLagoonId)}/history`;
+  const endpoint = productApiPath(productType, "/history");
 
-  const { data } = await httpClient.get<HistoryResponse>(endpoint, {
+  const requestConfig = {
     params: {
       ...rest,
+      lagoon_id: normalizedLagoonId,
       tags,
       resolution: view,
     },
     paramsSerializer: {
       indexes: false,
     },
-  });
+  };
 
+  const { data } = await httpClient.get<HistoryResponse>(endpoint, requestConfig);
   return data;
 };

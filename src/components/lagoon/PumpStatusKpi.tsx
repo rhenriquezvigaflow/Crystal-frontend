@@ -10,6 +10,7 @@ import {
   getPumpEventSortTime,
 } from "../../scada/pumpEventTime";
 import { DOWNLOAD_URL_REVOKE_DELAY_MS } from "../../config/timing";
+import type { ProductType } from "../../modules/shared/product/types";
 
 interface PumpInfo {
   label: string;
@@ -19,6 +20,7 @@ interface PumpInfo {
 
 interface Props {
   lagoonId: string;
+  productType?: ProductType | null;
   pumps: Record<string, PumpInfo>;
   timezone?: string | null;
   eventsLoading?: boolean;
@@ -51,7 +53,7 @@ function toTitleCaseFromTag(raw: string) {
 function getDisplayPumpName(pumpLabel: string, event: PumpEvent) {
   if (pumpLabel?.trim()) return pumpLabel;
   if (event.tag_label?.trim()) return event.tag_label;
-  return toTitleCaseFromTag(event.tag_id || "Bomba");
+  return toTitleCaseFromTag(event.tag_id || "Pump");
 }
 
 function getStateConfig(state: number | null) {
@@ -119,6 +121,7 @@ function saveBlob(blob: Blob, filename: string) {
 
 export default function PumpStatusKpi({
   lagoonId,
+  productType = null,
   pumps,
   timezone,
   eventsLoading,
@@ -135,7 +138,7 @@ export default function PumpStatusKpi({
     setReportError(null);
 
     try {
-      const report = await downloadPumpEventsReport(lagoonId);
+      const report = await downloadPumpEventsReport(lagoonId, productType);
       saveBlob(report.blob, report.filename);
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 403) {
@@ -153,8 +156,8 @@ export default function PumpStatusKpi({
       <div className="px-4 py-3 border-b border-slate-200">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-700">Bomb Status</div>
-            <div className="text-xs text-slate-500 mt-0.5">Last 3 events per bomb</div>
+            <div className="text-sm font-semibold text-slate-700">Pump Status</div>
+            <div className="text-xs text-slate-500 mt-0.5">Last 3 events per pump</div>
           </div>
 
           <button
@@ -244,7 +247,7 @@ export default function PumpStatusKpi({
 
                 {!eventsLoading && !eventsError && events.length === 0 && (
                   <div className="mt-2 text-xs text-slate-500">
-                    {eventsEmpty ? "Sin eventos recientes" : "Sin eventos para esta bomba"}
+                    {eventsEmpty ? "Sin eventos recientes" : "No events for this pump"}
                   </div>
                 )}
               </div>

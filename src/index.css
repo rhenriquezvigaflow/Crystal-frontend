@@ -28,7 +28,12 @@ body {
     radial-gradient(circle at top left, rgba(120, 215, 255, 0.34), transparent 28%),
     radial-gradient(circle at 85% 12%, rgba(92, 193, 255, 0.18), transparent 24%),
     radial-gradient(circle at bottom center, rgba(103, 220, 229, 0.12), transparent 26%),
-    linear-gradient(180deg, #f6fcff 0%, #ecf7ff 46%, #f7fcff 100%);
+    linear-gradient(
+      180deg,
+      var(--product-background-from, #f6fcff) 0%,
+      var(--product-background-to, #ecf7ff) 46%,
+      #f7fcff 100%
+    );
 }
 
 .lagoon-topbar {
@@ -56,7 +61,12 @@ body {
   overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.75), transparent 24%),
-    linear-gradient(180deg, #def5ff 0%, #e9f8ff 35%, #f8fdff 100%);
+    linear-gradient(
+      180deg,
+      var(--product-sidebar-from, #def5ff) 0%,
+      #e9f8ff 35%,
+      var(--product-sidebar-to, #f8fdff) 100%
+    );
 }
 
 .lagoon-sidebar::before {
@@ -280,6 +290,172 @@ body {
 
 .scada-stage-no-control svg [id^="Vector_324"] {
   display: none !important;
+}
+
+.system-status-card {
+  --system-filter-color: #059669;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid #d9dfe7;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+}
+
+.system-status-card__bar {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 1px solid #e3e7ee;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.system-status-card__status,
+.system-status-card__filter {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.system-status-card__filter {
+  overflow: hidden;
+  color: #475569;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.system-status-card__filter strong {
+  color: var(--system-filter-color);
+  font-weight: 800;
+}
+
+.system-status-card__separator {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.system-status-card__dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 6px;
+  border-radius: 9999px;
+}
+
+.system-status-card__dot--online {
+  background: #10b981;
+}
+
+.system-status-card__dot--offline {
+  background: #ef4444;
+}
+
+.system-status-card__body {
+  padding: 10px 14px 11px;
+  text-align: center;
+}
+
+.system-status-card__time {
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.system-status-card__timezone {
+  margin-top: 5px;
+  overflow: hidden;
+  color: rgba(51, 65, 85, 0.8);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.system-status-card__subtext {
+  margin-top: 3px;
+  color: rgba(51, 65, 85, 0.65);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.system-status-card--compact .system-status-card__bar {
+  min-height: 24px;
+  gap: 5px;
+  padding: 5px 6px;
+}
+
+.system-status-card--compact .system-status-card__status,
+.system-status-card--compact .system-status-card__filter,
+.system-status-card--compact .system-status-card__separator {
+  font-size: 8px;
+  letter-spacing: 0;
+}
+
+.system-status-card--compact .system-status-card__dot {
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+}
+
+.system-status-card--compact .system-status-card__body {
+  padding: 6px 6px 7px;
+}
+
+.system-status-card--compact .system-status-card__time {
+  font-size: 10px;
+}
+
+.system-status-card--compact .system-status-card__timezone {
+  margin-top: 4px;
+  font-size: 8px;
+}
+
+.system-status-card--compact .system-status-card__subtext {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .system-status-card__bar {
+    gap: 6px;
+    padding: 7px 10px;
+  }
+
+  .system-status-card__status,
+  .system-status-card__filter {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .system-status-card__body {
+    padding: 9px 10px 10px;
+  }
+
+  .system-status-card__time {
+    font-size: 21px;
+  }
+
+  .system-status-card__timezone {
+    font-size: 11px;
+  }
+
+  .system-status-card__subtext {
+    font-size: 10px;
+  }
 }
 
 @keyframes scada-map-fade {

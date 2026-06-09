@@ -9,14 +9,31 @@ export type LoginPayload = {
 export type LoginUser = {
   id: string;
   email: string;
-  role: "ADMIN";
+  roles?: string[];
+  role?: string | null;
+  product_type?: string | null;
+  product_types?: string[];
+  auth_level?: "password" | "2fa" | string;
 };
 
-export type LoginResponse = {
+export type LoginSuccessResponse = {
   access_token: string;
   token_type: "bearer";
   expires_in: number;
   user: LoginUser;
+};
+
+export type LoginTwoFactorResponse = {
+  requires_2fa: true;
+  challenge_id: string;
+  message: string;
+};
+
+export type LoginResponse = LoginSuccessResponse | LoginTwoFactorResponse;
+
+export type VerifyTwoFactorPayload = {
+  challenge_id: string;
+  code: string;
 };
 
 const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? "/api";
@@ -96,6 +113,12 @@ async function http<T>(path: string, init?: HttpRequestInit): Promise<T> {
 export const authApi = {
   login(payload: LoginPayload) {
     return http<LoginResponse>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+  verifyTwoFactor(payload: VerifyTwoFactorPayload) {
+    return http<LoginSuccessResponse>("/auth/verify-2fa", {
       method: "POST",
       body: JSON.stringify(payload),
     });

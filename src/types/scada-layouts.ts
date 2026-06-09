@@ -9,6 +9,7 @@ export type ScadaElementType =
   | "valve"
   | "tank"
   | "chemical"
+  | "image"
   | "plc_status";
 
 export type ScadaRenderableElementType =
@@ -21,10 +22,21 @@ export type ScadaTankStateKey = "LOW" | "MEDIUM" | "HIGH";
 
 export type ScadaRenderMode = "color" | "pulse" | "binary_level" | "multi_level";
 
+export interface ScadaTankStateTagCondition {
+  tag: string;
+  active_state?: number | string | boolean | null;
+}
+
+export type ScadaTankStateTagEntry = string | ScadaTankStateTagCondition;
+export type ScadaTankStateTagSelector =
+  | ScadaTankStateTagEntry
+  | ScadaTankStateTagEntry[]
+  | null;
+
 export interface ScadaTankStateTags {
-  LOW?: string | string[] | null;
-  MEDIUM?: string | string[] | null;
-  HIGH?: string | string[] | null;
+  LOW?: ScadaTankStateTagSelector;
+  MEDIUM?: ScadaTankStateTagSelector;
+  HIGH?: ScadaTankStateTagSelector;
 }
 
 export interface ScadaRenderRuleState {
@@ -80,6 +92,36 @@ export type LagoonScadaTankDefinition = LagoonScadaEquipmentDefinition;
 
 export type LagoonScadaChemicalDefinition = LagoonScadaEquipmentDefinition;
 
+export interface LagoonScadaImageDefinition {
+  id?: string | null;
+  src: string;
+  alt?: string | null;
+  position?: ScadaLayoutPosition | null;
+  width?: string | number | null;
+  height?: string | number | null;
+  object_fit?: string | null;
+  opacity?: number | null;
+  z_index?: number | null;
+  full_stage?: boolean | null;
+}
+
+export type LagoonMetricKey = "temperature" | "orp" | "dosage";
+
+export interface LagoonMetricDefinition {
+  key?: LagoonMetricKey | string | null;
+  tag: string;
+  label?: string | null;
+  unit?: string | null;
+  fallback_tag?: string | null;
+}
+
+export interface LagoonMetricsOverlayDefinition {
+  position?: ScadaLayoutPosition | null;
+  width?: string | number | null;
+  z_index?: number | null;
+  metrics: LagoonMetricDefinition[];
+}
+
 export interface LagoonScadaPlcStatusDefinition {
   position: ScadaLayoutPosition;
 }
@@ -99,6 +141,8 @@ export interface LagoonScadaConfig {
   tanks?: LagoonScadaTankDefinition[];
   hipoclorito?: LagoonScadaChemicalDefinition[];
   chemicals?: LagoonScadaChemicalDefinition[];
+  images?: LagoonScadaImageDefinition[];
+  lagoon_metrics_overlay?: LagoonMetricsOverlayDefinition | null;
   plc_status?: LagoonScadaPlcStatusDefinition | null;
   render_rules?: Partial<ScadaRenderRules> | null;
   labels?: ScadaTextLabelDefinition[] | null;
@@ -118,7 +162,30 @@ export interface ResolvedScadaElement {
   always_visible?: boolean | null;
   fallback_tag?: string | null;
   state_tags?: ScadaTankStateTags | null;
+  src?: string | null;
+  alt?: string | null;
+  width?: string | number | null;
+  height?: string | number | null;
+  object_fit?: string | null;
+  opacity?: number | null;
+  z_index?: number | null;
+  full_stage?: boolean | null;
   [key: string]: unknown;
+}
+
+export interface ResolvedLagoonMetric {
+  key: LagoonMetricKey;
+  tag: string;
+  label: string;
+  unit: string;
+  fallback_tag: string | null;
+}
+
+export interface ResolvedLagoonMetricsOverlay {
+  position: ScadaLayoutPosition | null;
+  width: string | number | null;
+  z_index: number | null;
+  metrics: ResolvedLagoonMetric[];
 }
 
 export interface ResolvedScadaScene {
@@ -130,6 +197,7 @@ export interface ResolvedScadaScene {
   elements: ResolvedScadaElement[];
   render_rules: ScadaRenderRules;
   labels: ResolvedScadaTextLabel[];
+  lagoon_metrics_overlay: ResolvedLagoonMetricsOverlay | null;
 }
 
 export interface ScadaMapManifestEntry {
@@ -186,14 +254,41 @@ export interface RealtimeTagLookup {
 
 export type ScadaTextLabelAlign = "left" | "center" | "right";
 
+export interface ScadaTextLabelStateDefinition {
+  text?: string | number | null;
+  label?: string | number | null;
+  value?: string | number | null;
+  color?: string | null;
+  dot_color?: string | null;
+}
+
+export type ScadaTextLabelStateDefinitionValue =
+  | string
+  | number
+  | ScadaTextLabelStateDefinition;
+
+export type ScadaTextLabelStateDefinitions =
+  Record<string, ScadaTextLabelStateDefinitionValue>;
+
+export interface ScadaTextLabelState {
+  text: string;
+  color: string | null;
+}
+
+export type ScadaTextLabelStates = Record<string, ScadaTextLabelState>;
+
 export interface ScadaTextLabelDefinition {
   id: string;
   text?: string | null;
+  tag?: string | null;
+  fallback_tag?: string | null;
+  states?: ScadaTextLabelStateDefinitions | null;
   position?: ScadaLayoutPosition | null;
   align?: ScadaTextLabelAlign | null;
   hidden?: boolean | null;
   max_width?: number | null;
   color?: string | null;
+  font_family?: string | null;
   font_size?: number | null;
   font_weight?: number | null;
   text_shadow?: string | null;
@@ -204,10 +299,14 @@ export interface ScadaTextLabelDefinition {
 export interface ResolvedScadaTextLabel {
   id: string;
   text: string;
+  tag: string | null;
+  fallback_tag: string | null;
+  states: ScadaTextLabelStates | null;
   position: ScadaLayoutPosition | null;
   align: ScadaTextLabelAlign;
   max_width: number | null;
   color: string | null;
+  font_family: string | null;
   font_size: number | null;
   font_weight: number | null;
   text_shadow: string | null;

@@ -110,12 +110,12 @@ export function getWsBaseUrl(): string {
   return getBrowserWsOrigin();
 }
 
-export function buildScadaWsUrl(): string {
+export function buildScadaWsUrl(productType?: "crystal" | "small"): string {
   const scadaWsUrl = normalizeBase(RAW_SCADA_WS_URL);
   if (scadaWsUrl) return scadaWsUrl;
 
   const wsBase = getWsBaseUrl();
-  return `${wsBase}/ws/scada`;
+  return `${wsBase}/ws/${productType ?? "scada"}`;
 }
 
 

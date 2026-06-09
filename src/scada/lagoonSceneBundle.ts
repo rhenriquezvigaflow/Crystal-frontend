@@ -1,10 +1,16 @@
 import type {
+  LagoonMetricKey,
+  ResolvedLagoonMetric,
+  ResolvedLagoonMetricsOverlay,
   ResolvedEmbeddedScadaMapDefinition,
   ResolvedScadaElement,
   ResolvedScadaScene,
   ResolvedScadaTextLabel,
   ScadaRenderRule,
   ScadaRenderRules,
+  ScadaTextLabelState,
+  ScadaTankStateTagCondition,
+  ScadaTankStateTagEntry,
   ScadaTankStateTags,
 } from "../types/scada-layouts";
 import { normalizeScadaLayoutName } from "./layoutResolver";
@@ -147,6 +153,18 @@ function pickFirstNumber(...values: unknown[]): number | null {
   return null;
 }
 
+function pickFirstSize(...values: unknown[]): string | number | null {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value !== "string") continue;
+
+    const normalized = value.trim();
+    if (normalized) return normalized;
+  }
+
+  return null;
+}
+
 function getCandidateRecords(raw: unknown): JsonRecord[] {
   const root = asRecord(raw);
   if (!root) return [];
@@ -196,6 +214,9 @@ function looksLikeSceneRecord(record: JsonRecord): boolean {
     "pumps",
     "valves",
     "tanks",
+    "images",
+    "lagoon_metrics_overlay",
+    "lagoonMetricsOverlay",
     "hipoclorito",
     "chemicals",
     "plc_status",
@@ -529,6 +550,7 @@ function normalizeElementType(value: unknown): ResolvedScadaElement["type"] | nu
   if (normalized === "valve") return "valve";
   if (normalized === "tank") return "tank";
   if (normalized === "chemical" || normalized === "hipoclorito") return "chemical";
+  if (normalized === "image" || normalized === "img") return "image";
   if (normalized === "plc_status" || normalized === "plc-status") return "plc_status";
 
   return null;
@@ -599,17 +621,31 @@ function normalizeRenderRuleAnimation(value: unknown): ScadaRenderRule["animatio
   };
 }
 
-function normalizeTagCollection(value: unknown): string[] | null {
+function normalizeTagCondition(value: unknown): ScadaTankStateTagEntry | null {
   if (typeof value === "string" || typeof value === "number") {
     const normalized = asString(value);
-    return normalized ? [normalized] : null;
+    return normalized;
   }
 
-  if (!Array.isArray(value)) return null;
+  const record = asRecord(value);
+  if (!record) return null;
 
-  const normalized = value
-    .map((entry) => asString(entry))
-    .filter((entry): entry is string => Boolean(entry));
+  const tag = pickFirstString(record.tag, record.tag_id, record.tagId, record.name);
+  if (!tag) return null;
+
+  const activeState = record.active_state ?? record.activeState ?? record.state;
+
+  return {
+    tag,
+    active_state: activeState === undefined ? 1 : activeState as ScadaTankStateTagCondition["active_state"],
+  };
+}
+
+function normalizeTagCollection(value: unknown): ScadaTankStateTagEntry[] | null {
+  const entries = Array.isArray(value) ? value : [value];
+  const normalized = entries
+    .map((entry) => normalizeTagCondition(entry))
+    .filter((entry): entry is ScadaTankStateTagEntry => entry !== null);
 
   return normalized.length ? normalized : null;
 }
@@ -773,6 +809,8 @@ function normalizeResolvedElement(
     rawElement.tag_id,
     rawElement.label,
     rawElement.default_label,
+    rawElement.src,
+    rawElement.image,
   );
 
   return {
@@ -802,6 +840,21 @@ function normalizeResolvedElement(
     ),
     fallback_tag: fallbackTag,
     state_tags: normalizeTankStateTags(rawElement, mappingEntry),
+    src: pickFirstString(
+      rawElement.src,
+      rawElement.image_src,
+      rawElement.imageSrc,
+      rawElement.image,
+      rawElement.asset,
+      rawElement.url,
+    ),
+    alt: pickFirstString(rawElement.alt, rawElement.label),
+    width: pickFirstSize(rawElement.width, rawElement.w),
+    height: pickFirstSize(rawElement.height, rawElement.h),
+    object_fit: pickFirstString(rawElement.object_fit, rawElement.objectFit, rawElement.fit),
+    opacity: pickFirstNumber(rawElement.opacity),
+    z_index: pickFirstNumber(rawElement.z_index, rawElement.zIndex),
+    full_stage: pickFirstBoolean(rawElement.full_stage, rawElement.fullStage),
   };
 }
 
@@ -860,6 +913,7 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
   appendElements(asArray(sceneRecord.tanks), "tank");
   appendElements(asArray(sceneRecord.chemicals), "chemical");
   appendElements(asArray(sceneRecord.hipoclorito), "chemical");
+  appendElements(asArray(sceneRecord.images), "image");
 
   const plcStatusRecord = asRecord(sceneRecord.plc_status);
   if (plcStatusRecord) {
@@ -884,9 +938,115 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
   return elements;
 }
 
+function normalizeLagoonMetricKey(value: unknown): LagoonMetricKey | null {
+  const normalized = String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (["TEMPERATURE", "TEMP", "C"].includes(normalized)) return "temperature";
+  if (normalized === "ORP") return "orp";
+  if (["DOSAGE", "DOSING", "DOSIF", "DOSIFICACION", "PPM"].includes(normalized)) {
+    return "dosage";
+  }
+
+  return null;
+}
+
+function normalizeLagoonMetric(
+  rawMetric: unknown,
+): ResolvedLagoonMetric | null {
+  const metricRecord = asRecord(rawMetric);
+  if (!metricRecord) return null;
+
+  const tag = pickFirstString(metricRecord.tag, metricRecord.tag_id, metricRecord.tagId);
+  if (!tag) return null;
+
+  const key = normalizeLagoonMetricKey(
+    metricRecord.key ?? metricRecord.metric ?? metricRecord.type ?? tag ?? metricRecord.label,
+  );
+  if (!key) return null;
+
+  const fallbackLabel =
+    key === "temperature" ? "TEMP" : key === "orp" ? "ORP" : "Dosif";
+  const fallbackUnit =
+    key === "temperature" ? "C" : key === "orp" ? "mV" : "ppm";
+
+  return {
+    key,
+    tag,
+    label: pickFirstString(metricRecord.label, fallbackLabel) ?? fallbackLabel,
+    unit: pickFirstString(metricRecord.unit, fallbackUnit) ?? fallbackUnit,
+    fallback_tag: pickFirstString(metricRecord.fallback_tag, metricRecord.fallbackTag),
+  };
+}
+
+function buildLagoonMetricsOverlay(
+  sceneRecord: JsonRecord,
+): ResolvedLagoonMetricsOverlay | null {
+  const overlayRecord = asRecord(
+    sceneRecord.lagoon_metrics_overlay ?? sceneRecord.lagoonMetricsOverlay,
+  );
+  if (!overlayRecord) return null;
+
+  const metrics = (asArray(overlayRecord.metrics) ?? [])
+    .map((metric) => normalizeLagoonMetric(metric))
+    .filter((metric): metric is ResolvedLagoonMetric => metric !== null);
+
+  if (!metrics.length) return null;
+
+  return {
+    position: normalizeScadaPosition(overlayRecord.position as never),
+    width: pickFirstSize(overlayRecord.width, overlayRecord.w),
+    z_index: pickFirstNumber(overlayRecord.z_index, overlayRecord.zIndex),
+    metrics,
+  };
+}
+
 function normalizeTextAlign(value: unknown): "left" | "center" | "right" {
   if (value === "left" || value === "right") return value;
   return "center";
+}
+
+function normalizeTextLabelState(value: unknown): ScadaTextLabelState | null {
+  const directText = asString(value);
+  if (directText) {
+    return {
+      text: directText,
+      color: null,
+    };
+  }
+
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const text = pickFirstString(record.text, record.label, record.value, record.name);
+  if (!text) return null;
+
+  return {
+    text,
+    color: pickFirstString(record.color, record.dot_color, record.dotColor, record.fill),
+  };
+}
+
+function normalizeTextLabelStates(value: unknown): Record<string, ScadaTextLabelState> | null {
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const states = Object.entries(record).reduce<Record<string, ScadaTextLabelState>>(
+    (currentStates, [stateKey, stateValue]) => {
+      const normalizedStateKey = String(stateKey).trim();
+      const normalizedState = normalizeTextLabelState(stateValue);
+      if (!normalizedStateKey || !normalizedState) return currentStates;
+
+      currentStates[normalizedStateKey] = normalizedState;
+      return currentStates;
+    },
+    {},
+  );
+
+  return Object.keys(states).length ? states : null;
 }
 
 function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLabel[] {
@@ -912,7 +1072,8 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
     .filter((label) => !asBoolean(label.hidden))
     .map((label, index) => {
       const position = normalizeScadaPosition(label.position as never);
-      const text = pickFirstString(label.text, label.label, label.id);
+      const tag = pickFirstString(label.tag, label.tag_id, label.tagId);
+      const text = pickFirstString(label.text, label.label, label.id, tag);
 
       if (!text) return null;
 
@@ -922,6 +1083,11 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
           `label_${index + 1}`,
         ),
         text,
+        tag,
+        fallback_tag: pickFirstString(label.fallback_tag, label.fallbackTag),
+        states: normalizeTextLabelStates(
+          label.states ?? label.state_labels ?? label.stateLabels,
+        ),
         position,
         align: normalizeTextAlign(label.align),
         max_width:
@@ -929,6 +1095,7 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
             ? label.max_width
             : null,
         color: pickFirstString(label.color),
+        font_family: pickFirstString(label.font_family, label.fontFamily),
         font_size:
           typeof label.font_size === "number" && Number.isFinite(label.font_size)
             ? label.font_size
@@ -1024,6 +1191,7 @@ export function resolveLagoonSceneDefinition(
   const mappingLookup = buildMappingLookup(raw);
   const rawElements = asArray(sceneRecord.elements);
   const labels = buildLabels(raw, sceneRecord);
+  const lagoonMetricsOverlay = buildLagoonMetricsOverlay(sceneRecord);
 
   return {
     lagoon_id: getEmbeddedLagoonId(raw) ?? normalizedLagoonId,
@@ -1040,5 +1208,6 @@ export function resolveLagoonSceneDefinition(
       ? buildElementsFromResolvedArray(rawElements, mappingLookup)
       : buildElementsFromFlatConfig(sceneRecord),
     labels,
+    lagoon_metrics_overlay: lagoonMetricsOverlay,
   };
 }

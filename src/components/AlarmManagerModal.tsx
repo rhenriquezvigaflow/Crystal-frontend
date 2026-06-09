@@ -1,12 +1,14 @@
 import { useCallback, useEffect } from "react";
 
 import { useAlarmThresholds } from "../hooks/useAlarmThresholds";
+import type { ProductType } from "../modules/shared/product/types";
 import type { AlarmThresholdRow } from "../types/alarm-thresholds";
 import { ALARM_SEVERITIES } from "../types/alarm-thresholds";
 
 interface AlarmManagerModalProps {
   open: boolean;
   lagoonId: string;
+  productType: ProductType;
   wsTagIds?: string[];
   canEdit?: boolean;
   onClose: () => void;
@@ -65,11 +67,12 @@ function parseNumericInput(value: string): number | null {
 export default function AlarmManagerModal({
   open,
   lagoonId,
+  productType,
   wsTagIds = [],
   canEdit = true,
   onClose,
 }: AlarmManagerModalProps) {
-  const manager = useAlarmThresholds({ lagoonId, open, wsTagIds });
+  const manager = useAlarmThresholds({ lagoonId, open, wsTagIds, productType });
 
   const requestClose = useCallback(() => {
     if (manager.hasUnsavedChanges) {

@@ -31,7 +31,8 @@ function normalizeText(value: string): string {
 }
 
 function formatTagTitle(tag?: string | null, label?: string | null): string {
-  const source = normalizeText(tag ?? label ?? "");
+  const explicitLabel = normalizeText(label ?? "");
+  const source = explicitLabel || normalizeText(tag ?? "");
   if (!source) return "--";
 
   const cleaned = source

@@ -2,6 +2,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/useAuth";
 import { useLagoons } from "../lagoons/useLagoons";
+import { useProduct } from "../modules/shared/product/useProduct";
+import { productLagoonPath } from "../modules/shared/routing/paths";
 
 type FullscreenMessageProps = {
   message: string;
@@ -32,6 +34,7 @@ export default function DashboardRedirect() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { lagoons, loading, error, errorStatus } = useLagoons();
+  const product = useProduct();
 
   const handleLogout = () => {
     logout();
@@ -60,5 +63,5 @@ export default function DashboardRedirect() {
     );
   }
 
-  return <Navigate to={`/lagoon/${encodeURIComponent(lagoons[0].lagoon_id)}`} replace />;
+  return <Navigate to={productLagoonPath(product.id, lagoons[0].lagoon_id)} replace />;
 }

@@ -1,9 +1,10 @@
 import { getStoredSession, parseJwt } from "../auth/session";
-
-export type ProductType = "crystal" | "small";
+import type { ProductType } from "../modules/shared/product/types";
 
 const ROLE_ADMIN_CRYSTAL = "AdminCrystal";
+const ROLE_VISUAL_CRYSTAL = "VisualCrystal";
 const ROLE_ADMIN_SMALL = "AdminSmall";
+const ROLE_VISUAL_SMALL = "VisualSmall";
 const ROLE_SUPERADMIN = "SuperAdmin";
 
 function normalizeRole(value: unknown): string | null {
@@ -25,7 +26,9 @@ export interface UserScope {
   roles: string[];
   accessTokenPresent: boolean;
   hasAdminCrystal: boolean;
+  hasVisualCrystal: boolean;
   hasAdminSmall: boolean;
+  hasVisualSmall: boolean;
   hasSuperAdmin: boolean;
 }
 
@@ -55,7 +58,9 @@ export function resolveCurrentUserScope(): UserScope {
 
   const lowerRoles = new Set(roles.map((role) => role.toLowerCase()));
   const hasAdminCrystal = lowerRoles.has(ROLE_ADMIN_CRYSTAL.toLowerCase());
+  const hasVisualCrystal = lowerRoles.has(ROLE_VISUAL_CRYSTAL.toLowerCase());
   const hasAdminSmall = lowerRoles.has(ROLE_ADMIN_SMALL.toLowerCase());
+  const hasVisualSmall = lowerRoles.has(ROLE_VISUAL_SMALL.toLowerCase());
   const hasSuperAdmin = lowerRoles.has(ROLE_SUPERADMIN.toLowerCase());
 
   return {
@@ -70,7 +75,9 @@ export function resolveCurrentUserScope(): UserScope {
     roles,
     accessTokenPresent: Boolean(token),
     hasAdminCrystal,
+    hasVisualCrystal,
     hasAdminSmall,
+    hasVisualSmall,
     hasSuperAdmin,
   };
 }
@@ -86,5 +93,19 @@ export function hasWritePrivilegesForProduct(
   if (scope.hasSuperAdmin) return true;
   if (productType === "crystal") return scope.hasAdminCrystal;
   if (productType === "small") return scope.hasAdminSmall;
+  return false;
+}
+
+export function hasReadPrivilegesForProduct(
+  scope: UserScope,
+  productType: ProductType | null,
+): boolean {
+  if (scope.hasSuperAdmin) return true;
+  if (productType === "crystal") {
+    return scope.hasAdminCrystal || scope.hasVisualCrystal;
+  }
+  if (productType === "small") {
+    return scope.hasAdminSmall || scope.hasVisualSmall;
+  }
   return false;
 }

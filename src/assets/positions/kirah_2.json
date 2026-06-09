@@ -5,10 +5,143 @@
   "aspect_ratio": "1400 / 1150",
   "map_name": "Map 2",
   "map_order": 2,
-  "kpis": [],
-  "pumps": [],
+  "kpis": [
+    {
+      "tag": "PT100_R",
+      "label": "PT100_R",
+      "unit": "bar",
+      "position": {
+        "top": "62%",
+        "left": "37%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT103_R",
+      "label": "PT103_R",
+      "unit": "bar",
+      "position": {
+        "top": "59.7%",
+        "left": "49%"
+      },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "FIT001_R",
+      "label": "FIT001_R",
+      "unit": "l/s",
+      "position": {
+        "top": "51%",
+        "left": "59.5%"
+      },
+      "icon_type": "flow"
+    },
+    {
+      "tag": "TE110_R",
+      "label": "TEMP",
+      "unit": "°C",
+      "position": {
+        "top": "69%",
+        "left": "73.5%"
+      },
+      "icon_type": "temperature"
+    },
+    {
+      "tag": "TH110_R",
+      "label": "HUM",
+      "unit": "%",
+      "position": {
+        "top": "69%",
+        "left": "88%"
+      },
+      "icon_type": "humidity"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P001_ST",
+      "label": "PUMP01",
+      "svg_target": "PUMP01",
+      "type": "pump",
+      "position": {
+        "top": "50%",
+        "left": "50%"
+      }
+    }
+  ],
   "valves": [],
   "tanks": [],
   "chemicals": [],
-  "labels": []
+  "labels": [
+    {
+      "id": "lf-status",
+      "tag": "LF_ST",
+      "text": "No data",
+      "states": {
+        "0": {
+          "text": "STOPPED",
+          "color": "#d83a3a"
+        },
+        "1": {
+          "text": "STAND BY",
+          "color": "#2f6fed"
+        },
+        "2": {
+          "text": "RUNNING",
+          "color": "#24a148"
+        },
+        "3": {
+          "text": "FAILURE",
+          "color": "#d4b106"
+        }
+      },
+      "position": {
+        "top": "46%",
+        "left": "50%"
+      },
+      "align": "center",
+      "color": "#616264",
+      "font_family": "Calibri, Arial, sans-serif",
+      "font_size": 22,
+      "font_weight": 700,
+      "text_shadow": "0 1px 1px rgba(255, 255, 255, 0.88)"
+    },
+    {
+      "id": "pump01-bottom-cleaning-label",
+      "text": "BOTTOM\nCLEANING PUMP",
+      "source_svg_target": "PUMP01",
+      "source_element_type": "pump",
+      "position": {
+        "top": "72.5%",
+        "left": "43.7%"
+      }
+    },
+    {
+      "id": "TK01",
+      "text": "BACKGROUND\nCLEANING",
+      "source_svg_target": "TK01",
+      "source_element_type": "TK01",
+      "position": {
+        "top": "54%",
+        "left": "81%"
+      }
+    }
+    ,
+    {
+      "id": "P003",
+      "text": "A-C1LO",
+      "source_svg_target": "P003",
+      "source_element_type": "P003",
+      "position": {
+        "top": "43.5%",
+        "left": "83%"
+      }
+    }
+  ],
+  "plc_status": {
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
+  }
 }

@@ -1,6 +1,8 @@
 import { ApiError } from "../auth/authApi";
 import { httpClient } from "../api/httpClient";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
+import { productApiPath } from "../modules/shared/api/productEndpoints";
+import type { ProductType } from "../modules/shared/product/types";
 import type {
   ThresholdConfigRequest,
   ThresholdConfigResponse,
@@ -11,12 +13,19 @@ function encodeLagoonId(lagoonId: string): string {
   return encodeURIComponent(normalizeLagoonId(lagoonId));
 }
 
-function buildThresholdBasePath(lagoonId: string): string {
-  return `/alarms/${encodeLagoonId(lagoonId)}/thresholds/pt-fit`;
+function buildThresholdBasePath(
+  lagoonId: string,
+  productType: ProductType,
+): string {
+  const path = `/alarms/${encodeLagoonId(lagoonId)}/thresholds/pt-fit`;
+  return productApiPath(productType, path);
 }
 
-function buildThresholdViewPath(lagoonId: string): string {
-  return `${buildThresholdBasePath(lagoonId)}/view`;
+function buildThresholdViewPath(
+  lagoonId: string,
+  productType: ProductType,
+): string {
+  return `${buildThresholdBasePath(lagoonId, productType)}/view`;
 }
 
 export function clearAlarmThresholdEndpointCache(lagoonId?: string): void {
@@ -25,6 +34,7 @@ export function clearAlarmThresholdEndpointCache(lagoonId?: string): void {
 
 export async function getThresholdsView(
   lagoonId: string,
+  productType: ProductType,
 ): Promise<ThresholdViewResponse> {
   const normalizedLagoonId = normalizeLagoonId(lagoonId);
   if (!normalizedLagoonId) {
@@ -32,7 +42,7 @@ export async function getThresholdsView(
   }
 
   const { data } = await httpClient.get<ThresholdViewResponse>(
-    buildThresholdViewPath(normalizedLagoonId),
+    buildThresholdViewPath(normalizedLagoonId, productType),
   );
   return data;
 }
@@ -40,6 +50,7 @@ export async function getThresholdsView(
 export async function upsertThresholds(
   lagoonId: string,
   payload: ThresholdConfigRequest,
+  productType: ProductType,
 ): Promise<ThresholdConfigResponse> {
   const normalizedLagoonId = normalizeLagoonId(lagoonId);
   if (!Array.isArray(payload.items) || payload.items.length === 0) {
@@ -47,7 +58,7 @@ export async function upsertThresholds(
   }
 
   const { data } = await httpClient.put<ThresholdConfigResponse>(
-    buildThresholdBasePath(normalizedLagoonId),
+    buildThresholdBasePath(normalizedLagoonId, productType),
     payload,
   );
   return data;

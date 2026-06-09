@@ -7,6 +7,8 @@ import LagoonContainer from "../components/lagoonContainer";
 import { useAuth } from "../auth/useAuth";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import { useLagoons } from "../lagoons/useLagoons";
+import { useProduct } from "../modules/shared/product/useProduct";
+import { legacyCrystalLagoonPath, productLagoonPath } from "../modules/shared/routing/paths";
 
 const AlarmManagerModal = lazy(() => import("../components/AlarmManagerModal"));
 
@@ -56,9 +58,10 @@ function safeDecode(value: string) {
   }
 }
 
-export default function LagoonsView() {
+export default function LagoonsView({ legacyRoute = false }: { legacyRoute?: boolean }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const product = useProduct();
   const { lagoonId: rawLagoonId } = useParams<{ lagoonId: string }>();
   const lagoonId = useMemo(
     () => {
@@ -93,8 +96,13 @@ export default function LagoonsView() {
     const decodedLagoonId = safeDecode(rawLagoonId);
     if (decodedLagoonId === lagoonId) return;
 
-    navigate(`/lagoon/${encodeURIComponent(lagoonId)}`, { replace: true });
-  }, [lagoonId, navigate, rawLagoonId]);
+    navigate(
+      legacyRoute
+        ? legacyCrystalLagoonPath(lagoonId)
+        : productLagoonPath(product.id, lagoonId),
+      { replace: true },
+    );
+  }, [lagoonId, legacyRoute, navigate, product.id, rawLagoonId]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -175,7 +183,11 @@ export default function LagoonsView() {
       return;
     }
 
-    navigate(`/lagoon/${encodeURIComponent(nextLagoonId)}`);
+    navigate(
+      legacyRoute
+        ? legacyCrystalLagoonPath(nextLagoonId)
+        : productLagoonPath(product.id, nextLagoonId),
+    );
     setIsMobileNavOpen(false);
   };
 
@@ -183,7 +195,11 @@ export default function LagoonsView() {
     <div className="min-h-screen">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[260px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
         <div className="hidden lg:row-span-2 lg:block">
-          <Sidebar lagoons={lagoons} selectedLagoonId={selectedLagoon.lagoon_id} />
+          <Sidebar
+            lagoons={lagoons}
+            selectedLagoonId={selectedLagoon.lagoon_id}
+            legacyRoute={legacyRoute}
+          />
         </div>
 
         <TopBar
@@ -230,6 +246,7 @@ export default function LagoonsView() {
               lagoons={lagoons}
               selectedLagoonId={selectedLagoon.lagoon_id}
               onNavigate={() => setIsMobileNavOpen(false)}
+              legacyRoute={legacyRoute}
               className="shadow-[0_22px_48px_-24px_rgba(15,23,42,0.55)]"
             />
           </div>
@@ -241,6 +258,7 @@ export default function LagoonsView() {
           <AlarmManagerModal
             open={isAlarmModalOpen}
             lagoonId={selectedLagoon.lagoon_id}
+            productType={product.id}
             wsTagIds={realtimePtFitTags}
             canEdit={selectedLagoon.can_edit}
             onClose={() => setIsAlarmModalOpen(false)}

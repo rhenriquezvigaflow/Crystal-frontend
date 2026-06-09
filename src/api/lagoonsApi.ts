@@ -1,11 +1,12 @@
 import { normalizeScadaLayoutName, type ScadaLayoutId } from "../scada/layoutResolver";
 import { normalizeLagoonId } from "../lagoons/lagoonAliases";
 import { httpClient } from "./httpClient";
+import { productApiPath } from "../modules/shared/api/productEndpoints";
+import type { ProductType } from "../modules/shared/product/types";
 import {
   hasWritePrivilegesForProduct,
   inferProductTypeFromValue,
   resolveCurrentUserScope,
-  type ProductType,
   type UserScope,
 } from "./productApi";
 
@@ -122,9 +123,9 @@ function mergeLagoon(current: LagoonAccess, incoming: LagoonAccess): LagoonAcces
   };
 }
 
-export async function fetchLagoons(): Promise<LagoonAccess[]> {
+export async function fetchLagoons(productType: ProductType): Promise<LagoonAccess[]> {
   const scope = resolveCurrentUserScope();
-  const endpoint = "/lagoons";
+  const endpoint = productApiPath(productType, "/lagoons");
 
   const { data } = await httpClient.get<unknown>(endpoint);
   const rows = getRawRows(data);
@@ -142,7 +143,10 @@ export async function fetchLagoons(): Promise<LagoonAccess[]> {
   });
 
   const final = Array.from(merged.values()).filter(
-    (lagoon) => lagoon.can_view && lagoon.enable,
+    (lagoon) =>
+      lagoon.can_view &&
+      lagoon.enable &&
+      (!productType || lagoon.product_type === productType),
   );
 
   return final;

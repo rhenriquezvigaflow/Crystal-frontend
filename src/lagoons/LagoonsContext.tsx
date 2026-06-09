@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { fetchLagoons } from "../api/lagoonsApi";
+import type { ProductType } from "../modules/shared/product/types";
 import { useAuth } from "../auth/useAuth";
 import { ApiError } from "../auth/authApi";
 import { normalizeLagoonId } from "./lagoonAliases";
@@ -25,7 +26,13 @@ function getLagoonsError(err: unknown): { message: string; status: number | null
   return { message: "Error loading lagoons", status: null };
 }
 
-export function LagoonsProvider({ children }: { children: React.ReactNode }) {
+export function LagoonsProvider({
+  children,
+  productType,
+}: {
+  children: React.ReactNode;
+  productType: ProductType;
+}) {
   const { isAuthenticated } = useAuth();
   const [state, setState] = useState<LagoonsState>({
     lagoons: [],
@@ -48,7 +55,7 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
     }));
 
     try {
-      const data = await fetchLagoons();
+      const data = await fetchLagoons(productType);
       const visible = data.filter((lagoon) => lagoon.can_view && lagoon.enable);
 
       setState({
@@ -66,7 +73,7 @@ export function LagoonsProvider({ children }: { children: React.ReactNode }) {
         errorStatus: status,
       });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, productType]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

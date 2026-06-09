@@ -26,7 +26,7 @@ function hasManualPosition(element: ResolvedScadaElement): boolean {
 
 function isEquipmentLabelCandidate(
   element: ResolvedScadaElement,
-): element is ResolvedScadaElement & { type: "pump" | "valve" } {
+): element is ResolvedScadaElement & { type: "pump" | "valve"; svg_target: string } {
   return (
     (element.type === "pump" || element.type === "valve") &&
     Boolean(element.label?.trim()) &&
@@ -106,7 +106,7 @@ function ScadaSvgEquipmentLabelsOverlay({
   const labelCandidates = useMemo(
     () =>
       elements.filter(
-        (element) =>
+        (element): element is ResolvedScadaElement & { type: "pump" | "valve"; svg_target: string } =>
           isEquipmentLabelCandidate(element) &&
           !manualLabelTargets.has(element.svg_target.trim().toUpperCase()),
       ),

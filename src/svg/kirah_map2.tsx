@@ -26,9 +26,9 @@ const SVGComponent = (props) => (
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={0.70710678}
-      inkscape:cx={627.20372}
-      inkscape:cy={610.23315}
+      inkscape:zoom={0.5}
+      inkscape:cx={522}
+      inkscape:cy={559}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
       inkscape:window-x={1912}
@@ -590,8 +590,8 @@ const SVGComponent = (props) => (
       id="rect5"
       width={469.71335}
       height={349.2402}
-      x={370.72437}
-      y={506.24451}
+      x={427.49246}
+      y={500.31165}
     />
     <path
       style={{
@@ -605,13 +605,13 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 767.17494,655.03102 0.13216,-30.08966"
+      d="m 835.13536,637.22952 0.13216,-30.08966"
       id="path6-8-5"
     />
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 28,
+        fontSize: 22,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -627,57 +627,21 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={589.16785}
-      y={551.685}
+      x={542.25842}
+      y={536.00116}
       id="text13-6-6"
     >
       <tspan
         id="tspan13-1-1"
-        x={589.16785}
-        y={551.685}
+        x={542.25842}
+        y={536.00116}
         style={{
-          fontSize: 28,
+          fontSize: 22,
           fill: "#000303",
           fillOpacity: 0.612205,
         }}
       >
-        {"SKID CLEANING"}
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      style={{
-        fontSize: 28,
-        fontFamily: "Calibri",
-        InkscapeFontSpecification: "Calibri",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        textAnchor: "middle",
-        fill: "#000303",
-        fillOpacity: 1,
-        stroke: "#000303",
-        strokeWidth: 0.1,
-        strokeLinecap: "square",
-        strokeLinejoin: "round",
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      x={591.12738}
-      y={586.43475}
-      id="text13-6-6-2"
-    >
-      <tspan
-        id="tspan13-1-1-7"
-        x={591.12738}
-        y={586.43475}
-        style={{
-          fontSize: 28,
-          fill: "#000303",
-          fillOpacity: 0.612205,
-        }}
-      >
-        {"FUND "}
+        {"SKID CLEANING FUND:"}
       </tspan>
     </text>
     <path
@@ -690,7 +654,7 @@ const SVGComponent = (props) => (
         strokeLinejoin: "round",
         strokeMiterlimit: 10.7,
       }}
-      d="m 221.40329,415.67328 -0.0385,388.74956 347.98068,0.48662"
+      d="m 244.67138,398.98945 -0.0385,388.74956 347.98068,0.48662"
       id="path1"
       sodipodi:nodetypes="ccc"
     />
@@ -868,12 +832,12 @@ const SVGComponent = (props) => (
       }}
       transform="translate(-12.010192,6.7897392)"
     >
-      <tspan x={1162.1543} y={49} id="tspan4">
+      <tspan x={1162.1543} y={49} id="tspan8">
         <tspan
           style={{
             fill: "#2c2c2c",
           }}
-          id="tspan3"
+          id="tspan7"
         >
           {"Equipment Operation"}
         </tspan>
@@ -983,7 +947,7 @@ const SVGComponent = (props) => (
     </text>
     <g
       id="g24-6"
-      transform="matrix(1.3372687,0,0,1.3392637,172.63852,271.52136)"
+      transform="matrix(1.3372687,0,0,1.3392637,195.90661,254.83753)"
       style={{
         strokeWidth: 0.747236,
       }}
@@ -999,10 +963,10 @@ const SVGComponent = (props) => (
       />
     </g>
     <rect
-      x={1072.735}
-      y={596.36877}
+      x={1186.724}
+      y={573.73737}
       className="st26"
-      width={166.59927}
+      width={152.25735}
       height={90.010765}
       id="TK01"
       style={{
@@ -1013,7 +977,7 @@ const SVGComponent = (props) => (
     />
     <g
       id="g27-2"
-      transform="matrix(1.2663699,0,0,1.3007382,195.08737,286.16004)"
+      transform="matrix(1.2663699,0,0,1.3007382,218.35546,269.47621)"
       style={{
         strokeWidth: 0.779157,
       }}
@@ -1073,7 +1037,7 @@ const SVGComponent = (props) => (
     </g>
     <g
       id="g33"
-      transform="matrix(0.50299205,0,0,0.62916521,638.80318,889.66678)"
+      transform="matrix(0.50299205,0,0,0.62916521,662.79751,960.5825)"
       style={{
         strokeWidth: 1.52558,
       }}
@@ -1151,7 +1115,7 @@ const SVGComponent = (props) => (
     </g>
     <g
       id="Group_12-6-4-7"
-      transform="matrix(2.2002694,0,0,1.406336,309.67273,-350.34876)"
+      transform="matrix(2.2002694,0,0,1.406336,332.94082,-367.03259)"
       style={{
         strokeWidth: 0.948161,
       }}
@@ -1196,7 +1160,7 @@ const SVGComponent = (props) => (
     </g>
     <path
       id="PUMP02"
-      d="m 1164.6034,422.93851 h -17.24 c -0.9852,0 -1.8471,-0.7828 -1.8471,-1.67742 V 405.6051 c 0,-0.89463 0.8619,-1.67743 1.8471,-1.67743 h 17.24 c 0.985,0 1.8471,0.7828 1.8471,1.67743 v 15.65599 c 0,0.89462 -0.8621,1.67742 -1.8471,1.67742 z"
+      d="m 1187.8715,406.25468 h -17.24 c -0.9852,0 -1.8471,-0.7828 -1.8471,-1.67742 v -15.65599 c 0,-0.89463 0.8619,-1.67743 1.8471,-1.67743 h 17.24 c 0.985,0 1.8471,0.7828 1.8471,1.67743 v 15.65599 c 0,0.89462 -0.8621,1.67742 -1.8471,1.67742 z"
       fill="#2f3e49"
       sodipodi:nodetypes="sssssssss"
       inkscape:label="PUMP02"
@@ -1206,7 +1170,7 @@ const SVGComponent = (props) => (
     />
     <path
       className="st23"
-      d="m 1239.3343,582.47361 v 101.08783 c 0,1.54541 -0.8035,2.81809 -1.6071,2.81809 H 1074.342 c -0.9374,0 -1.6071,-1.27268 -1.6071,-2.81809 V 582.47361"
+      d="m 1339.2606,557.84219 v 103.03356 c 0,1.57516 -0.7448,2.87233 -1.4897,2.87233 h -151.4363 c -0.8689,0 -1.4896,-1.29717 -1.4896,-2.87233 V 557.84219"
       id="path38-2"
       style={{
         fill: "none",
@@ -1227,7 +1191,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 622.03489,792.25784 111.01733,0.0194 V 654.92657 l 335.99508,1.02846"
+      d="m 645.30273,775.57401 129.9372,0.0194 V 638.24274 l 406.01157,-1.99986"
       id="path3"
       sodipodi:nodetypes="cccc"
     />
@@ -1243,13 +1207,13 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="M 1155.9834,403.49634 V 336.99367 L 949,336.00002 950.90105,635.3342 951,650.91405"
+      d="m 1179.2515,386.81251 v -66.50267 l -206.98341,-0.99365 1.90105,299.33418 0.099,7.27135"
       id="path5"
       sodipodi:nodetypes="ccccc"
     />
     <path
       id="Vector_324-6"
-      d="m 943.70141,644.85376 c 0,-1.26139 0.9216,-2.4093 2.1553,-2.41093 l 10.1789,-0.0118 c 1.131,-0.003 2.1608,1.02948 2.1629,2.40548 0,0.6307 -0.2036,1.26169 -0.5629,1.66355 l -5.0806,5.68271 c -0.7698,0.86106 -2.0549,0.86253 -2.9301,0.11838 l -0.103,-0.11459 -5.0982,-5.67019 c -0.6177,-0.51529 -0.7214,-1.03129 -0.7224,-1.66199 z"
+      d="m 966.99318,626.12245 c 0,-1.26139 0.9216,-2.4093 2.1553,-2.41093 l 10.1789,-0.0118 c 1.131,-0.003 2.1608,1.02948 2.1629,2.40548 0,0.6307 -0.2036,1.26169 -0.5629,1.66355 l -5.0806,5.68271 c -0.7698,0.86106 -2.0549,0.86253 -2.9301,0.11838 l -0.103,-0.11459 -5.0982,-5.67019 c -0.6177,-0.51529 -0.7214,-1.03129 -0.7224,-1.66199 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -1279,7 +1243,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="M 457,801.84666 456.5,739.5"
+      d="m 524.76662,785.66283 -0.5,-62.34666"
       id="path6"
     />
     <path
@@ -1294,7 +1258,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 730.29041,704.86901 -61.46468,0.12462"
+      d="m 772.3085,687.24768 -61.46468,0.12462"
       id="path6-8"
     />
     <rect
@@ -1312,8 +1276,8 @@ const SVGComponent = (props) => (
       id="rect5-7"
       width={420.71335}
       height={165.15974}
-      x={854.5}
-      y={693.32361}
+      x={917.76813}
+      y={684.39209}
     />
     <text
       xmlSpace="preserve"
@@ -1339,13 +1303,14 @@ const SVGComponent = (props) => (
       x={1065.3831}
       y={726.00116}
       id="text13-6-6-5"
+      transform="translate(63.0778,-14.683826)"
     >
-      <tspan x={1065.3831} y={726.00116} id="tspan7">
+      <tspan x={1065.3831} y={726.00116} id="tspan10">
         <tspan
           style={{
             fillOpacity: 0.612205,
           }}
-          id="tspan5"
+          id="tspan9"
         >
           {"ELECTRICAL PANEL"}
         </tspan>
@@ -1375,14 +1340,14 @@ const SVGComponent = (props) => (
       x={1065.3831}
       y={726.00116}
       id="text13-6-6-5-1"
-      transform="translate(-3.4010324,20.08497)"
+      transform="translate(59.676767,5.401144)"
     >
-      <tspan x={1065.3831} y={726.00116} id="tspan9">
+      <tspan x={1065.3831} y={726.00116} id="tspan14">
         <tspan
           style={{
             fillOpacity: 0.612205,
           }}
-          id="tspan8"
+          id="tspan11"
         >
           {"BACKGROUND CLEANING"}
         </tspan>

@@ -152,7 +152,7 @@
   ],
   "labels": [
     {
-      "id": "pump-title-bomba-retrolavado",
+      "id": "pump-title-pump-retrolavado",
       "text": "BACKWASH \n PUMP",
       "source_svg_target": "PUMP-03",
       "source_element_type": "pump",
@@ -162,7 +162,7 @@
       }
     },
     {
-      "id": "pump-title-bomba-filtracion",
+      "id": "pump-title-pump-filtracion",
       "text": "FILTRATION \n PUMP",
       "source_svg_target": "PUMP-02",
       "source_element_type": "pump",
@@ -172,7 +172,7 @@
       }
     },
     {
-      "id": "pump-title-bomba-retorno-clarificado",
+      "id": "pump-title-pump-retorno-clarificado",
       "text": "Clarified Return Pump",
       "source_svg_target": "PUMP-04",
       "source_element_type": "pump",

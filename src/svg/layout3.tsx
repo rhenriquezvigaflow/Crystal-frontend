@@ -751,7 +751,7 @@ const SVGComponent = (props) => (
           strokeWidth: 0.779157,
           enableBackground: "new",
         }}
-        inkscape:label="BOMBA-FILTRACION"
+        inkscape:label="PUMP-FILTRACION"
       />
     </g>
     <g
@@ -811,7 +811,7 @@ const SVGComponent = (props) => (
           strokeWidth: 0.779157,
           enableBackground: "new",
         }}
-        inkscape:label="BOMBA-RETORNO-CLARIFICADO"
+        inkscape:label="PUMP-RETORNO-CLARIFICADO"
       />
     </g>
     <path
@@ -1106,7 +1106,7 @@ const SVGComponent = (props) => (
           strokeWidth: 0.779157,
           enableBackground: "new",
         }}
-        inkscape:label="BOMBA-RETROLAVADO"
+        inkscape:label="PUMP-RETROLAVADO"
       />
     </g>
     <g

@@ -3,18 +3,25 @@ import type { CSSProperties } from "react";
 
 import ScadaDevtoolsStatus from "../../containers/ScadaDevtoolsStatus";
 import ScadaEquipmentStateOverlay from "../../containers/ScadaEquipmentStateOverlay";
+import ScadaImageOverlay from "../../containers/ScadaImageOverlay";
 import ScadaOverlay from "../../containers/ScadaOverlay";
 import ScadaSvgEquipmentLabelsOverlay from "../../containers/ScadaSvgEquipmentLabelsOverlay";
 import ScadaTextOverlay from "../../containers/ScadaTextOverlay";
+import LagoonMetricsOverlay, {
+  type LagoonMetricKey,
+  type LagoonMetricsProps,
+} from "./LagoonMetricsOverlay";
 import { useScadaLayout } from "../../hooks/useScadaLayout";
 import {
   getScadaEquipmentBindingValue,
   getScadaEquipmentStateBindingsFromElements,
+  getScadaTankStateTagIds,
 } from "../../scada/layoutEquipmentState";
-import { getDiscreteStateLabel } from "../../scada/layoutSceneResolver";
+import { getDiscreteStateLabel, getRealtimeValue } from "../../scada/layoutSceneResolver";
 import { resolveScadaSvgRegistryEntry } from "../../scada/svgRegistry";
 import type {
   RealtimeTagLookup,
+  ResolvedLagoonMetricsOverlay,
   ResolvedScadaElement,
   ResolvedScadaMap,
   ResolvedScadaTextLabel,
@@ -31,6 +38,7 @@ interface Props {
   plcStatus?: "online" | "offline";
   localTime?: string | null;
   timezone?: string | null;
+  filterStatus?: string | null;
   canControl?: boolean;
 }
 
@@ -78,17 +86,51 @@ function isScadaDebugEnabled(): boolean {
   return new URLSearchParams(window.location.search).get("scadaDebug") === "1";
 }
 
-function normalizeTagList(value: string | string[] | null | undefined): string[] {
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    return trimmed ? [trimmed] : [];
-  }
+function toMetricNumber(value: unknown): number {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : Number.NaN;
+}
 
-  if (!Array.isArray(value)) return [];
+function resolveLagoonMetrics(
+  overlay: ResolvedLagoonMetricsOverlay | null | undefined,
+  tagLookup: RealtimeTagLookup,
+): LagoonMetricsProps | null {
+  if (!overlay) return null;
 
-  return value
-    .map((entry) => String(entry ?? "").trim())
-    .filter(Boolean);
+  const values: Record<LagoonMetricKey, number> = {
+    temperature: Number.NaN,
+    orp: Number.NaN,
+    dosage: Number.NaN,
+  };
+  const labels: LagoonMetricsProps["labels"] = {};
+  const units: LagoonMetricsProps["units"] = {};
+
+  overlay.metrics.forEach((metric) => {
+    values[metric.key] = toMetricNumber(
+      getRealtimeValue(tagLookup, metric.tag, metric.fallback_tag),
+    );
+    labels[metric.key] = metric.label;
+    units[metric.key] = metric.unit;
+  });
+
+  return {
+    ...values,
+    labels,
+    units,
+  };
+}
+
+function buildLagoonMetricsStyle(
+  overlay: ResolvedLagoonMetricsOverlay | null | undefined,
+): CSSProperties | undefined {
+  if (!overlay?.position?.left || !overlay.position.top) return undefined;
+
+  return {
+    left: overlay.position.left,
+    top: overlay.position.top,
+    width: overlay.width ?? "clamp(12rem,24%,22rem)",
+    zIndex: overlay.z_index ?? 2,
+  };
 }
 
 function ScadaDebugLayer() {
@@ -175,6 +217,7 @@ export default function ScadaMapRenderer({
   plcStatus,
   localTime,
   timezone,
+  filterStatus,
   canControl = true,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -189,6 +232,7 @@ export default function ScadaMapRenderer({
   const elements = scene?.elements ?? EMPTY_SCADA_ELEMENTS;
   const labels = scene?.labels ?? EMPTY_SCADA_LABELS;
   const layoutId = scene?.layout_id ?? activeMap?.id ?? "default";
+  const lagoonMetricsOverlay = scene?.lagoon_metrics_overlay ?? null;
   const renderRules = scene?.render_rules ?? ({
     tank: { mode: "binary_level", states: {}, animation: null },
     valve: { mode: "color", states: {}, animation: null },
@@ -207,6 +251,14 @@ export default function ScadaMapRenderer({
   const scadaLayout = useScadaLayout(layout, containerRef, { containerElement });
   const debugLayout = useMemo(() => isScadaDebugEnabled(), []);
   const equipmentLookup = equipmentTagLookup ?? tagLookup;
+  const lagoonMetrics = useMemo(
+    () => resolveLagoonMetrics(lagoonMetricsOverlay, tagLookup),
+    [lagoonMetricsOverlay, tagLookup],
+  );
+  const lagoonMetricsStyle = useMemo(
+    () => buildLagoonMetricsStyle(lagoonMetricsOverlay),
+    [lagoonMetricsOverlay],
+  );
   const devtoolsStatusItems = useMemo(
     () =>
       getScadaEquipmentStateBindingsFromElements(elements).map((binding) => {
@@ -216,11 +268,7 @@ export default function ScadaMapRenderer({
             ? String(value ?? "UNKNOWN")
             : getDiscreteStateLabel(value);
         const sourceTags = binding.type === "tank" && binding.state_tags
-          ? [
-              ...normalizeTagList(binding.state_tags.LOW),
-              ...normalizeTagList(binding.state_tags.MEDIUM),
-              ...normalizeTagList(binding.state_tags.HIGH),
-            ]
+          ? getScadaTankStateTagIds(binding.state_tags)
           : [binding.tag, binding.fallback_tag]
               .map((tag) => String(tag ?? "").trim())
               .filter(Boolean);
@@ -280,8 +328,26 @@ export default function ScadaMapRenderer({
             ) : svgMarkup ? (
               <InlineScadaSvg markup={svgMarkup} />
             ) : null}
+            <ScadaImageOverlay
+              elements={elements}
+              placements={scadaLayout.elements}
+            />
+            {lagoonMetrics ? (
+              <LagoonMetricsOverlay
+                temperature={lagoonMetrics.temperature}
+                orp={lagoonMetrics.orp}
+                dosage={lagoonMetrics.dosage}
+                labels={lagoonMetrics.labels}
+                units={lagoonMetrics.units}
+                style={lagoonMetricsStyle}
+              />
+            ) : null}
             {debugLayout ? <ScadaDebugLayer /> : null}
-            <ScadaTextOverlay labels={labels as ResolvedScadaTextLabel[]} placements={scadaLayout.labels} />
+            <ScadaTextOverlay
+              labels={labels as ResolvedScadaTextLabel[]}
+              tagLookup={tagLookup}
+              placements={scadaLayout.labels}
+            />
             <ScadaSvgEquipmentLabelsOverlay
               elements={elements}
               labels={labels}
@@ -295,6 +361,7 @@ export default function ScadaMapRenderer({
               plc_status={plcStatus}
               local_time={localTime}
               timezone={timezone}
+              filter_status={filterStatus}
               placements={scadaLayout.elements}
             />
             <ScadaEquipmentStateOverlay

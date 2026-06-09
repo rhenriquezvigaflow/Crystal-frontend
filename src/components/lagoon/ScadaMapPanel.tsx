@@ -14,6 +14,7 @@ interface Props {
   plcStatus?: "online" | "offline";
   localTime?: string | null;
   timezone?: string | null;
+  filterStatus?: string | null;
   canControl?: boolean;
 }
 
@@ -29,6 +30,7 @@ export default function ScadaMapPanel({
   plcStatus,
   localTime,
   timezone,
+  filterStatus,
   canControl = true,
 }: Props) {
   return (
@@ -70,6 +72,7 @@ export default function ScadaMapPanel({
         plcStatus={plcStatus}
         localTime={localTime}
         timezone={timezone}
+        filterStatus={filterStatus}
         canControl={canControl}
       />
     </section>

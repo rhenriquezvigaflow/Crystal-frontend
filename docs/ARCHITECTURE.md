@@ -62,7 +62,7 @@ Flujo:
 2. `LagoonsProvider` llama `GET /api/lagoons`.
 3. El frontend normaliza lagunas y aplica `can_view && enable`.
 4. `can_edit` habilita guardado de alarmas.
-5. `can_control` controla visibilidad de controles de bombas.
+5. `can_control` controla visibilidad de controles de pumps.
 
 ## Resolucion de Escena SCADA
 
@@ -180,7 +180,7 @@ Filtro de tags no ploteables:
 - contiene `_BOOL`
 - contiene `RETRO`
 
-## Bombas y Eventos
+## Pumps y Eventos
 
 Archivos:
 

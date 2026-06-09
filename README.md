@@ -11,7 +11,7 @@ Frontend SCADA para monitoreo de lagunas Crystal con React, Vite y TypeScript.
 - SVGs React registrados en `src/scada/svgRegistry.ts`.
 - Realtime por `WS /ws/scada/{lagoon_id}`.
 - Historico por `GET /api/scada/{lagoon_id}/history`.
-- Eventos de bombas por `GET /api/scada/{lagoon_id}/pump-events/last-3`.
+- Eventos de pumps por `GET /api/scada/{lagoon_id}/pump-events/last-3`.
 - Configuracion de umbrales PT/FIT por `GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`.
 
 ## Stack
@@ -65,7 +65,7 @@ Por defecto REST usa rutas browser-relative bajo `/api`. Vite o IIS deben reenvi
 
 - `src/App.tsx`: routing, providers y refresh horario.
 - `src/pages/lagoonsView.tsx`: shell principal.
-- `src/components/lagoonContainer.tsx`: compone mapa SCADA, bombas e historico.
+- `src/components/lagoonContainer.tsx`: compone mapa SCADA, pumps e historico.
 - `src/assets/positions/*.json`: escenas por laguna, fuente actual de posiciones, tags, labels y `svg_target`.
 - `src/scada/lagoonSceneBundle.ts`: carga y normaliza escenas locales.
 - `src/hooks/useScadaLayoutScene.ts`: cache y refresh de escenas.

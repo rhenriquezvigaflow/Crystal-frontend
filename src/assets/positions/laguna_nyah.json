@@ -323,9 +323,26 @@
       "svg_target": "TK03",
       "type": "tank",
       "state_tags": {
-        "LOW": "LSL004.ESTADO",
-        "MEDIUM": "LSM006.ESTADO",
-        "HIGH": "LSH005.ESTADO"
+        "LOW": [
+          {
+            "tag": "LSM006.ESTADO",
+            "active_state": 1
+          },
+          {
+            "tag": "LSH005.ESTADO",
+            "active_state": 0
+          }
+        ],
+        "HIGH": [
+          {
+            "tag": "LSH005.ESTADO",
+            "active_state": 1
+          },
+          {
+            "tag": "LSM006.ESTADO",
+            "active_state": 0
+          }
+        ]
       }
     }
   ],

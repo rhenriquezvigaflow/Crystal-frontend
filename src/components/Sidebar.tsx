@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom";
 
 import type { LagoonAccess } from "../api/lagoonsApi";
+import { useProduct } from "../modules/shared/product/useProduct";
+import { legacyCrystalLagoonPath, productLagoonPath } from "../modules/shared/routing/paths";
 
 interface Props {
   lagoons: LagoonAccess[];
   selectedLagoonId: string | null;
   onNavigate?: () => void;
   className?: string;
+  legacyRoute?: boolean;
 }
 
 export default function Sidebar({
@@ -14,8 +17,10 @@ export default function Sidebar({
   selectedLagoonId,
   onNavigate,
   className,
+  legacyRoute = false,
 }: Props) {
   const navigate = useNavigate();
+  const product = useProduct();
   const visibleLagoons = lagoons.filter((lagoon) => lagoon.can_view && lagoon.enable);
 
   return (
@@ -28,13 +33,13 @@ export default function Sidebar({
 
       <div className="relative mb-6 rounded-[16px] border border-white/60 bg-white/68 px-4 py-4 shadow-[0_18px_34px_-24px_rgba(29,92,128,0.4)] backdrop-blur">
         <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">
-          Crystal
+          {product.theme.eyebrow}
         </div>
         <div className="mt-1 text-xl font-semibold tracking-[0.08em] text-slate-800">
-          Lagoons
+          {product.theme.title}
         </div>
         <div className="mt-2 text-xs text-sky-900/70">
-          Visual monitoring for lagoons and SCADA stations.
+          {product.theme.tagline}
         </div>
       </div>
 
@@ -58,7 +63,11 @@ export default function Sidebar({
                   return;
                 }
 
-                navigate(`/lagoon/${encodeURIComponent(lagoon.lagoon_id)}`);
+                navigate(
+                  legacyRoute
+                    ? legacyCrystalLagoonPath(lagoon.lagoon_id)
+                    : productLagoonPath(product.id, lagoon.lagoon_id),
+                );
                 onNavigate?.();
               }}
               className={[

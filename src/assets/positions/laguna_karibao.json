@@ -88,22 +88,22 @@
   "pumps": [
     {
       "tag": "P002_STS_SCADA",
-      "label": "Bomba Retrolavado",
-      "svg_target": "BOMBA-RETROLAVADO",
+      "label": "Pump Retrolavado",
+      "svg_target": "PUMP-03",
       "panel": "pump-status",
       "type": "pump"
     },
     {
       "tag": "P006_STS_SCADA",
-      "label": "Bomba Filtracion",
-      "svg_target": "BOMBA-FILTRACION",
+      "label": "Pump Filtracion",
+      "svg_target": "PUMP-02",
       "panel": "pump-status",
       "type": "pump"
     },
     {
       "tag": "P007_STS_SCADA",
-      "label": "Bomba Retorno Clarificado",
-      "svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "label": "Pump Retorno Clarificado",
+      "svg_target": "PUMP-04",
       "panel": "pump-status",
       "type": "pump"
     },
@@ -155,9 +155,9 @@
   ],
   "labels": [
     {
-      "id": "pump-title-bomba-retrolavado",
-      "text": "Bomba Retrolavado",
-      "source_svg_target": "BOMBA-RETROLAVADO",
+      "id": "pump-title-pump-retrolavado",
+      "text": "Pump Retrolavado",
+      "source_svg_target": "PUMP-03",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -165,9 +165,9 @@
       }
     },
     {
-      "id": "pump-title-bomba-filtracion",
-      "text": "Bomba Filtracion",
-      "source_svg_target": "BOMBA-FILTRACION",
+      "id": "pump-title-pump-filtracion",
+      "text": "Pump Filtracion",
+      "source_svg_target": "PUMP-02",
       "source_element_type": "pump",
       "position": {
         "top": "",
@@ -175,9 +175,9 @@
       }
     },
     {
-      "id": "pump-title-bomba-retorno-clarificado",
-      "text": "Bomba Retorno Clarificado",
-      "source_svg_target": "BOMBA-RETORNO-CLARIFICADO",
+      "id": "pump-title-pump-retorno-clarificado",
+      "text": "Pump Retorno Clarificado",
+      "source_svg_target": "PUMP-04",
       "source_element_type": "pump",
       "position": {
         "top": "",

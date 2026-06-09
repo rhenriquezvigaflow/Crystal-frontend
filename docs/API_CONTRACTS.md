@@ -100,7 +100,7 @@ Campos soportados:
   "pumps": [
     {
       "tag": "P005_ST",
-      "label": "Bomba Filtro",
+      "label": "Pump Filtro",
       "svg_target": "circle26-4",
       "panel": "pump-status"
     }
@@ -196,7 +196,7 @@ Las series aceptan cualquiera de estos identificadores:
 - `tag_key`
 - `name`
 
-## Eventos de Bombas
+## Eventos de Pumps
 
 Lectura:
 
@@ -215,7 +215,7 @@ Response esperada:
     {
       "lagoon_id": "costa_del_lago",
       "tag_id": "P002_STS_SCADA",
-      "tag_label": "Bomba Retrolavado",
+      "tag_label": "Pump Retrolavado",
       "start_local": "2026-04-27T12:49:45.964664"
     }
   ]

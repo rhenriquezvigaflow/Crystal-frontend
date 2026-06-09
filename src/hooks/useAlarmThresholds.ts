@@ -17,6 +17,7 @@ import type {
   ThresholdViewRow,
 } from "../types/alarm-thresholds";
 import { ALARM_SEVERITIES } from "../types/alarm-thresholds";
+import type { ProductType } from "../modules/shared/product/types";
 
 const PT_FIT_TAG_REGEX = /^(PT|FIT)/i;
 
@@ -24,6 +25,7 @@ interface UseAlarmThresholdsParams {
   lagoonId: string;
   open: boolean;
   wsTagIds?: string[];
+  productType: ProductType;
 }
 
 interface SaveResult {
@@ -203,6 +205,7 @@ export function useAlarmThresholds({
   lagoonId,
   open,
   wsTagIds = [],
+  productType,
 }: UseAlarmThresholdsParams) {
   const normalizedWsTagIds = useMemo(() => normalizeWsTagIds(wsTagIds), [wsTagIds]);
   const baselineByTagRef = useRef<Map<string, AlarmThresholdRow>>(new Map());
@@ -374,9 +377,13 @@ export function useAlarmThresholds({
         setSaving(true);
         setTagsSaving(tagIds, true);
 
-        const response = await upsertThresholds(lagoonId, {
-          items: targetRows.map(toConfigItem),
-        });
+        const response = await upsertThresholds(
+          lagoonId,
+          {
+            items: targetRows.map(toConfigItem),
+          },
+          productType,
+        );
 
         applySavedRows(targetRows);
         setError(null);
@@ -396,7 +403,7 @@ export function useAlarmThresholds({
         setSaving(false);
       }
     },
-    [applySavedRows, lagoonId, saving, setTagsSaving],
+    [applySavedRows, lagoonId, productType, saving, setTagsSaving],
   );
 
   const load = useCallback(
@@ -408,7 +415,7 @@ export function useAlarmThresholds({
       setError(null);
 
       try {
-        const response = await getThresholdsView(targetLagoonId);
+        const response = await getThresholdsView(targetLagoonId, productType);
         const mergedRows = buildRows(response.rows ?? [], normalizedWsTagIds);
         baselineByTagRef.current = new Map(
           mergedRows.map((row) => [row.tag_id, row]),
@@ -435,7 +442,7 @@ export function useAlarmThresholds({
         setLoading(false);
       }
     },
-    [lagoonId, normalizedWsTagIds],
+    [lagoonId, normalizedWsTagIds, productType],
   );
 
   const selectTag = useCallback((tagId: string) => {

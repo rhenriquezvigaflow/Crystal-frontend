@@ -1,8 +1,12 @@
+import { useProduct } from "../../modules/shared/product/useProduct";
+
 interface Props {
   compact?: boolean;
 }
 
 export default function HeaderBrand({ compact = false }: Props) {
+  const product = useProduct();
+
   return (
     <div className="min-w-0">
       <div
@@ -13,7 +17,7 @@ export default function HeaderBrand({ compact = false }: Props) {
             : "text-[10px] tracking-[0.28em]",
         ].join(" ")}
       >
-        Live monitoring
+        {product.theme.eyebrow}
       </div>
       <div
         className={[
@@ -23,7 +27,7 @@ export default function HeaderBrand({ compact = false }: Props) {
             : "text-sm uppercase tracking-[0.18em] sm:text-base sm:tracking-[0.24em]",
         ].join(" ")}
       >
-        Crystal Lagoons
+        {product.theme.logoText}
       </div>
     </div>
   );
