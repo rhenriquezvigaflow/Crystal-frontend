@@ -8,8 +8,8 @@ Desde el browser, el frontend llama normalmente a rutas bajo `/api/*`.
 
 Ejemplos:
 
-- frontend: `/api/lagoons`
-- backend directo: `/lagoons`
+- frontend: `/api/small/lagoons`
+- backend directo: `/small/lagoons`
 
 La escena SCADA visual no se pide al backend: se carga desde `src/assets/positions/*.json`.
 
@@ -39,16 +39,19 @@ Response esperada:
     "id": "1",
     "email": "user@domain.com",
     "roles": ["AdminCrystal"],
-    "role": "AdminCrystal"
+    "role": "AdminCrystal",
+    "product_type": "crystal",
+    "product_types": ["crystal"]
   }
 }
 ```
 
 ## Lagunas
 
-Ruta:
+Rutas:
 
-- `GET /api/lagoons`
+- `GET /api/crystal/lagoons`
+- `GET /api/small/lagoons`
 
 Payload compatible:
 
@@ -72,7 +75,7 @@ Notas:
 
 - El frontend tambien acepta `{ "lagoons": [...] }`.
 - `scada_layout`, `layout` o `layout_id` son opcionales; la escena local define el layout efectivo.
-- Se descartan lagunas sin `can_view` o con `enable=false`.
+- Se descartan lagunas sin `can_view`, con `enable=false` o con `product_type` distinto al modulo activo.
 
 ## Escena SCADA Local
 
@@ -125,18 +128,26 @@ Campos soportados:
 }
 ```
 
-Tambien se acepta una forma con `elements[]` y `mapping_json`, pero el uso actual en el repo es el formato plano con `kpis`, `pumps`, `valves`, `labels` y `plc_status`.
+Tambien se acepta una forma con `elements[]` y `mapping_json`. Para SmallLagoons se usan ademas:
+
+- `images[]`: assets visuales desde `src/lagoons/img/*`.
+- `lagoon_metrics_overlay`: metricas compactas para TEMP, ORP y Dosif.
+- `map_name`, `map_order` y `default_map`: metadatos para multiples mapas.
 
 ## Realtime SCADA
 
 Ruta:
+
+- `WS /ws/{product_type}/{lagoon_id}`
+
+Compatibilidad legacy Crystal:
 
 - `WS /ws/scada/{lagoon_id}`
 
 Autenticacion soportada por el frontend:
 
 - query string `?token=<jwt>`
-- fallback por subprotocol `crystal-scada.v1` + `bearer.<jwt>`
+- fallback por subprotocol `scada.v1` + `bearer.<jwt>`
 
 Payload esperado:
 
@@ -163,7 +174,7 @@ El frontend ignora:
 
 Ruta:
 
-- `GET /api/scada/{lagoon_id}/history`
+- `GET /api/{product_type}/history`
 
 Query:
 
@@ -200,11 +211,11 @@ Las series aceptan cualquiera de estos identificadores:
 
 Lectura:
 
-- `GET /api/scada/{lagoon_id}/pump-events/last-3`
+- `GET /api/{product_type}/lagoons/{lagoon_id}/pump-events/last-3`
 
 Descarga:
 
-- `GET /api/scada/{lagoon_id}/pump-events/report.xlsx`
+- `GET /api/{product_type}/lagoons/{lagoon_id}/pump-events/report.xlsx`
 
 Response esperada:
 
@@ -247,6 +258,18 @@ Request:
   ]
 }
 ```
+
+## Small Control y Quimicos
+
+Rutas:
+
+- `POST /api/small/control`
+- `PUT /api/small/control`
+- `GET /api/small/chemicals`
+- `POST /api/small/chemicals`
+- `DELETE /api/small/chemicals`
+
+Requieren roles Small y permisos de control sobre la laguna.
 
 ## Manejo de Errores Esperado
 

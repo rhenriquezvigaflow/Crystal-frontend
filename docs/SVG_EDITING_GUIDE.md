@@ -10,6 +10,7 @@ SVG React:
 - `src/svg/layout2.tsx`
 - `src/svg/layout3.tsx`
 - `src/svg/layout4.tsx`
+- `src/svg/small_layout_1.tsx`
 
 Registro:
 
@@ -18,6 +19,7 @@ Registro:
 Escenas por laguna:
 
 - `src/assets/positions/*.json`
+- `src/lagoons/img/*`
 
 Resolucion:
 
@@ -54,6 +56,7 @@ Identificar:
 - `svg_component`;
 - `aspect_ratio`;
 - tags usados por KPIs, pumps y valvulas;
+- imagenes y `lagoon_metrics_overlay` si aplica;
 - `svg_target` de cada pump o valvula que debe cambiar de color;
 - labels fijos sobre el plano.
 
@@ -64,6 +67,7 @@ Identificar:
 - evitar renombrar pumps o valvulas ya referenciadas por JSON;
 - evitar filtros o metadata innecesaria;
 - si cambia la proporcion, ajustar `aspectRatio` en `svgRegistry.ts` y/o `aspect_ratio` en la escena.
+- para SmallLagoons, conservar hitboxes transparentes usados por popups de bombas o dosificadores.
 
 ## Ajustar KPI Cards
 
@@ -144,16 +148,63 @@ Campos opcionales:
 - `text_shadow`
 - `hidden`
 
+## Ajustar Imagenes
+
+Ejemplo:
+
+```json
+{
+  "id": "small-lagoons-image",
+  "type": "image",
+  "src": "small_lagoons.webp",
+  "alt": "Small Lagoons",
+  "position": {
+    "top": "42%",
+    "left": "16%"
+  },
+  "width": "48%",
+  "height": "40%",
+  "object_fit": "contain"
+}
+```
+
+`src` se busca por nombre dentro de `src/lagoons/img/*`. Si no existe, se usa el valor como URL.
+
+## Ajustar Lagoon Metrics Overlay
+
+Ejemplo Small:
+
+```json
+{
+  "lagoon_metrics_overlay": {
+    "position": {
+      "top": "41.5%",
+      "left": "16.5%"
+    },
+    "width": "24%",
+    "metrics": [
+      { "key": "temperature", "tag": "TEMP", "label": "TEMP", "unit": "C" },
+      { "key": "orp", "tag": "ORP", "label": "ORP", "unit": "mV" },
+      { "key": "dosage", "tag": "Dosif", "label": "Dosif", "unit": "ppm" }
+    ]
+  }
+}
+```
+
+`key` acepta `temperature`, `orp` y `dosage`.
+
 ## Agregar una Laguna
 
 1. Crear `src/assets/positions/<lagoon_id>.json`.
 2. Usar un `svg_component` existente (`layout1` a `layout4`) o agregar uno nuevo.
 3. Si agregas SVG nuevo:
-   - crear `src/svg/layoutN.tsx`;
-   - registrar en `src/scada/svgRegistry.ts`;
-   - agregar el nuevo valor en `src/scada/layoutResolver.ts`.
-4. Confirmar que el backend devuelve la laguna en `GET /api/lagoons`.
+   - crear `src/svg/<nombre_layout>.tsx`;
+   - confirmar que `src/scada/svgRegistry.ts` lo descubre via `import.meta.glob`;
+   - usar ese nombre en `svg_component`.
+4. Confirmar que el backend devuelve la laguna en `GET /api/{product}/lagoons`.
 5. Confirmar que el collector envia tags con los mismos nombres usados por la escena.
+
+Para SmallLagoons, usar `product_type = "small"` y la ruta `/small/lagoon/<lagoon_id>`.
 
 ## Debug Visual
 

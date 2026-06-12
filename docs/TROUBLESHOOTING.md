@@ -18,12 +18,13 @@ Causas tipicas:
 
 - `can_view=false`
 - `enable=false`
-- `GET /api/lagoons` devuelve lista vacia
+- `GET /api/{product}/lagoons` devuelve lista vacia
+- `product_type` de la laguna no coincide con el modulo activo
 - la laguna existe en el collector pero no en backend/BD
 
 Revisar:
 
-1. response de `/api/lagoons`
+1. response de `/api/crystal/lagoons` o `/api/small/lagoons`
 2. permisos del usuario
 3. JWT y roles
 
@@ -33,7 +34,7 @@ Causas tipicas:
 
 - no existe `src/assets/positions/{lagoon_id}.json`
 - `svg_component` no existe en `src/scada/svgRegistry.ts`
-- `layout_id` no normaliza a `layout1|layout2|layout3|layout4`
+- `layout_id` o `svg_component` no existe en `src/svg/*.tsx`
 - JSON malformed
 
 Revisar:
@@ -64,7 +65,7 @@ Revisar:
 1. URL WS final construida en `src/config/env.ts`
 2. token JWT valido
 3. fallback por subprotocol si falla query token
-4. backend `WS /ws/scada/{lagoon_id}`
+4. backend `WS /ws/{product}/{lagoon_id}`
 
 Si la conexion cae:
 
@@ -103,7 +104,7 @@ Mapa de color:
 
 Revisar:
 
-1. `GET /api/scada/{lagoon_id}/history`
+1. `GET /api/{product}/history?lagoon_id={lagoon_id}`
 2. `resolution` enviada
 3. `series[].points`
 4. que los tags no hayan sido filtrados por no ploteables
@@ -120,7 +121,7 @@ Tags que el frontend descarta:
 
 Revisar:
 
-1. `GET /api/scada/{lagoon_id}/pump-events/last-3`
+1. `GET /api/{product}/lagoons/{lagoon_id}/pump-events/last-3`
 2. `tag_id` de cada evento
 3. fallback `pump_last_on` del WS
 4. que el pump tenga `panel: "pump-status"`
@@ -147,8 +148,8 @@ Revisar:
 ## Checklist Antes de Escalar
 
 1. `lagoon_id`
-2. response de `/api/lagoons`
+2. response de `/api/{product}/lagoons`
 3. archivo `src/assets/positions/{lagoon_id}.json`
 4. payload WS o banner de health
-5. response de `/api/scada/{lagoon_id}/history` si aplica
+5. response de `/api/{product}/history` si aplica
 6. captura UI + consola browser

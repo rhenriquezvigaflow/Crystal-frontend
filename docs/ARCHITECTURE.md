@@ -20,15 +20,19 @@ main.tsx
   -> App.tsx
       -> BrowserRouter
       -> AuthProvider
-      -> LagoonsProvider
-      -> /login | /dashboard | /lagoon/:lagoonId
+      -> /login | /dashboard
+      -> /crystal/* | /small/*
+          -> ProductProvider
+          -> ProductGuard
+          -> LagoonsProvider
 ```
 
 Notas:
 
 - `App.tsx` hace auto-refresh de pagina cada 1 hora.
-- `DashboardRedirect` redirige a la primera laguna permitida.
+- `DashboardRedirect` redirige a la primera laguna permitida dentro del producto activo.
 - `ProtectedRoute` exige sesion valida.
+- `/lagoon/:lagoonId` se mantiene como ruta legacy Crystal.
 
 ## Networking y Entorno
 
@@ -54,15 +58,18 @@ Archivos:
 - `src/auth/AuthContext.tsx`
 - `src/api/lagoonsApi.ts`
 - `src/api/productApi.ts`
+- `src/modules/shared/product/registry.ts`
+- `src/modules/shared/layouts/ProductModule.tsx`
 - `src/lagoons/LagoonsContext.tsx`
 
 Flujo:
 
 1. Login obtiene JWT.
-2. `LagoonsProvider` llama `GET /api/lagoons`.
-3. El frontend normaliza lagunas y aplica `can_view && enable`.
-4. `can_edit` habilita guardado de alarmas.
-5. `can_control` controla visibilidad de controles de pumps.
+2. `ProductGuard` valida rol de lectura para `crystal` o `small`.
+3. `LagoonsProvider` llama `GET /api/{product}/lagoons`.
+4. El frontend normaliza lagunas y aplica `can_view && enable && product_type`.
+5. `can_edit` habilita guardado de alarmas.
+6. `can_control` controla visibilidad de controles de pumps.
 
 ## Resolucion de Escena SCADA
 
@@ -86,6 +93,8 @@ Flujo actual:
 Formatos soportados:
 
 - `kpis[]`, `pumps[]`, `valves[]`, `plc_status`, `labels[]`.
+- `images[]` para assets desde `src/lagoons/img/*`.
+- `lagoon_metrics_overlay` para metricas compactas tipo TEMP/ORP/Dosif.
 - `elements[]` con `type`.
 - `mapping_json` embebido para sobrescribir `tag`, `label`, `svg_target`, `unit`, `icon_type`, `panel` o `always_visible`.
 
@@ -95,6 +104,7 @@ Layouts soportados en `svgRegistry`:
 - `layout2`
 - `layout3`
 - `layout4`
+- cualquier `*.tsx` agregado en `src/svg`, por ejemplo `small_layout_1`
 
 Alias:
 
@@ -108,13 +118,13 @@ Archivo:
 
 URL efectiva:
 
-- `WS /ws/scada/{lagoon_id}`
+- `WS /ws/{product_type}/{lagoon_id}`
 
 Autenticacion:
 
-1. intento legacy con `?token=<jwt>`
+1. intento con `?token=<jwt>`
 2. fallback a subprotocol:
-   - `crystal-scada.v1`
+   - `scada.v1`
    - `bearer.<jwt>`
 
 Estado expuesto:
@@ -164,7 +174,7 @@ Archivos:
 
 Endpoint:
 
-- `GET /api/scada/{lagoon_id}/history`
+- `GET /api/{product}/history`
 
 Resolucion:
 
@@ -190,7 +200,7 @@ Archivos:
 
 Endpoint:
 
-- `GET /api/scada/{lagoon_id}/pump-events/last-3`
+- `GET /api/{product}/lagoons/{lagoon_id}/pump-events/last-3`
 
 Fallback:
 

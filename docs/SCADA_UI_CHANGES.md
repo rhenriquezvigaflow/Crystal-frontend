@@ -16,6 +16,7 @@ Estado:
 - drawer en mobile;
 - TopBar con selector de laguna, logout y boton de alarmas;
 - RBAC visible con `can_edit` y `can_control`.
+- rutas productizadas `/crystal/*` y `/small/*` con guard por rol.
 
 ## Mapa SCADA Local-Scene
 
@@ -29,6 +30,7 @@ Archivos:
 Estado:
 
 - posiciones, tags, labels y `svg_target` vienen de JSON local por laguna;
+- se soportan `images[]`, `lagoon_metrics_overlay` y multiples mapas por `map_order`;
 - el backend entrega datos realtime, historico, alarmas y permisos;
 - si no hay realtime, luego de 7 segundos se muestra el plano con `--`;
 - en modo dev los JSON locales se refrescan automaticamente sin recargar toda la pagina.
@@ -39,10 +41,27 @@ Estado:
 - `layout2`
 - `layout3`
 - `layout4`
+- `small_layout_1`
 
 Alias:
 
 - `layout_small` se normaliza a `layout3`.
+
+## SmallLagoons
+
+Se agrego escena local para:
+
+- `src/assets/positions/small_sim.json`
+- `src/svg/small_layout_1.tsx`
+
+Estado:
+
+- ruta `/small/lagoon/small_sim`;
+- WebSocket `/ws/small/small_sim`;
+- KPIs `PT-123`, `AE-100`, `AE-022`;
+- overlay compacto `TEMP`, `ORP`, `Dosif`;
+- asset `small_lagoons.webp` via `images[]`;
+- popups DOSIF y hitbox accesible para popup de bomba `Pump recirculation`.
 
 ## Laguna ARY
 
@@ -144,7 +163,8 @@ Estado:
 ## Validacion Visual Rapida
 
 1. probar `layout1` a `layout4`;
-2. probar `ary` y una laguna offline;
-3. confirmar colores por `svg_target`;
-4. validar selector de tags del historico;
-5. ejecutar `npm run build`.
+2. probar `small_layout_1`;
+3. probar `ary`, `small_sim` y una laguna offline;
+4. confirmar colores por `svg_target`;
+5. validar selector de tags del historico;
+6. ejecutar `npm run build`.

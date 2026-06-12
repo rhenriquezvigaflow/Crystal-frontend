@@ -2616,27 +2616,8 @@ const SVGComponent = ({
       />
       <g
         id="g278"
-        role="button"
-        tabIndex={0}
-        aria-label={`Open popup ${SMALL_PUMP_NAME}`}
-        onClick={openPumpPopup}
-        onKeyDown={handlePumpKeyDown}
         transform="matrix(0.74779287,0,0,0.90564304,-396.72455,-450.5477)"
-        style={{
-          cursor: "pointer",
-        }}
       >
-        <rect
-          aria-hidden="true"
-          x={948}
-          y={1078}
-          width={48}
-          height={46}
-          style={{
-            fill: "transparent",
-            pointerEvents: "all",
-          }}
-        />
         <path
           className="st17"
           d="m 987.9,1083.1 h -17.4 c -1.1,-0.3 -2.2,-0.4 -3.4,-0.4 -8.1,0 -14.6,6.5 -14.6,14.6 0,4.1 1.7,7.8 4.3,10.4 l -4.1,9 c -0.3,0.7 0.1,1.6 0.7,1.6 h 27.7 c 0.6,0 0.9,-0.9 0.6,-1.6 l -4.1,-9.1 c 2.6,-2.6 4.2,-6.3 4.2,-10.3 0,-1.5 -0.2,-2.9 -0.6,-4.2 h 6.8 c 1.4,0 2.6,-1.2 2.6,-2.7 v -4.6 c 0,-1.5 -1.2,-2.7 -2.7,-2.7 z"
@@ -2693,6 +2674,27 @@ const SVGComponent = ({
           transform="matrix(1.3372687,0,0,1.1041878,531.02732,498.28934)"
         />
       </g>
+      <rect
+        id="pump-popup-hitbox"
+        role="button"
+        tabIndex={0}
+        aria-label={`Open popup ${SMALL_PUMP_NAME}`}
+        x={306}
+        y={522}
+        width={62}
+        height={58}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={openPumpPopup}
+        onKeyDown={handlePumpKeyDown}
+        style={{
+          cursor: "pointer",
+          fill: "transparent",
+          outline: "none",
+          pointerEvents: "all",
+          stroke: "transparent",
+          strokeWidth: 0,
+        }}
+      />
     </g>
     <path
       id="Vector_324-6-6-5-1-7-7-7-06"

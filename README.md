@@ -5,14 +5,17 @@ Frontend SCADA para monitoreo de lagunas Crystal con React, Vite y TypeScript.
 ## Estado Actual
 
 - Autenticacion por JWT contra `POST /api/auth/login`.
-- Selector de lagunas desde `GET /api/lagoons`, filtrado por `enable` y `can_view`.
-- Vista SCADA por laguna en `/lagoon/:lagoonId`.
+- Modulos por producto: `/crystal/*` y `/small/*`.
+- Selector de lagunas desde `GET /api/{product}/lagoons`, filtrado por `enable`, `can_view` y `product_type`.
+- Vista SCADA por laguna en `/{product}/lagoon/:lagoonId`.
+- Compatibilidad legacy Crystal en `/lagoon/:lagoonId`.
 - Escenas SCADA locales desde `src/assets/positions/*.json`.
-- SVGs React registrados en `src/scada/svgRegistry.ts`.
-- Realtime por `WS /ws/scada/{lagoon_id}`.
-- Historico por `GET /api/scada/{lagoon_id}/history`.
-- Eventos de pumps por `GET /api/scada/{lagoon_id}/pump-events/last-3`.
+- SVGs React descubiertos desde `src/svg/*.tsx`.
+- Realtime por `WS /ws/{product}/{lagoon_id}`.
+- Historico por `GET /api/{product}/history`.
+- Eventos de pumps por `GET /api/{product}/lagoons/{lagoon_id}/pump-events/last-3`.
 - Configuracion de umbrales PT/FIT por `GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit`.
+- SmallLagoons incluye `small_sim`, `small_layout_1`, overlays de imagen y `lagoon_metrics_overlay`.
 
 ## Stack
 
@@ -41,7 +44,11 @@ npm run build
 
 - `/login`
 - `/dashboard`
-- `/lagoon/:lagoonId`
+- `/crystal/dashboard`
+- `/crystal/lagoon/:lagoonId`
+- `/small/dashboard`
+- `/small/lagoon/:lagoonId`
+- `/lagoon/:lagoonId` legacy Crystal
 
 ## Variables de Entorno
 
@@ -67,31 +74,35 @@ Por defecto REST usa rutas browser-relative bajo `/api`. Vite o IIS deben reenvi
 - `src/pages/lagoonsView.tsx`: shell principal.
 - `src/components/lagoonContainer.tsx`: compone mapa SCADA, pumps e historico.
 - `src/assets/positions/*.json`: escenas por laguna, fuente actual de posiciones, tags, labels y `svg_target`.
+- `src/lagoons/img/*`: assets de imagen usados por `images[]`.
 - `src/scada/lagoonSceneBundle.ts`: carga y normaliza escenas locales.
+- `src/scada/lagoonScadaMaps.ts`: resuelve mapas embebidos, manifest externos y legacy `/scada/maps`.
 - `src/hooks/useScadaLayoutScene.ts`: cache y refresh de escenas.
 - `src/hooks/useScadaRealtime.ts`: WebSocket, snapshot, reconexion y salud realtime.
 - `src/hooks/useHistory.ts`: historico.
 - `src/hooks/useAlarmThresholds.ts`: umbrales PT/FIT.
 - `src/scada/svgRegistry.ts`: layouts SVG soportados.
 - `src/svg/*`: SVG React por layout.
+- `src/modules/shared/product/*`: configuracion Crystal/Small, theme y guards.
 
 ## Flujo SCADA Actual
 
 ```text
 Browser
-  -> /lagoon/:lagoonId
+  -> /{product}/lagoon/:lagoonId
+  -> ProductProvider + ProductGuard
   -> LagoonsProvider
-       -> GET /api/lagoons
+       -> GET /api/{product}/lagoons
   -> useScadaLayoutScene
        -> src/assets/positions/{lagoon_id}.json
   -> svgRegistry
-       -> src/svg/layout*.tsx
+       -> src/svg/*.tsx
   -> useScadaRealtime
-       -> WS /ws/scada/{lagoon_id}
+       -> WS /ws/{product}/{lagoon_id}
   -> useHistory
-       -> GET /api/scada/{lagoon_id}/history
+       -> GET /api/{product}/history
   -> usePumpEventsLast3
-       -> GET /api/scada/{lagoon_id}/pump-events/last-3
+       -> GET /api/{product}/lagoons/{lagoon_id}/pump-events/last-3
   -> useAlarmThresholds
        -> GET/PUT /api/alarms/{lagoon_id}/thresholds/pt-fit
 ```
@@ -109,7 +120,31 @@ Ejemplos actuales:
 - `costa_del_lago`
 - `laguna_santa_rosalia`
 - `central_hub_dubai`
+- `gouna`
 - `kirah`
+- `small_sim`
+
+## SmallLagoons
+
+La escena actual de SmallLagoons esta en:
+
+- `src/assets/positions/small_sim.json`
+- `src/svg/small_layout_1.tsx`
+
+Tags esperados por la escena:
+
+- `PT-123`
+- `AE-100`
+- `AE-022`
+- `TEMP`
+- `ORP`
+- `Dosif`
+
+Funciones visuales relevantes:
+
+- `images[]` permite montar assets desde `src/lagoons/img/*`.
+- `lagoon_metrics_overlay` pinta TEMP, ORP y Dosif sobre el plano.
+- `small_layout_1.tsx` tiene popups DOSIF y hitbox accesible para el popup de bomba `Pump recirculation`.
 
 ## Documentacion Relacionada
 
@@ -118,3 +153,4 @@ Ejemplos actuales:
 - `docs/TROUBLESHOOTING.md`
 - `docs/SCADA_UI_CHANGES.md`
 - `docs/SVG_EDITING_GUIDE.md`
+- `docs/GUIA_NUEVA_LAGUNA.md`
