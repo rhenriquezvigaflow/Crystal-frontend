@@ -4,6 +4,7 @@ interface Props {
   online: boolean;
   timezone?: string | null;
   localTime?: string | null;
+  clockOffsetSeconds?: number | null;
   filterStatus?: string | null;
   compact?: boolean;
 }
@@ -28,10 +29,49 @@ function getFilterStatusColor(status: string): string {
   return "#059669";
 }
 
+function applyClockOffset(
+  localTime: string | null | undefined,
+  offsetSeconds: number | null | undefined,
+): string {
+  const normalizedTime = String(localTime ?? "").trim();
+  const match = normalizedTime.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+  if (!match) return normalizedTime || "--:--:--";
+
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  const seconds = Number(match[3]);
+  const offset = Number(offsetSeconds ?? 0);
+  if (
+    !Number.isInteger(hours) ||
+    !Number.isInteger(minutes) ||
+    !Number.isInteger(seconds) ||
+    !Number.isFinite(offset)
+  ) {
+    return normalizedTime;
+  }
+
+  const secondsPerDay = 24 * 60 * 60;
+  const totalSeconds = (
+    hours * 60 * 60 +
+    minutes * 60 +
+    seconds +
+    Math.trunc(offset)
+  );
+  const wrappedSeconds = ((totalSeconds % secondsPerDay) + secondsPerDay) % secondsPerDay;
+  const adjustedHours = Math.floor(wrappedSeconds / 3600);
+  const adjustedMinutes = Math.floor((wrappedSeconds % 3600) / 60);
+  const adjustedSeconds = wrappedSeconds % 60;
+
+  return [adjustedHours, adjustedMinutes, adjustedSeconds]
+    .map((part) => String(part).padStart(2, "0"))
+    .join(":");
+}
+
 export default function SystemStatusCard({
   online,
   timezone,
   localTime,
+  clockOffsetSeconds,
   filterStatus,
   compact = false,
 }: Props) {
@@ -77,7 +117,7 @@ export default function SystemStatusCard({
 
       <div className="system-status-card__body">
         <div className="system-status-card__time">
-          {localTime ?? "--:--:--"}
+          {applyClockOffset(localTime, clockOffsetSeconds)}
         </div>
         <div className="system-status-card__timezone">
           {timezone ?? ""}

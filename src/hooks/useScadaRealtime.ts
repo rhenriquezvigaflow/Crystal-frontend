@@ -20,30 +20,15 @@ export type RealtimeConnectionState =
   | "degraded"
   | "disconnected";
 
-type WebSocketAuthMode = "query" | "subprotocol";
-
 const WS_SUBPROTOCOL = "scada.v1";
-
-function buildQueryUrl(
-  lagoonId: string,
-  accessToken: string,
-  productType: ProductType,
-) {
-  return `${API_WS}${productWsPath(productType, lagoonId)}?token=${encodeURIComponent(accessToken)}`;
-}
 
 function createRealtimeSocket(
   lagoonId: string,
   accessToken: string,
-  mode: WebSocketAuthMode,
   endpointProductType: ProductType,
 ) {
   const wsPath = `${API_WS}${productWsPath(endpointProductType, lagoonId)}`;
-  if (mode === "subprotocol") {
-    return new WebSocket(wsPath, [WS_SUBPROTOCOL, `bearer.${accessToken}`]);
-  }
-
-  return new WebSocket(buildQueryUrl(lagoonId, accessToken, endpointProductType));
+  return new WebSocket(wsPath, [WS_SUBPROTOCOL, `bearer.${accessToken}`]);
 }
 
 export function useScadaRealtime(
@@ -88,12 +73,12 @@ export function useScadaRealtime(
 
   useEffect(() => {
     let disposed = false;
+    let connectTimer: number | null = null;
     let resetTimer: number | null = null;
     let reconnectTimer: number | null = null;
     let reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
     let reconnectCount = 0;
     let hasEverReceivedSnapshot = false;
-    let currentMode: WebSocketAuthMode = "query";
 
     const cleanupSocket = (socket: WebSocket | null) => {
       if (!socket) return;
@@ -114,6 +99,12 @@ export function useScadaRealtime(
       if (reconnectTimer === null) return;
       window.clearTimeout(reconnectTimer);
       reconnectTimer = null;
+    };
+
+    const clearConnectTimer = () => {
+      if (connectTimer === null) return;
+      window.clearTimeout(connectTimer);
+      connectTimer = null;
     };
 
     const clearResetTimer = () => {
@@ -153,7 +144,7 @@ export function useScadaRealtime(
 
       reconnectTimer = window.setTimeout(() => {
         reconnectTimer = null;
-        connect(currentMode);
+        connect();
       }, reconnectDelayMs);
 
       reconnectDelayMs = Math.min(
@@ -162,20 +153,17 @@ export function useScadaRealtime(
       );
     };
 
-    const connect = (mode: WebSocketAuthMode) => {
+    const connect = () => {
       if (disposed) return;
 
-      currentMode = mode;
       setConnectionState(reconnectCount > 0 ? "reconnecting" : "connecting");
       setConnectionError(null);
 
       const ws = createRealtimeSocket(
         normalizedLagoonId,
         accessToken,
-        mode,
         productType,
       );
-      let receivedSnapshotOnSocket = false;
       wsRef.current = ws;
 
       ws.onopen = () => {
@@ -194,7 +182,6 @@ export function useScadaRealtime(
           if (msg?.type === "ping") return;
 
           hasEverReceivedSnapshot = true;
-          receivedSnapshotOnSocket = true;
           reconnectCount = 0;
           reconnectDelayMs = REALTIME_INITIAL_RECONNECT_DELAY_MS;
 
@@ -228,17 +215,6 @@ export function useScadaRealtime(
         }
 
         const closeReason = event.reason?.trim();
-        const shouldFallbackToSubprotocol =
-          mode === "query" &&
-          !receivedSnapshotOnSocket;
-
-        if (shouldFallbackToSubprotocol) {
-          setConnectionState("connecting");
-          setConnectionError(null);
-          connect("subprotocol");
-          return;
-        }
-
         setConnectionState(
           hasEverReceivedSnapshot ? "reconnecting" : "disconnected",
         );
@@ -249,10 +225,17 @@ export function useScadaRealtime(
       };
     };
 
-    connect("query");
+    // React Strict Mode mounts and immediately unmounts effects once in
+    // development. Deferring socket creation lets that probe cleanly cancel
+    // without opening a connection that the browser reports as aborted.
+    connectTimer = window.setTimeout(() => {
+      connectTimer = null;
+      connect();
+    }, 0);
 
     return () => {
       disposed = true;
+      clearConnectTimer();
       clearResetTimer();
       clearReconnectTimer();
 

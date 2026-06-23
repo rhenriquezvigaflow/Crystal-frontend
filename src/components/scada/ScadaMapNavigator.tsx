@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 
 import ScadaMapRenderer from "./ScadaMapRenderer";
-import type { RealtimeTagLookup, ResolvedScadaMap } from "../../types/scada-layouts";
+import type {
+  RealtimeTagLookup,
+  ResolvedScadaMap,
+  ScadaNumericControlHandler,
+  ScadaPumpControlHandler,
+} from "../../types/scada-layouts";
 
 interface Props {
   heading: string;
@@ -17,6 +22,9 @@ interface Props {
   timezone?: string | null;
   filterStatus?: string | null;
   canControl?: boolean;
+  onStartPump?: ScadaPumpControlHandler;
+  onStopPump?: ScadaPumpControlHandler;
+  onWriteNumericControl?: ScadaNumericControlHandler;
 }
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -45,6 +53,9 @@ export default function ScadaMapNavigator({
   timezone,
   filterStatus,
   canControl = true,
+  onStartPump,
+  onStopPump,
+  onWriteNumericControl,
 }: Props) {
   const activeMap = maps[activeMapIndex] ?? maps[0] ?? null;
 
@@ -93,6 +104,9 @@ export default function ScadaMapNavigator({
         timezone={timezone}
         filterStatus={filterStatus}
         canControl={canControl}
+        onStartPump={onStartPump}
+        onStopPump={onStopPump}
+        onWriteNumericControl={onWriteNumericControl}
       />
     </>
   );

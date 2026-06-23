@@ -53,6 +53,67 @@
       "always_visible": true
     }
   ],
+  "pumps": [
+    {
+      "tag": "TAGS_03_BOOL",
+      "label": "Pump recirculation",
+      "svg_target": "circle280",
+      "control_id": "recirculation_pump",
+      "panel": "pump-status",
+      "type": "pump"
+    }
+  ],
+  "numeric_controls": [
+    {
+      "id": "dosif001",
+      "tag": "TAGS_03_INT",
+      "label": "TAGS_03_INT",
+      "module_id": "recirculation_pump",
+      "command_id": "set_tags_03_int",
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "id": "dosif002",
+      "tag": "TAGS_02_INT",
+      "label": "TAGS_02_INT",
+      "module_id": "recirculation_pump",
+      "command_id": "set_tags_02_int",
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "id": "dosif003",
+      "tag": "TAGS_04_INT",
+      "label": "TAGS_04_INT",
+      "module_id": "recirculation_pump",
+      "command_id": "set_tags_04_int",
+      "min": 0,
+      "max": 100,
+      "step": 1
+    }
+  ],
+  "render_rules": {
+    "pump": {
+      "mode": "color",
+      "states": {
+        "0": {
+          "color": "#FF0000"
+        },
+        "1": {
+          "color": "#00FF00"
+        },
+        "2": {
+          "color": "#0099FF"
+        },
+        "3": {
+          "color": "#FFFF00"
+        }
+      }
+    }
+  },
   "lagoon_metrics_overlay": {
     "position": {
       "top": "41.5%",
@@ -65,21 +126,32 @@
         "key": "temperature",
         "tag": "TEMP",
         "label": "TEMP",
-        "unit": "C"
+        "unit": "C",
+        "static_value": 28.4
       },
       {
         "key": "orp",
         "tag": "ORP",
         "label": "ORP",
-        "unit": "mV"
+        "unit": "mV",
+        "static_value": 650
       },
       {
         "key": "dosage",
         "tag": "Dosif",
         "label": "Dosif",
-        "unit": "ppm"
+        "unit": "ppm",
+        "static_value": 1.25
       }
     ]
+  },
+  "plc_status": {
+    "label": "Santiago local time",
+    "clock_offset_seconds": -60,
+    "position": {
+      "top": "12%",
+      "left": "14%"
+    }
   },
   "labels": []
 }

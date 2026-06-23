@@ -1,6 +1,11 @@
 import ScadaMapNavigator from "../scada/ScadaMapNavigator";
 import ScadaMapControls from "../scada/ScadaMapControls";
-import type { RealtimeTagLookup, ResolvedScadaMap } from "../../types/scada-layouts";
+import type {
+  RealtimeTagLookup,
+  ResolvedScadaMap,
+  ScadaNumericControlHandler,
+  ScadaPumpControlHandler,
+} from "../../types/scada-layouts";
 
 interface Props {
   heading: string;
@@ -16,6 +21,9 @@ interface Props {
   timezone?: string | null;
   filterStatus?: string | null;
   canControl?: boolean;
+  onStartPump?: ScadaPumpControlHandler;
+  onStopPump?: ScadaPumpControlHandler;
+  onWriteNumericControl?: ScadaNumericControlHandler;
 }
 
 export default function ScadaMapPanel({
@@ -32,6 +40,9 @@ export default function ScadaMapPanel({
   timezone,
   filterStatus,
   canControl = true,
+  onStartPump,
+  onStopPump,
+  onWriteNumericControl,
 }: Props) {
   return (
     <section className="lagoon-map-shell rounded-[18px] p-2 sm:p-3">
@@ -74,6 +85,9 @@ export default function ScadaMapPanel({
         timezone={timezone}
         filterStatus={filterStatus}
         canControl={canControl}
+        onStartPump={onStartPump}
+        onStopPump={onStopPump}
+        onWriteNumericControl={onWriteNumericControl}
       />
     </section>
   );

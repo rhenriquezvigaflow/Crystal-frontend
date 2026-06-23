@@ -25,6 +25,11 @@ import { usePumpEventsLast3 } from "../hooks/usePumpEventsLast3";
 import { useAuth } from "../auth/useAuth";
 import type { LagoonAccess } from "../api/lagoonsApi";
 import type { PumpEvent } from "../api/scadaPumpEvents";
+import {
+  sendSmallNumericControl,
+  sendSmallPumpControl,
+  type SmallPumpAction,
+} from "../api/smallControl";
 import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
 import { useProduct } from "../modules/shared/product/useProduct";
 import type { ProductType } from "../modules/shared/product/types";
@@ -781,8 +786,12 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     [overlayElements, resolvedLabels],
   );
   const equipmentTagIds = useMemo(
-    () => collectSceneTagIds(equipmentElements, { includeTankStateTags: true }),
-    [equipmentElements],
+    () =>
+      Array.from(new Set([
+        ...collectSceneTagIds(equipmentElements, { includeTankStateTags: true }),
+        ...(scene?.numeric_controls ?? []).map((control) => control.tag),
+      ])),
+    [equipmentElements, scene?.numeric_controls],
   );
   const overlayTags = useMemo(
     () => filterTagsForScene(tags, overlayTagIds),
@@ -848,6 +857,37 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     () => (isKirahMapOne(lagoonId, activeMap) ? getFilterStatusLabel(realtimeTagLookup) : null),
     [activeMap, lagoonId, realtimeTagLookup],
   );
+  const sendPumpAction = useCallback(
+    async (action: SmallPumpAction, moduleId: string) => {
+      if (productType !== "small") {
+        throw new Error("Pump control is only available for Small Lagoons.");
+      }
+      await sendSmallPumpControl(lagoonId, action, moduleId);
+    },
+    [lagoonId, productType],
+  );
+  const handleStartPump = useCallback(
+    async (moduleId: string) => sendPumpAction("partir", moduleId),
+    [sendPumpAction],
+  );
+  const handleStopPump = useCallback(
+    async (moduleId: string) => sendPumpAction("parar", moduleId),
+    [sendPumpAction],
+  );
+  const handleWriteNumericControl = useCallback(
+    async (moduleId: string, commandId: string, value: number) => {
+      if (productType !== "small") {
+        throw new Error("Numeric control is only available for Small Lagoons.");
+      }
+      await sendSmallNumericControl(
+        lagoonId,
+        moduleId,
+        commandId,
+        value,
+      );
+    },
+    [lagoonId, productType],
+  );
 
   useEffect(() => {
     onRealtimePtFitTagsChange?.(realtimePtFitTags);
@@ -897,6 +937,9 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           timezone={timezone}
           filterStatus={filterStatus}
           canControl={lagoon.can_control}
+          onStartPump={handleStartPump}
+          onStopPump={handleStopPump}
+          onWriteNumericControl={handleWriteNumericControl}
         />
 
         {!lagoon.can_control ? (

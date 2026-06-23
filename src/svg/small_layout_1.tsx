@@ -39,8 +39,19 @@ function defaultPumpControlHandler(pumpId) {
   void pumpId;
 }
 
+function defaultNumericControlHandler(moduleId, commandId, value) {
+  void moduleId;
+  void commandId;
+  void value;
+}
+
 function SmallPumpPopup({
   pumpPopup,
+  pumpColor,
+  pumpStateLabel,
+  canControl,
+  actionPending,
+  actionError,
   pendingPumpAction,
   closePumpPopup,
   handlePopupClick,
@@ -146,7 +157,7 @@ function SmallPumpPopup({
           }}
         >
           <PopUpPump
-            pumpColor={pumpPopup.color}
+            pumpColor={pumpColor}
             style={{
               display: "block",
               height: 108,
@@ -158,47 +169,77 @@ function SmallPumpPopup({
 
         <div
           style={{
-            display: "flex",
-            gap: 10,
-            justifyContent: "center",
-            marginTop: 14,
+            color: "#475569",
+            fontSize: 12,
+            fontWeight: 700,
+            marginTop: 4,
           }}
         >
-          <button
-            type="button"
-            onClick={handleStartPump}
-            style={{
-              background: "#16a34a",
-              border: "1px solid #15803d",
-              borderRadius: 7,
-              color: "#ffffff",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 700,
-              height: 34,
-              minWidth: 94,
-            }}
-          >
-            Partir
-          </button>
-          <button
-            type="button"
-            onClick={handleStopPump}
-            style={{
-              background: "#dc2626",
-              border: "1px solid #b91c1c",
-              borderRadius: 7,
-              color: "#ffffff",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 700,
-              height: 34,
-              minWidth: 94,
-            }}
-          >
-            Parar
-          </button>
+          {`Status: ${pumpStateLabel}`}
         </div>
+
+        {canControl ? (
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              justifyContent: "center",
+              marginTop: 14,
+            }}
+          >
+            <button
+              type="button"
+              disabled={actionPending}
+              onClick={handleStartPump}
+              style={{
+                background: "#16a34a",
+                border: "1px solid #15803d",
+                borderRadius: 7,
+                color: "#ffffff",
+                cursor: actionPending ? "wait" : "pointer",
+                fontSize: 13,
+                fontWeight: 700,
+                height: 34,
+                minWidth: 94,
+                opacity: actionPending ? 0.65 : 1,
+              }}
+            >
+              Start
+            </button>
+            <button
+              type="button"
+              disabled={actionPending}
+              onClick={handleStopPump}
+              style={{
+                background: "#dc2626",
+                border: "1px solid #b91c1c",
+                borderRadius: 7,
+                color: "#ffffff",
+                cursor: actionPending ? "wait" : "pointer",
+                fontSize: 13,
+                fontWeight: 700,
+                height: 34,
+                minWidth: 94,
+                opacity: actionPending ? 0.65 : 1,
+              }}
+            >
+              Stop
+            </button>
+          </div>
+        ) : null}
+
+        {actionError ? (
+          <div
+            role="alert"
+            style={{
+              color: "#b91c1c",
+              fontSize: 12,
+              marginTop: 10,
+            }}
+          >
+            {actionError}
+          </div>
+        ) : null}
 
         {pendingPumpAction ? (
           <div
@@ -247,30 +288,32 @@ function SmallPumpPopup({
               >
                 <button
                   type="button"
+                  disabled={actionPending}
                   onClick={confirmPumpAction}
                   style={{
                     background: "#0f766e",
                     border: "1px solid #0f766e",
                     borderRadius: 6,
                     color: "#ffffff",
-                    cursor: "pointer",
+                    cursor: actionPending ? "wait" : "pointer",
                     fontSize: 12,
                     fontWeight: 700,
                     height: 28,
                     minWidth: 64,
                   }}
                 >
-                  Yes
+                  {actionPending ? "Sending..." : "Yes"}
                 </button>
                 <button
                   type="button"
+                  disabled={actionPending}
                   onClick={cancelPumpAction}
                   style={{
                     background: "#ffffff",
                     border: "1px solid #cbd5e1",
                     borderRadius: 6,
                     color: "#334155",
-                    cursor: "pointer",
+                    cursor: actionPending ? "wait" : "pointer",
                     fontSize: 12,
                     fontWeight: 700,
                     height: 28,
@@ -289,8 +332,83 @@ function SmallPumpPopup({
   );
 }
 
-function DosifPopup({ dosifPopup, onClose }) {
+function DosifPopup({
+  dosifPopup,
+  canControl,
+  onClose,
+  onWriteNumericControl,
+}) {
+  const control = dosifPopup.control;
+  const currentValue =
+    control?.value === null || control?.value === undefined
+      ? Number.NaN
+      : Number(control.value);
+  const [draftValue, setDraftValue] = React.useState(
+    Number.isFinite(currentValue) ? String(currentValue) : "",
+  );
+  const [writePending, setWritePending] = React.useState(false);
+  const [writeError, setWriteError] = React.useState(null);
+  const [writeSuccess, setWriteSuccess] = React.useState(null);
+  const [pendingValue, setPendingValue] = React.useState(null);
+
   if (typeof document === "undefined") return null;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!control || writePending) return;
+
+    const numericValue = Number(draftValue);
+    if (!Number.isFinite(numericValue)) {
+      setWriteError("Enter a valid number.");
+      return;
+    }
+    if (control.min !== null && numericValue < control.min) {
+      setWriteError(`The minimum value is ${control.min}.`);
+      return;
+    }
+    if (control.max !== null && numericValue > control.max) {
+      setWriteError(`The maximum value is ${control.max}.`);
+      return;
+    }
+
+    setWriteError(null);
+    setWriteSuccess(null);
+    setPendingValue(numericValue);
+  };
+
+  const confirmValueChange = async (event) => {
+    event.stopPropagation();
+    if (!control || pendingValue === null || writePending) return;
+
+    setWritePending(true);
+    setWriteError(null);
+    setWriteSuccess(null);
+    try {
+      await onWriteNumericControl(
+        control.module_id,
+        control.command_id,
+        pendingValue,
+      );
+      setWriteSuccess(`Value ${pendingValue} was sent to the PLC.`);
+      setPendingValue(null);
+    } catch (error) {
+      setPendingValue(null);
+      setWriteError(
+        error instanceof Error
+          ? error.message
+          : "The value could not be written to the PLC.",
+      );
+    } finally {
+      setWritePending(false);
+    }
+  };
+
+  const cancelValueChange = (event) => {
+    event.stopPropagation();
+    if (writePending) return;
+    setPendingValue(null);
+  };
 
   return createPortal(
     <div
@@ -322,6 +440,7 @@ function DosifPopup({ dosifPopup, onClose }) {
           fontFamily: "Calibri, Arial, sans-serif",
           maxWidth: "min(360px, calc(100vw - 32px))",
           padding: 18,
+          position: "relative",
           textAlign: "center",
           width: 340,
         }}
@@ -359,16 +478,200 @@ function DosifPopup({ dosifPopup, onClose }) {
             x
           </button>
         </div>
-        <p
-          style={{
-            color: "#475569",
-            fontSize: 13,
-            lineHeight: 1.45,
-            margin: "18px 0 0",
-          }}
-        >
-          Basic popup for {dosifPopup.id}.
-        </p>
+        {control ? (
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                color: "#475569",
+                fontSize: 12,
+                marginTop: 18,
+                textAlign: "left",
+              }}
+            >
+              {control.label}
+              {control.unit ? ` (${control.unit})` : ""}
+            </div>
+            <input
+              type="number"
+              aria-label={`${control.label} value`}
+              value={draftValue}
+              min={control.min ?? undefined}
+              max={control.max ?? undefined}
+              step={control.step}
+              disabled={!canControl || writePending}
+              onChange={(event) => {
+                setDraftValue(event.target.value);
+                setWriteError(null);
+                setWriteSuccess(null);
+              }}
+              style={{
+                background: canControl ? "#ffffff" : "#f1f5f9",
+                border: "1px solid #94a3b8",
+                borderRadius: 8,
+                boxSizing: "border-box",
+                color: "#0f172a",
+                fontSize: 16,
+                height: 42,
+                marginTop: 7,
+                padding: "0 12px",
+                width: "100%",
+              }}
+            />
+            <div
+              style={{
+                color: "#64748b",
+                fontSize: 11,
+                marginTop: 6,
+                textAlign: "left",
+              }}
+            >
+              {`Range: ${control.min ?? "-"} to ${control.max ?? "-"}`}
+            </div>
+            {canControl ? (
+              <button
+                type="submit"
+                disabled={writePending || draftValue.trim() === ""}
+                style={{
+                  background: "#0f766e",
+                  border: "1px solid #0f766e",
+                  borderRadius: 7,
+                  color: "#ffffff",
+                  cursor: writePending ? "wait" : "pointer",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  height: 36,
+                  marginTop: 14,
+                  opacity: writePending ? 0.65 : 1,
+                  width: "100%",
+                }}
+              >
+                {writePending ? "Sending..." : "Save to PLC"}
+              </button>
+            ) : (
+              <div
+                style={{
+                  color: "#64748b",
+                  fontSize: 12,
+                  marginTop: 14,
+                }}
+              >
+                Your user has read-only access.
+              </div>
+            )}
+            {writeError ? (
+              <div
+                role="alert"
+                style={{ color: "#b91c1c", fontSize: 12, marginTop: 10 }}
+              >
+                {writeError}
+              </div>
+            ) : null}
+            {writeSuccess ? (
+              <div
+                role="status"
+                style={{ color: "#15803d", fontSize: 12, marginTop: 10 }}
+              >
+                {writeSuccess}
+              </div>
+            ) : null}
+            {pendingValue !== null ? (
+              <div
+                role="alertdialog"
+                aria-label="Confirm value change"
+                style={{
+                  alignItems: "center",
+                  background: "rgba(15, 23, 42, 0.18)",
+                  borderRadius: 12,
+                  display: "flex",
+                  inset: 0,
+                  justifyContent: "center",
+                  padding: 14,
+                  position: "absolute",
+                  zIndex: 2,
+                }}
+              >
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.2)",
+                    padding: "12px 14px",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 12,
+                      lineHeight: 1.35,
+                      textAlign: "center",
+                    }}
+                  >
+                    {`Do you want to change ${dosifPopup.name} from ${
+                      Number.isFinite(currentValue) ? currentValue : "--"
+                    } to ${pendingValue}?`}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      justifyContent: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      disabled={writePending}
+                      onClick={confirmValueChange}
+                      style={{
+                        background: "#0f766e",
+                        border: "1px solid #0f766e",
+                        borderRadius: 6,
+                        color: "#ffffff",
+                        cursor: writePending ? "wait" : "pointer",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        height: 28,
+                        minWidth: 64,
+                      }}
+                    >
+                      {writePending ? "Sending..." : "Yes"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={writePending}
+                      onClick={cancelValueChange}
+                      style={{
+                        background: "#ffffff",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: 6,
+                        color: "#334155",
+                        cursor: writePending ? "wait" : "pointer",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        height: 28,
+                        minWidth: 64,
+                      }}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </form>
+        ) : (
+          <p
+            style={{
+              color: "#475569",
+              fontSize: 13,
+              lineHeight: 1.45,
+              margin: "18px 0 0",
+            }}
+          >
+            This equipment does not have a configured numeric control.
+          </p>
+        )}
       </section>
     </div>,
     document.body,
@@ -377,17 +680,26 @@ function DosifPopup({ dosifPopup, onClose }) {
 
 const SVGComponent = ({
   onClick,
+  canControl = true,
+  pumpStateColor = FALLBACK_PUMP_COLOR,
+  pumpStateLabel = "No data",
+  numericControls = [],
   onStartPump = defaultPumpControlHandler,
   onStopPump = defaultPumpControlHandler,
+  onWriteNumericControl = defaultNumericControlHandler,
   ...props
 }) => {
   const [pumpPopup, setPumpPopup] = React.useState(null);
   const [pendingPumpAction, setPendingPumpAction] = React.useState(null);
+  const [pumpActionPending, setPumpActionPending] = React.useState(false);
+  const [pumpActionError, setPumpActionError] = React.useState(null);
   const [dosifPopup, setDosifPopup] = React.useState(null);
 
   const closePumpPopup = React.useCallback(() => {
     setPumpPopup(null);
     setPendingPumpAction(null);
+    setPumpActionPending(false);
+    setPumpActionError(null);
   }, []);
 
   const closeDosifPopup = React.useCallback(() => {
@@ -409,10 +721,11 @@ const SVGComponent = ({
     setPumpPopup({
       id: SMALL_PUMP_ID,
       name: SMALL_PUMP_NAME,
-      color: readPumpCircleColor(pumpRoot),
+      color: pumpStateColor || readPumpCircleColor(pumpRoot),
     });
     setPendingPumpAction(null);
-  }, []);
+    setPumpActionError(null);
+  }, [pumpStateColor]);
 
   const handlePumpKeyDown = React.useCallback(
     (event) => {
@@ -428,9 +741,13 @@ const SVGComponent = ({
     (id, name) => (event) => {
       event.stopPropagation();
       closePumpPopup();
-      setDosifPopup({ id, name });
+      setDosifPopup({
+        id,
+        name,
+        control: numericControls.find((control) => control.id === id) ?? null,
+      });
     },
-    [closePumpPopup],
+    [closePumpPopup, numericControls],
   );
 
   const handleDosifKeyDown = React.useCallback(
@@ -451,6 +768,7 @@ const SVGComponent = ({
     (event) => {
       event.stopPropagation();
       if (!pumpPopup) return;
+      setPumpActionError(null);
       setPendingPumpAction("partir");
     },
     [pumpPopup],
@@ -460,25 +778,42 @@ const SVGComponent = ({
     (event) => {
       event.stopPropagation();
       if (!pumpPopup) return;
+      setPumpActionError(null);
       setPendingPumpAction("parar");
     },
     [pumpPopup],
   );
 
   const confirmPumpAction = React.useCallback(
-    (event) => {
+    async (event) => {
       event.stopPropagation();
-      if (!pumpPopup || !pendingPumpAction) return;
+      if (!pumpPopup || !pendingPumpAction || pumpActionPending) return;
 
-      if (pendingPumpAction === "partir") {
-        onStartPump(pumpPopup.id);
-      } else {
-        onStopPump(pumpPopup.id);
+      setPumpActionPending(true);
+      setPumpActionError(null);
+      try {
+        if (pendingPumpAction === "partir") {
+          await onStartPump(pumpPopup.id);
+        } else {
+          await onStopPump(pumpPopup.id);
+        }
+        setPendingPumpAction(null);
+      } catch (error) {
+        setPendingPumpAction(null);
+        setPumpActionError(
+          error instanceof Error ? error.message : "The command could not be sent.",
+        );
+      } finally {
+        setPumpActionPending(false);
       }
-
-      setPendingPumpAction(null);
     },
-    [onStartPump, onStopPump, pendingPumpAction, pumpPopup],
+    [
+      onStartPump,
+      onStopPump,
+      pendingPumpAction,
+      pumpActionPending,
+      pumpPopup,
+    ],
   );
 
   const cancelPumpAction = React.useCallback(
@@ -2714,7 +3049,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.20461431}
       inkscape:transform-center-y={-0.66509277}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89"
@@ -2734,7 +3068,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={0.69886196}
       inkscape:transform-center-y={-0.14617663}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-0"
@@ -2754,7 +3087,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.16877715}
       inkscape:transform-center-y={-0.70738077}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-8"
@@ -2774,7 +3106,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.69708309}
       inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7"
@@ -2794,7 +3125,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.69708309}
       inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <text
       xmlSpace="preserve"
@@ -3538,7 +3868,6 @@ const SVGComponent = ({
         inkscape:transform-center-x={-0.10221554}
         inkscape:transform-center-y={-0.46324031}
         inkscape:highlight-color="#aa6a31"
-        onclick="12&#10;"
       />
       <rect
         style={{
@@ -4414,7 +4743,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={1.6988668}
       inkscape:transform-center-y={-3.3961664}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <text
       xmlSpace="preserve"
@@ -4599,7 +4927,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.10221554}
       inkscape:transform-center-y={-0.46324031}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-6-4-1"
@@ -4619,7 +4946,6 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.10221554}
       inkscape:transform-center-y={-0.46324031}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-6-4-4"
@@ -4639,12 +4965,16 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.4632875}
       inkscape:transform-center-y={0.10224177}
       inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
     />
       </svg>
       {pumpPopup ? (
         <SmallPumpPopup
           pumpPopup={pumpPopup}
+          pumpColor={pumpStateColor || pumpPopup.color}
+          pumpStateLabel={pumpStateLabel}
+          canControl={canControl}
+          actionPending={pumpActionPending}
+          actionError={pumpActionError}
           pendingPumpAction={pendingPumpAction}
           closePumpPopup={closePumpPopup}
           handlePopupClick={handlePopupClick}
@@ -4655,7 +4985,12 @@ const SVGComponent = ({
         />
       ) : null}
       {dosifPopup ? (
-        <DosifPopup dosifPopup={dosifPopup} onClose={closeDosifPopup} />
+        <DosifPopup
+          dosifPopup={dosifPopup}
+          canControl={canControl}
+          onClose={closeDosifPopup}
+          onWriteNumericControl={onWriteNumericControl}
+        />
       ) : null}
     </>
   );

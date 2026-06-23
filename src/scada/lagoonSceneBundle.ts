@@ -4,6 +4,7 @@ import type {
   ResolvedLagoonMetricsOverlay,
   ResolvedEmbeddedScadaMapDefinition,
   ResolvedScadaElement,
+  ResolvedScadaNumericControl,
   ResolvedScadaScene,
   ResolvedScadaTextLabel,
   ScadaRenderRule,
@@ -217,6 +218,8 @@ function looksLikeSceneRecord(record: JsonRecord): boolean {
     "images",
     "lagoon_metrics_overlay",
     "lagoonMetricsOverlay",
+    "numeric_controls",
+    "numericControls",
     "hipoclorito",
     "chemicals",
     "plc_status",
@@ -834,6 +837,12 @@ function normalizeResolvedElement(
       mappingEntry?.icon_type,
     ),
     panel: pickFirstString(rawElement.panel, mappingEntry?.panel),
+    control_id: pickFirstString(
+      rawElement.control_id,
+      rawElement.controlId,
+      mappingEntry?.control_id,
+      mappingEntry?.controlId,
+    ),
     always_visible: pickFirstBoolean(
       rawElement.always_visible,
       mappingEntry?.always_visible,
@@ -932,6 +941,10 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
       panel: null,
       always_visible: true,
       fallback_tag: null,
+      clock_offset_seconds: pickFirstNumber(
+        plcStatusRecord.clock_offset_seconds,
+        plcStatusRecord.clockOffsetSeconds,
+      ),
     });
   }
 
@@ -979,6 +992,10 @@ function normalizeLagoonMetric(
     label: pickFirstString(metricRecord.label, fallbackLabel) ?? fallbackLabel,
     unit: pickFirstString(metricRecord.unit, fallbackUnit) ?? fallbackUnit,
     fallback_tag: pickFirstString(metricRecord.fallback_tag, metricRecord.fallbackTag),
+    static_value: pickFirstNumber(
+      metricRecord.static_value,
+      metricRecord.staticValue,
+    ),
   };
 }
 
@@ -1002,6 +1019,51 @@ function buildLagoonMetricsOverlay(
     z_index: pickFirstNumber(overlayRecord.z_index, overlayRecord.zIndex),
     metrics,
   };
+}
+
+function normalizeNumericControl(
+  rawControl: unknown,
+): ResolvedScadaNumericControl | null {
+  const control = asRecord(rawControl);
+  if (!control) return null;
+
+  const id = pickFirstString(control.id, control.svg_target, control.svgTarget);
+  const tag = pickFirstString(control.tag, control.tag_id, control.tagId);
+  const moduleId = pickFirstString(
+    control.module_id,
+    control.moduleId,
+    control.module,
+  );
+  const commandId = pickFirstString(
+    control.command_id,
+    control.commandId,
+    control.command,
+  );
+  if (!id || !tag || !moduleId || !commandId) return null;
+
+  return {
+    id,
+    tag,
+    module_id: moduleId,
+    command_id: commandId,
+    label: pickFirstString(control.label, control.name, tag) ?? tag,
+    unit: pickFirstString(control.unit),
+    min: pickFirstNumber(control.min, control.minimum),
+    max: pickFirstNumber(control.max, control.maximum),
+    step: pickFirstNumber(control.step) ?? 1,
+  };
+}
+
+function buildNumericControls(
+  sceneRecord: JsonRecord,
+): ResolvedScadaNumericControl[] {
+  return (
+    asArray(sceneRecord.numeric_controls ?? sceneRecord.numericControls) ?? []
+  )
+    .map(normalizeNumericControl)
+    .filter(
+      (control): control is ResolvedScadaNumericControl => control !== null,
+    );
 }
 
 function normalizeTextAlign(value: unknown): "left" | "center" | "right" {
@@ -1192,6 +1254,7 @@ export function resolveLagoonSceneDefinition(
   const rawElements = asArray(sceneRecord.elements);
   const labels = buildLabels(raw, sceneRecord);
   const lagoonMetricsOverlay = buildLagoonMetricsOverlay(sceneRecord);
+  const numericControls = buildNumericControls(sceneRecord);
 
   return {
     lagoon_id: getEmbeddedLagoonId(raw) ?? normalizedLagoonId,
@@ -1209,5 +1272,6 @@ export function resolveLagoonSceneDefinition(
       : buildElementsFromFlatConfig(sceneRecord),
     labels,
     lagoon_metrics_overlay: lagoonMetricsOverlay,
+    numeric_controls: numericControls,
   };
 }

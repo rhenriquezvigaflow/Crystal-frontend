@@ -11,6 +11,7 @@ interface Props {
   status?: "online" | "offline";
   localTime?: string | null;
   timezone?: string | null;
+  clockOffsetSeconds?: number | null;
   filterStatus?: string | null;
   position?: ScadaLayoutPosition | null;
   scale?: number;
@@ -21,6 +22,7 @@ function PlcStatusComponent({
   status,
   localTime,
   timezone,
+  clockOffsetSeconds,
   filterStatus,
   position,
   scale = 1,
@@ -52,6 +54,7 @@ function PlcStatusComponent({
           online={isOnline}
           localTime={localTime}
           timezone={timezone}
+          clockOffsetSeconds={clockOffsetSeconds}
           filterStatus={filterStatus}
           compact
         />
@@ -73,6 +76,7 @@ function PlcStatusComponent({
         online={isOnline}
         localTime={localTime}
         timezone={timezone}
+        clockOffsetSeconds={clockOffsetSeconds}
         filterStatus={filterStatus}
       />
     </div>

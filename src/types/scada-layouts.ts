@@ -66,6 +66,7 @@ export interface ScadaRenderRules {
 
 export interface LagoonScadaEquipmentDefinition {
   tag: string;
+  control_id?: string | null;
   label?: string | null;
   position?: ScadaLayoutPosition | null;
   svg_target?: string | null;
@@ -113,6 +114,7 @@ export interface LagoonMetricDefinition {
   label?: string | null;
   unit?: string | null;
   fallback_tag?: string | null;
+  static_value?: number | null;
 }
 
 export interface LagoonMetricsOverlayDefinition {
@@ -124,6 +126,19 @@ export interface LagoonMetricsOverlayDefinition {
 
 export interface LagoonScadaPlcStatusDefinition {
   position: ScadaLayoutPosition;
+  clock_offset_seconds?: number | null;
+}
+
+export interface ScadaNumericControlDefinition {
+  id: string;
+  tag: string;
+  module_id: string;
+  command_id: string;
+  label?: string | null;
+  unit?: string | null;
+  min?: number | null;
+  max?: number | null;
+  step?: number | null;
 }
 
 export interface LagoonScadaConfig {
@@ -145,6 +160,7 @@ export interface LagoonScadaConfig {
   lagoon_metrics_overlay?: LagoonMetricsOverlayDefinition | null;
   plc_status?: LagoonScadaPlcStatusDefinition | null;
   render_rules?: Partial<ScadaRenderRules> | null;
+  numeric_controls?: ScadaNumericControlDefinition[] | null;
   labels?: ScadaTextLabelDefinition[] | null;
   warnings?: string[] | null;
 }
@@ -159,6 +175,7 @@ export interface ResolvedScadaElement {
   unit?: string | null;
   icon_type?: string | null;
   panel?: string | null;
+  control_id?: string | null;
   always_visible?: boolean | null;
   fallback_tag?: string | null;
   state_tags?: ScadaTankStateTags | null;
@@ -170,6 +187,7 @@ export interface ResolvedScadaElement {
   opacity?: number | null;
   z_index?: number | null;
   full_stage?: boolean | null;
+  clock_offset_seconds?: number | null;
   [key: string]: unknown;
 }
 
@@ -179,6 +197,7 @@ export interface ResolvedLagoonMetric {
   label: string;
   unit: string;
   fallback_tag: string | null;
+  static_value: number | null;
 }
 
 export interface ResolvedLagoonMetricsOverlay {
@@ -186,6 +205,22 @@ export interface ResolvedLagoonMetricsOverlay {
   width: string | number | null;
   z_index: number | null;
   metrics: ResolvedLagoonMetric[];
+}
+
+export interface ResolvedScadaNumericControl {
+  id: string;
+  tag: string;
+  module_id: string;
+  command_id: string;
+  label: string;
+  unit: string | null;
+  min: number | null;
+  max: number | null;
+  step: number;
+}
+
+export interface ScadaNumericControlView extends ResolvedScadaNumericControl {
+  value: unknown;
 }
 
 export interface ResolvedScadaScene {
@@ -198,6 +233,7 @@ export interface ResolvedScadaScene {
   render_rules: ScadaRenderRules;
   labels: ResolvedScadaTextLabel[];
   lagoon_metrics_overlay: ResolvedLagoonMetricsOverlay | null;
+  numeric_controls: ResolvedScadaNumericControl[];
 }
 
 export interface ScadaMapManifestEntry {
@@ -251,6 +287,16 @@ export interface RealtimeTagLookup {
   exact: Record<string, unknown>;
   normalized: Record<string, unknown>;
 }
+
+export type ScadaPumpControlHandler = (
+  pumpId: string,
+) => void | Promise<void>;
+
+export type ScadaNumericControlHandler = (
+  moduleId: string,
+  commandId: string,
+  value: number,
+) => void | Promise<void>;
 
 export type ScadaTextLabelAlign = "left" | "center" | "right";
 

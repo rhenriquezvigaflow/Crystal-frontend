@@ -56,6 +56,7 @@ function ScadaOverlay({
               status={plc_status}
               localTime={local_time}
               timezone={timezone}
+              clockOffsetSeconds={element.clock_offset_seconds}
               filterStatus={filter_status}
               position={element.position}
               placement={placements[element.id]}

@@ -154,7 +154,10 @@ function resolveRuleState(rule: ScadaRenderRule, value: unknown) {
   return null;
 }
 
-function resolveStateColor(rule: ScadaRenderRule, value: unknown): string {
+export function getScadaEquipmentStateColor(
+  rule: ScadaRenderRule,
+  value: unknown,
+): string {
   return resolveRuleState(rule, value)?.color ?? getDiscreteStateColor(value);
 }
 
@@ -239,7 +242,7 @@ function createDiscreteRenderer(
 
   return {
     update(value: unknown) {
-      const color = resolveStateColor(rule, value);
+      const color = getScadaEquipmentStateColor(rule, value);
       const state = normalizeDiscreteState(value);
 
       setTargetClasses(root, binding.type, value);
@@ -299,7 +302,7 @@ function createTankRenderer(
     update(value: unknown) {
       const nextState = resolveRuleState(rule, value);
       const targetLevel = clamp((nextState?.level ?? 0) / 100, 0, 1);
-      const targetColor = nextState?.color ?? resolveStateColor(rule, value);
+      const targetColor = nextState?.color ?? getScadaEquipmentStateColor(rule, value);
 
       setTargetClasses(root, binding.type, value);
       root.style.setProperty("--scada-state-color", targetColor);

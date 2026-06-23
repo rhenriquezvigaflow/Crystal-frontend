@@ -107,20 +107,38 @@ export function normalizeDiscreteState(value: unknown): number | null {
   return null;
 }
 
-export function getDiscreteStateLabel(value: unknown): string {
+export function getDiscreteStateLabel(
+  value: unknown,
+  locale: "es" | "en" = "es",
+): string {
   const state = normalizeDiscreteState(value);
+  const labels = locale === "en"
+    ? {
+        0: "Stopped",
+        1: "Running",
+        2: "Moving",
+        3: "Fault",
+        unknown: "No data",
+      }
+    : {
+        0: "Detenida",
+        1: "Funcionando",
+        2: "Moviendose",
+        3: "Falla",
+        unknown: "Sin dato",
+      };
 
   switch (state) {
     case 0:
-      return "Detenida";
+      return labels[0];
     case 1:
-      return "Funcionando";
+      return labels[1];
     case 2:
-      return "Moviendose";
+      return labels[2];
     case 3:
-      return "Falla";
+      return labels[3];
     default:
-      return "Sin dato";
+      return labels.unknown;
   }
 }
 

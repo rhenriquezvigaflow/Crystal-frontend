@@ -11,10 +11,10 @@ type EventEmitterLike = {
   on(event: string, handler: (...args: unknown[]) => void): void;
 };
 
-function isEconnReset(error: unknown): boolean {
+function isExpectedWsDisconnect(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
   const code = Reflect.get(error, "code");
-  return code === "ECONNRESET";
+  return code === "ECONNRESET" || code === "ECONNABORTED" || code === "EPIPE";
 }
 
 function readReqUrl(req: unknown): string | undefined {
@@ -29,8 +29,10 @@ function isEventEmitterLike(value: unknown): value is EventEmitterLike {
 
 function attachWsProxyGuards(proxy: EventEmitterLike): void {
   proxy.on("error", (error: unknown, req: unknown) => {
-    if (isEconnReset(error)) {
-      console.warn("[vite-proxy/ws] ECONNRESET ignored", { url: readReqUrl(req) });
+    if (isExpectedWsDisconnect(error)) {
+      console.warn("[vite-proxy/ws] client disconnect ignored", {
+        url: readReqUrl(req),
+      });
       return;
     }
     console.error("[vite-proxy/ws] proxy error", error);
@@ -39,8 +41,8 @@ function attachWsProxyGuards(proxy: EventEmitterLike): void {
   proxy.on("open", (proxySocket: unknown, req: unknown) => {
     if (!isEventEmitterLike(proxySocket)) return;
     proxySocket.on("error", (error: unknown) => {
-      if (isEconnReset(error)) {
-        console.warn("[vite-proxy/ws] socket ECONNRESET ignored", {
+      if (isExpectedWsDisconnect(error)) {
+        console.warn("[vite-proxy/ws] socket client disconnect ignored", {
           url: readReqUrl(req),
         });
         return;

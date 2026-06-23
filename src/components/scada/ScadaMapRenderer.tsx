@@ -18,6 +18,7 @@ import {
   getScadaTankStateTagIds,
 } from "../../scada/layoutEquipmentState";
 import { getDiscreteStateLabel, getRealtimeValue } from "../../scada/layoutSceneResolver";
+import { getScadaEquipmentStateColor } from "../../scada/svgEquipmentState";
 import { resolveScadaSvgRegistryEntry } from "../../scada/svgRegistry";
 import type {
   RealtimeTagLookup,
@@ -25,7 +26,10 @@ import type {
   ResolvedScadaElement,
   ResolvedScadaMap,
   ResolvedScadaTextLabel,
+  ScadaNumericControlHandler,
+  ScadaNumericControlView,
   ScadaRenderRules,
+  ScadaPumpControlHandler,
 } from "../../types/scada-layouts";
 
 interface Props {
@@ -40,6 +44,9 @@ interface Props {
   timezone?: string | null;
   filterStatus?: string | null;
   canControl?: boolean;
+  onStartPump?: ScadaPumpControlHandler;
+  onStopPump?: ScadaPumpControlHandler;
+  onWriteNumericControl?: ScadaNumericControlHandler;
 }
 
 const SKELETON_PLACEHOLDERS = [
@@ -107,7 +114,9 @@ function resolveLagoonMetrics(
 
   overlay.metrics.forEach((metric) => {
     values[metric.key] = toMetricNumber(
-      getRealtimeValue(tagLookup, metric.tag, metric.fallback_tag),
+      metric.static_value !== null
+        ? metric.static_value
+        : getRealtimeValue(tagLookup, metric.tag, metric.fallback_tag),
     );
     labels[metric.key] = metric.label;
     units[metric.key] = metric.unit;
@@ -219,6 +228,9 @@ export default function ScadaMapRenderer({
   timezone,
   filterStatus,
   canControl = true,
+  onStartPump,
+  onStopPump,
+  onWriteNumericControl,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
@@ -251,6 +263,44 @@ export default function ScadaMapRenderer({
   const scadaLayout = useScadaLayout(layout, containerRef, { containerElement });
   const debugLayout = useMemo(() => isScadaDebugEnabled(), []);
   const equipmentLookup = equipmentTagLookup ?? tagLookup;
+  const numericControls = useMemo<ScadaNumericControlView[]>(
+    () =>
+      (scene?.numeric_controls ?? []).map((control) => ({
+        ...control,
+        value: getRealtimeValue(equipmentLookup, control.tag, null),
+      })),
+    [equipmentLookup, scene?.numeric_controls],
+  );
+  const popupPump = useMemo(
+    () =>
+      elements.find(
+        (element) => element.type === "pump" && element.panel === "pump-status",
+      ) ?? elements.find((element) => element.type === "pump") ?? null,
+    [elements],
+  );
+  const popupPumpState = popupPump
+    ? getRealtimeValue(
+        equipmentLookup,
+        popupPump.tag,
+        popupPump.fallback_tag,
+      )
+    : undefined;
+  const popupPumpStateColor = getScadaEquipmentStateColor(
+    renderRules.pump,
+    popupPumpState,
+  );
+  const popupPumpStateLabel = getDiscreteStateLabel(popupPumpState, "en");
+  const popupPumpControlId = String(
+    popupPump?.control_id ?? popupPump?.id ?? "",
+  ).trim();
+  const handleSvgStartPump = useCallback(
+    () => onStartPump?.(popupPumpControlId),
+    [onStartPump, popupPumpControlId],
+  );
+  const handleSvgStopPump = useCallback(
+    () => onStopPump?.(popupPumpControlId),
+    [onStopPump, popupPumpControlId],
+  );
   const lagoonMetrics = useMemo(
     () => resolveLagoonMetrics(lagoonMetricsOverlay, tagLookup),
     [lagoonMetricsOverlay, tagLookup],
@@ -324,6 +374,13 @@ export default function ScadaMapRenderer({
               <SvgComponent
                 className="scada-svg"
                 preserveAspectRatio="xMidYMid meet"
+                canControl={canControl}
+                pumpStateColor={popupPumpStateColor}
+                pumpStateLabel={popupPumpStateLabel}
+                numericControls={numericControls}
+                onStartPump={handleSvgStartPump}
+                onStopPump={handleSvgStopPump}
+                onWriteNumericControl={onWriteNumericControl}
               />
             ) : svgMarkup ? (
               <InlineScadaSvg markup={svgMarkup} />

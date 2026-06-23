@@ -1,8 +1,21 @@
 import type { ComponentType, SVGProps } from "react";
 
 import { normalizeScadaLayoutName, type ScadaLayoutId } from "./layoutResolver";
+import type {
+  ScadaNumericControlHandler,
+  ScadaNumericControlView,
+  ScadaPumpControlHandler,
+} from "../types/scada-layouts";
 
-export type ScadaSvgProps = SVGProps<SVGSVGElement>;
+export interface ScadaSvgProps extends SVGProps<SVGSVGElement> {
+  canControl?: boolean;
+  pumpStateColor?: string;
+  pumpStateLabel?: string;
+  numericControls?: ScadaNumericControlView[];
+  onStartPump?: ScadaPumpControlHandler;
+  onStopPump?: ScadaPumpControlHandler;
+  onWriteNumericControl?: ScadaNumericControlHandler;
+}
 
 export interface ScadaSvgRegistryEntry {
   component: ComponentType<ScadaSvgProps>;
