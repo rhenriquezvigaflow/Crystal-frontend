@@ -76,7 +76,7 @@
     },
     {
       "tag": "DIF_PRES_SCADA",
-      "label": "DIF_PRES_SCADA",
+      "label": "BACKWASH.DP",
       "unit": "bar",
       "position": {
         "top": "58%",

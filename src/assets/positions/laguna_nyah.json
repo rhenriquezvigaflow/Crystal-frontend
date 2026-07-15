@@ -39,7 +39,7 @@
     },
     {
       "tag": "BACKWASH.DIFF_PRES",
-      "label": "DIF_PRES",
+      "label": "BACKWASH.DP",
       "unit": "bar",
       "position": {
         "top": "62.5%",

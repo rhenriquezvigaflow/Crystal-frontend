@@ -44,7 +44,7 @@
     },
     {
       "tag": "BACKWASH.DIFF_PRES",
-      "label": "DIF. PRESIÓN",
+      "label": "BACKWASH.DP",
       "unit": "bar",
       "position": { "top": "62.5%", "left": "52.3%" },
       "icon_type": "pressure"

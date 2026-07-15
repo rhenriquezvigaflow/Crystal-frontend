@@ -13,6 +13,8 @@ import {
 export interface LagoonAccess {
   lagoon_id: string;
   lagoon_name: string;
+  country_id: number | null;
+  country_name: string | null;
   scada_layout: ScadaLayoutId;
   timezone: string | null;
   ip: string | null;
@@ -31,6 +33,8 @@ type RawLagoon = {
   scada_layout?: string | null;
   layout?: string | null;
   layout_id?: string | null;
+  country_id?: number | string | null;
+  country_name?: string | null;
   timezone?: string | null;
   ip?: string | null;
   product_type?: string | null;
@@ -64,6 +68,22 @@ function toNullableString(value: unknown): string | null {
   return clean || null;
 }
 
+function toNullableNumber(value: unknown): number | null {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    if (!normalized) return null;
+
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
 function getRawRows(payload: unknown): RawLagoon[] {
   if (Array.isArray(payload)) return payload as RawLagoon[];
 
@@ -94,6 +114,8 @@ function normalizeLagoon(
   return {
     lagoon_id: lagoonId,
     lagoon_name: lagoonName,
+    country_id: toNullableNumber(raw.country_id),
+    country_name: toNullableString(raw.country_name),
     scada_layout: apiLayout,
     timezone: toNullableString(raw.timezone),
     ip: toNullableString(raw.ip),
@@ -109,6 +131,8 @@ function mergeLagoon(current: LagoonAccess, incoming: LagoonAccess): LagoonAcces
   return {
     lagoon_id: current.lagoon_id,
     lagoon_name: current.lagoon_name || incoming.lagoon_name,
+    country_id: current.country_id ?? incoming.country_id,
+    country_name: current.country_name ?? incoming.country_name,
     scada_layout:
       current.scada_layout && current.scada_layout !== "layout1"
         ? current.scada_layout
