@@ -1,4 +1,4 @@
-export type ScadaLayoutId = "layout1" | "layout2" | "layout3" | "layout4";
+export type ScadaLayoutId = "layout1" | "layout2" | "layout3" | "layout4" | "layout5" | "layout6";
 
 const LAYOUT_ALIASES: Record<string, ScadaLayoutId> = {
   layout1: "layout1",
@@ -9,6 +9,10 @@ const LAYOUT_ALIASES: Record<string, ScadaLayoutId> = {
   layout_3: "layout3",
   layout4: "layout4",
   layout_4: "layout4",
+  layout5: "layout5",
+  layout_5: "layout5",
+  layout6: "layout6",
+  layout_6: "layout6",
   layout_small: "layout3",
   small: "layout3",
 };
@@ -32,6 +36,8 @@ export function normalizeScadaLayoutName(value: unknown): ScadaLayoutId {
   if (compact === "layout2") return "layout2";
   if (compact === "layout3") return "layout3";
   if (compact === "layout4") return "layout4";
+  if (compact === "layout5") return "layout5";
+  if (compact === "layout6") return "layout6";
 
   return "layout1";
 }

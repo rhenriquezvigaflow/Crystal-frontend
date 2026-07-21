@@ -44,6 +44,7 @@ import type {
   ResolvedScadaElement,
   ResolvedScadaMap,
   ResolvedScadaTextLabel,
+  ScadaTagDefinition,
   ScadaTankStateTags,
 } from "../types/scada-layouts";
 
@@ -388,7 +389,7 @@ const KIRAH_FILTER_STATUS_TAG = "FILTRACION.ST";
 const KIRAH_FILTER_STATUS_FALLBACK_TAG = "FILTRACION_ST";
 
 const FILTER_STATUS_LABELS: Record<number, string> = {
-  0: "DISABLED",
+  0: "STOPPED",
   1: "STOPPED",
   2: "SWITCHING TO SERVICE",
   3: "STARTING FILTRATION",
@@ -426,6 +427,46 @@ function getFilterStatusLabel(tagLookup: RealtimeTagLookup): string {
   const rawStatus = getRealtimeValue(tagLookup, KIRAH_FILTER_STATUS_TAG, KIRAH_FILTER_STATUS_FALLBACK_TAG);
   const state = normalizeFilterStatus(rawStatus);
   return state === null ? "NO DATA" : FILTER_STATUS_LABELS[state] ?? "UNKNOWN STATUS";
+}
+
+function getConfiguredScadaStatusLabel(
+  statusElement: ResolvedScadaElement | undefined,
+  labels: ResolvedScadaTextLabel[],
+  tagDefinitions: ScadaTagDefinition[],
+  tagLookup: RealtimeTagLookup,
+): string | null {
+  const tag = String(statusElement?.tag ?? "").trim();
+  const fallbackTag = String(statusElement?.fallback_tag ?? "").trim();
+  if (!tag && !fallbackTag) return null;
+
+  const rawStatus = getRealtimeValue(tagLookup, tag, fallbackTag);
+  if (rawStatus === undefined || rawStatus === null || String(rawStatus).trim() === "") {
+    return "NO DATA";
+  }
+
+  const stateKey = typeof rawStatus === "boolean"
+    ? (rawStatus ? "1" : "0")
+    : String(rawStatus).trim();
+  const statusTagIds = new Set(
+    [tag, fallbackTag]
+      .filter(Boolean)
+      .map((tagId) => tagId.toUpperCase()),
+  );
+  const stateLabel = labels.find((label) =>
+    [label.tag, label.fallback_tag]
+      .map((tagId) => String(tagId ?? "").trim().toUpperCase())
+      .some((tagId) => tagId && statusTagIds.has(tagId)),
+  );
+  const statusTagDefinition = tagDefinitions.find((definition) => {
+    const definitionTag = String(definition.tag ?? "").trim().toUpperCase();
+    return definitionTag && statusTagIds.has(definitionTag);
+  });
+
+  return (
+    stateLabel?.states?.[stateKey]?.text ??
+    statusTagDefinition?.states?.[stateKey] ??
+    stateKey
+  );
 }
 
 function isKirahMapOne(lagoonId: string, activeMap: ResolvedScadaMap | null): boolean {
@@ -586,7 +627,7 @@ function HistorySection({ lagoonId, timezone, productType }: HistorySectionProps
     return Array.from(new Set(tags)).sort();
   }, [data]);
 
-  const [selectedTags, setSelectedTags] = useState<string[] | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[] | null>([]);
   const ignoreNextTagChangeRef = useRef(false);
   const visibleSelectedTags = useMemo(() => {
     if (!availableTags.length) return [];
@@ -648,9 +689,10 @@ function HistorySection({ lagoonId, timezone, productType }: HistorySectionProps
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "minmax(0, 260px) minmax(0, 1fr) auto" }, alignItems: "center", gap: 2, mb: 3 }}>
         <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 240 }, maxWidth: { xs: "100%", md: 280 } }}>
-          <InputLabel>TAG</InputLabel>
+          <InputLabel shrink>TAG</InputLabel>
           <Select
             multiple
+            displayEmpty
             value={visibleSelectedTags}
             onChange={handleTagChange}
             input={<OutlinedInput label="TAG" />}
@@ -854,8 +896,20 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     [overlayTags],
   );
   const filterStatus = useMemo(
-    () => (isKirahMapOne(lagoonId, activeMap) ? getFilterStatusLabel(realtimeTagLookup) : null),
-    [activeMap, lagoonId, realtimeTagLookup],
+    () => {
+      const configuredStatus = getConfiguredScadaStatusLabel(
+        overlayElements.find((element) => element.type === "plc_status"),
+        resolvedLabels,
+        scene?.tags ?? [],
+        realtimeTagLookup,
+      );
+      if (configuredStatus) return configuredStatus;
+
+      return isKirahMapOne(lagoonId, activeMap)
+        ? getFilterStatusLabel(realtimeTagLookup)
+        : null;
+    },
+    [activeMap, lagoonId, overlayElements, realtimeTagLookup, resolvedLabels, scene?.tags],
   );
   const sendPumpAction = useCallback(
     async (action: SmallPumpAction, moduleId: string) => {

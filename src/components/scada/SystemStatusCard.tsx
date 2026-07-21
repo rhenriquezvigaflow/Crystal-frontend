@@ -17,16 +17,76 @@ function normalizeStatusText(value?: string | null): string | null {
 function getFilterStatusColor(status: string): string {
   const normalized = status.toUpperCase();
 
-  if (normalized.includes("BACKWASH")) return "#d97706";
+  if (
+    normalized.includes("NO CONNECTION") ||
+    normalized.includes("NO CONEXION") ||
+    normalized.includes("OFFLINE") ||
+    normalized.includes("DISCONNECTED")
+  ) {
+    return "#64748b";
+  }
+  if (normalized.includes("MOVING") || normalized.includes("MOVIEND")) {
+    return "#0000ff";
+  }
+  if (
+    normalized.includes("FAILURE") ||
+    normalized.includes("FAULT") ||
+    normalized.includes("FALLA") ||
+    normalized.includes("ALARM") ||
+    normalized.includes("ERROR")
+  ) {
+    return "#ffff00";
+  }
+  if (normalized.includes("RUNNING") || normalized.includes("FUNCIONANDO")) {
+    return "#00ff00";
+  }
+  if (normalized.includes("BACKWASH") || normalized.includes("RETROLAVADO")) {
+    return "#d97706";
+  }
   if (
     normalized.includes("STOP") ||
     normalized.includes("DISABLED") ||
-    normalized.includes("UNKNOWN")
+    normalized.includes("UNKNOWN") ||
+    normalized.includes("DETEN") ||
+    normalized.includes("DESHABILITADO") ||
+    normalized.includes("DESCONOCIDO")
   ) {
-    return "#d83a3a";
+    return "#ff0000";
   }
-  if (normalized.includes("NO DATA")) return "#64748b";
+  if (normalized.includes("NO DATA") || normalized.includes("SIN DATO")) {
+    return "#64748b";
+  }
   return "#059669";
+}
+
+function getFilterStatusTextColor(color: string | null): string {
+  switch (color) {
+    case "#0000ff":
+    case "#ff0000":
+    case "#64748b":
+      return "#ffffff";
+    default:
+      return "#334155";
+  }
+}
+
+function getFilterStatusBorderColor(color: string | null): string {
+  switch (color) {
+    case "#00ff00":
+      return "#059669";
+    case "#0000ff":
+      return "#1d4ed8";
+    case "#ffff00":
+      return "#9a8100";
+    case "#ff0000":
+      return "#b91c1c";
+    case "#d97706":
+      return "#9a5b00";
+    case "#64748b":
+      return "#475569";
+    default:
+      return "#047857";
+  }
 }
 
 function applyClockOffset(
@@ -75,7 +135,7 @@ export default function SystemStatusCard({
   filterStatus,
   compact = false,
 }: Props) {
-  const statusLabel = online ? "ONLINE" : "OFFLINE";
+  const statusLabel = online ? "ONLINE" : "NO CONNECTION";
   const normalizedFilterStatus = normalizeStatusText(filterStatus);
   const filterColor = normalizedFilterStatus
     ? getFilterStatusColor(normalizedFilterStatus)
@@ -90,7 +150,11 @@ export default function SystemStatusCard({
       ].filter(Boolean).join(" ")}
       style={
         filterColor
-          ? { "--system-filter-color": filterColor } as CSSProperties
+          ? {
+              "--system-filter-color": filterColor,
+              "--system-filter-text-color": getFilterStatusTextColor(filterColor),
+              "--system-filter-border-color": getFilterStatusBorderColor(filterColor),
+            } as CSSProperties
           : undefined
       }
     >

@@ -9,6 +9,7 @@ import type {
   ResolvedScadaTextLabel,
   ScadaRenderRule,
   ScadaRenderRules,
+  ScadaTagDefinition,
   ScadaTextLabelState,
   ScadaTankStateTagCondition,
   ScadaTankStateTagEntry,
@@ -75,7 +76,7 @@ const DEFAULT_RENDER_RULES: ScadaRenderRules = {
   },
 };
 
-const rawLagoonSceneModules = import.meta.glob("../assets/positions/*.json", {
+const rawLagoonSceneModules = import.meta.glob("../assets/positions/**/*.json", {
   eager: true,
   import: "default",
 }) as Record<string, unknown>;
@@ -379,6 +380,49 @@ function buildWarnings(raw: unknown): string[] {
   return Array.from(new Set(warnings));
 }
 
+function normalizeTagStates(value: unknown): Record<string, string> | null {
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const states = Object.fromEntries(
+    Object.entries(record)
+      .map(([state, label]) => {
+        const normalizedLabel = asString(label);
+        return normalizedLabel ? [state, normalizedLabel] : null;
+      })
+      .filter((entry): entry is [string, string] => entry !== null),
+  );
+
+  return Object.keys(states).length ? states : null;
+}
+
+function buildTagDefinitions(sceneRecord: JsonRecord): ScadaTagDefinition[] {
+  return (asArray(sceneRecord.tags) ?? [])
+    .map((rawTag) => {
+      const tagRecord = asRecord(rawTag);
+      if (!tagRecord) return null;
+
+      const tag = pickFirstString(tagRecord.tag, tagRecord.tag_id);
+      const pendingTag = pickFirstBoolean(
+        tagRecord.pendingTag,
+        tagRecord.pending_tag,
+      ) ?? false;
+
+      if (!tag && !pendingTag) return null;
+
+      return {
+        tag,
+        name: pickFirstString(tagRecord.name, tagRecord.label, tag) ?? "Pending tag",
+        unit: pickFirstString(tagRecord.unit) ?? "-",
+        type: pickFirstString(tagRecord.type, tagRecord.data_type) ?? "",
+        description: pickFirstString(tagRecord.description) ?? "",
+        states: normalizeTagStates(tagRecord.states),
+        pendingTag,
+      } satisfies ScadaTagDefinition;
+    })
+    .filter((tag): tag is ScadaTagDefinition => tag !== null);
+}
+
 function inferLayoutId(sceneRecord: JsonRecord, raw: unknown): string {
   const candidates: unknown[] = [
     sceneRecord.layout_id,
@@ -441,7 +485,7 @@ function normalizeSceneAssetId(
     .toLowerCase()
     .replace(/[\s-]+/g, "_");
 
-  if (/^(layout[1-4]|layout_[1-4]|layout_small|small)$/.test(normalizedToken)) {
+  if (/^(layout[1-6]|layout_[1-6]|layout_small|small)$/.test(normalizedToken)) {
     return normalizeScadaLayoutName(normalizedToken);
   }
 
@@ -794,10 +838,14 @@ function normalizeResolvedElement(
 
   const tag = pickFirstString(
     mappingEntry?.tag,
+    rawElement.status_tag,
+    rawElement.statusTag,
     rawElement.tag,
     rawElement.tag_id,
   );
   const fallbackTag = pickFirstString(
+    rawElement.status_fallback_tag,
+    rawElement.statusFallbackTag,
     rawElement.fallback_tag,
     mappingEntry?.fallback_tag,
   );
@@ -932,7 +980,11 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
     elements.push({
       id: idFactory(preferredId, "plc_status"),
       type: "plc_status",
-      tag: null,
+      tag: pickFirstString(
+        plcStatusRecord.status_tag,
+        plcStatusRecord.statusTag,
+        plcStatusRecord.tag,
+      ),
       label: pickFirstString(plcStatusRecord.label, "PLC") ?? "PLC",
       position,
       svg_target: null,
@@ -940,7 +992,12 @@ function buildElementsFromFlatConfig(sceneRecord: JsonRecord): ResolvedScadaElem
       icon_type: null,
       panel: null,
       always_visible: true,
-      fallback_tag: null,
+      fallback_tag: pickFirstString(
+        plcStatusRecord.status_fallback_tag,
+        plcStatusRecord.statusFallbackTag,
+        plcStatusRecord.fallback_tag,
+        plcStatusRecord.fallbackTag,
+      ),
       clock_offset_seconds: pickFirstNumber(
         plcStatusRecord.clock_offset_seconds,
         plcStatusRecord.clockOffsetSeconds,
@@ -1255,6 +1312,7 @@ export function resolveLagoonSceneDefinition(
   const labels = buildLabels(raw, sceneRecord);
   const lagoonMetricsOverlay = buildLagoonMetricsOverlay(sceneRecord);
   const numericControls = buildNumericControls(sceneRecord);
+  const tags = buildTagDefinitions(sceneRecord);
 
   return {
     lagoon_id: getEmbeddedLagoonId(raw) ?? normalizedLagoonId,
@@ -1273,5 +1331,6 @@ export function resolveLagoonSceneDefinition(
     labels,
     lagoon_metrics_overlay: lagoonMetricsOverlay,
     numeric_controls: numericControls,
+    tags,
   };
 }

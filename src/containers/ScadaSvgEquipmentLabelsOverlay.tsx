@@ -169,17 +169,15 @@ function ScadaSvgEquipmentLabelsOverlay({
         <div
           key={placement.id}
           className={[
-            "absolute max-w-[9.5rem] -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md",
-            "border border-white/80 bg-white/88 px-2 py-1 text-center shadow-[0_10px_24px_-18px_rgba(15,23,42,0.6)] backdrop-blur-[2px]",
-            placement.type === "pump"
-              ? "text-[11px] font-semibold text-slate-800"
-              : "text-[10px] font-semibold text-slate-700",
+            "absolute max-w-[9.5rem] -translate-x-1/2 -translate-y-[calc(100%+6px)]",
+            "whitespace-pre-line text-center text-[12px] font-bold text-slate-800",
           ].join(" ")}
           style={{
             left: placement.left,
             top: placement.top,
             lineHeight: 1.15,
             textWrap: "balance",
+            textShadow: "0 1px 1px rgba(255, 255, 255, 0.88)",
           }}
           title={placement.label}
         >

@@ -27,6 +27,8 @@ const BUILTIN_ASPECT_RATIOS: Record<ScadaLayoutId, string> = {
   layout2: "1400 / 1150",
   layout3: "1393.0437 / 1150",
   layout4: "1393.0437 / 1150",
+  layout5: "1393.0437 / 1150",
+  layout6: "1400 / 1150",
 };
 
 const rawSvgModules = import.meta.glob("../svg/*.tsx", {
@@ -48,7 +50,7 @@ function normalizeSvgComponentToken(value: unknown): string {
 }
 
 function looksLikeBuiltinLayoutAlias(value: string): boolean {
-  return /^(layout[1-4]|layout_[1-4]|layout_small|small)$/.test(value);
+  return /^(layout[1-6]|layout_[1-6]|layout_small|small)$/.test(value);
 }
 
 export const svgRegistry: Record<string, ScadaSvgRegistryEntry> = Object.fromEntries(

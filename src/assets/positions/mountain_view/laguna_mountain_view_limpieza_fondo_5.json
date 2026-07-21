@@ -1,0 +1,58 @@
+{
+  "lagoon_id": "laguna_mountain_view",
+  "map_id": "limpieza_fondo_5",
+  "layout_id": "layout6",
+  "svg_component": "layout6",
+  "aspect_ratio": "1400 / 1150",
+  "map_name": "BOTTOM CLEANING No. 5",
+  "map_order": 7,
+  "tags": [
+    {
+      "tag": "P140_ST",
+      "name": "P-140",
+      "unit": "-",
+      "type": "INT",
+      "description": "BOTTOM CLEANING PUMP No. 5 STATUS",
+      "states": { "0": "Stopped", "1": "Running", "2": "Moving", "3": "Failure" }
+    },
+    {
+      "tag": "LF05_ST",
+      "name": "BOTTOM CLEANING STATUS",
+      "unit": "-",
+      "type": "INT",
+      "description": "BOTTOM CLEANING No. 5 STATUS",
+      "states": { "0": "Stopped", "1": "Standby", "2": "Running", "3": "Fault" }
+    },
+    { "tag": "PT141_R", "name": "PT-141", "unit": "bar", "type": "INT", "description": "BOTTOM CLEANING PUMP SUCTION PRESSURE" },
+    { "tag": "PT142_R", "name": "PT-142", "unit": "bar", "type": "INT", "description": "BOTTOM CLEANING PUMP DISCHARGE PRESSURE" },
+    { "tag": "FIT140_R", "name": "FIT-140", "unit": "L/s", "type": "INT", "description": "BOTTOM CLEANING PUMP DISCHARGE FLOW" },
+    { "tag": "TE140_R", "name": "TEMPERATURE", "unit": "°C", "type": "INT", "description": "BOTTOM CLEANING PANEL TEMPERATURE" },
+    { "tag": "TH141_R", "name": "HUMIDITY", "unit": "%", "type": "INT", "description": "BOTTOM CLEANING PANEL HUMIDITY" },
+    { "tag": "P140_FREQ", "name": "PUMP FREQUENCY", "unit": "Hz", "type": "REAL", "description": "LF05 PUMP FREQUENCY" }
+  ],
+  "kpis": [
+    { "tag": "PT141_R", "label": "PT-141", "unit": "bar", "position": { "top": "62%", "left": "37%" }, "icon_type": "pressure" },
+    { "tag": "PT142_R", "label": "PT-142", "unit": "bar", "position": { "top": "59.7%", "left": "49%" }, "icon_type": "pressure" },
+    { "tag": "FIT140_R", "label": "FIT-140", "unit": "L/s", "position": { "top": "51%", "left": "64%" }, "icon_type": "flow" },
+    { "tag": "TE140_R", "label": "TEMP", "unit": "°C", "position": { "top": "52%", "left": "25%" }, "icon_type": "temperature" },
+    { "tag": "TH141_R", "label": "HUM", "unit": "%", "position": { "top": "52%", "left": "34%" }, "icon_type": "humidity" },
+    { "tag": "P140_FREQ", "label": "FREQ. P-140", "unit": "Hz", "position": { "top": "71%", "left": "52%" }, "icon_type": "frequency" }
+  ],
+  "pumps": [
+    { "tag": "P140_ST", "label": "P-140", "svg_target": "PUMP01", "panel": "pump-status", "type": "pump", "position": { "top": "50%", "left": "50%" } }
+  ],
+  "valves": [],
+  "tanks": [],
+  "chemicals": [],
+  "plc_status": {
+    "position": { "top": "12%", "left": "14%" },
+    "status_tag": "P140_ST"
+  },
+  "labels": [
+    { "id": "pump-label", "text": "P-140\nBOTTOM CLEANING", "source_svg_target": "PUMP01", "source_element_type": "pump", "position": { "top": "72.5%", "left": "43.7%" } },
+    { "id": "tank-label", "text": "BOTTOM\nCLEANING No. 5", "source_svg_target": "TK01", "source_element_type": "tank", "position": { "top": "54%", "left": "81%" } },
+    { "id": "skid-number", "text": ": 5", "position": { "top": "48.4%", "left": "47.5%" }, "align": "left", "font_size": 22, "font_weight": 700, "color": "#666666" },
+    { "id": "pump-label", "text": "MP-100\nA-C1LO ", "source_svg_target": "", "source_element_type": "pump", "position": { "top": "45%", "left": "84%" } },
+    { "id": "pump-label", "text": "MP-101\nA-C1LO ", "source_svg_target": "", "source_element_type": "pump", "position": { "top": "68%", "left": "84%" } }
+  ]
+}

@@ -44,7 +44,7 @@ function PlcStatusComponent({
     return (
       <div
         className="absolute text-center"
-        title={`${isOnline ? "Online" : "Offline"}${timezone ? ` - ${timezone}` : ""}`}
+        title={`${isOnline ? "Online" : "No connection"}${timezone ? ` - ${timezone}` : ""}`}
         style={{
           ...overlayStyle,
           width: hasFilterStatus ? "136px" : "92px",

@@ -127,6 +127,8 @@ export interface LagoonMetricsOverlayDefinition {
 export interface LagoonScadaPlcStatusDefinition {
   position: ScadaLayoutPosition;
   clock_offset_seconds?: number | null;
+  status_tag?: string | null;
+  status_fallback_tag?: string | null;
 }
 
 export interface ScadaNumericControlDefinition {
@@ -139,6 +141,16 @@ export interface ScadaNumericControlDefinition {
   min?: number | null;
   max?: number | null;
   step?: number | null;
+}
+
+export interface ScadaTagDefinition {
+  tag: string | null;
+  name: string;
+  unit: string;
+  type: string;
+  description: string;
+  states: Record<string, string> | null;
+  pendingTag: boolean;
 }
 
 export interface LagoonScadaConfig {
@@ -161,6 +173,7 @@ export interface LagoonScadaConfig {
   plc_status?: LagoonScadaPlcStatusDefinition | null;
   render_rules?: Partial<ScadaRenderRules> | null;
   numeric_controls?: ScadaNumericControlDefinition[] | null;
+  tags?: ScadaTagDefinition[] | null;
   labels?: ScadaTextLabelDefinition[] | null;
   warnings?: string[] | null;
 }
@@ -234,6 +247,7 @@ export interface ResolvedScadaScene {
   labels: ResolvedScadaTextLabel[];
   lagoon_metrics_overlay: ResolvedLagoonMetricsOverlay | null;
   numeric_controls: ResolvedScadaNumericControl[];
+  tags: ScadaTagDefinition[];
 }
 
 export interface ScadaMapManifestEntry {

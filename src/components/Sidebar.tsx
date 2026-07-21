@@ -95,6 +95,27 @@ export default function Sidebar({
     }));
   };
 
+  const selectLagoon = (
+    lagoonId: string,
+    countryKey: string,
+    active: boolean,
+  ) => {
+    if (active) {
+      onNavigate?.();
+      return;
+    }
+
+    // Selecting a lagoon turns the country list into an accordion: only the
+    // selected lagoon's country remains expanded.
+    setCountryExpansionOverrides({ [countryKey]: true });
+    navigate(
+      legacyRoute
+        ? legacyCrystalLagoonPath(lagoonId)
+        : productLagoonPath(product.id, lagoonId),
+    );
+    onNavigate?.();
+  };
+
   return (
     <aside
       className={["lagoon-sidebar relative h-full w-full px-4 pb-6 pt-4", className]
@@ -174,19 +195,9 @@ export default function Sidebar({
                         <button
                           type="button"
                           key={lagoon.lagoon_id}
-                          onClick={() => {
-                            if (active) {
-                              onNavigate?.();
-                              return;
-                            }
-
-                            navigate(
-                              legacyRoute
-                                ? legacyCrystalLagoonPath(lagoon.lagoon_id)
-                                : productLagoonPath(product.id, lagoon.lagoon_id),
-                            );
-                            onNavigate?.();
-                          }}
+                          onClick={() =>
+                            selectLagoon(lagoon.lagoon_id, group.key, active)
+                          }
                           className={[
                             "w-full rounded-[14px] px-4 py-3 text-left text-sm transition",
                             active

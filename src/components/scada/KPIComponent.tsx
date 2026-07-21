@@ -32,7 +32,9 @@ function normalizeText(value: string): string {
 
 function formatTagTitle(tag?: string | null, label?: string | null): string {
   const explicitLabel = normalizeText(label ?? "");
-  const source = explicitLabel || normalizeText(tag ?? "");
+  if (explicitLabel) return explicitLabel.toUpperCase();
+
+  const source = normalizeText(tag ?? "");
   if (!source) return "--";
 
   const cleaned = source

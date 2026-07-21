@@ -16,8 +16,8 @@ function clampIndex(index: number, total: number): number {
   return index;
 }
 
-function getMapLabel(index: number): string {
-  return `Map ${index + 1}`;
+function getMapLabel(map: ResolvedScadaMap | null, index: number): string {
+  return map?.name?.trim() || `Map ${index + 1}`;
 }
 
 export default function MapSwitcher({
@@ -32,7 +32,7 @@ export default function MapSwitcher({
   const activeMap = maps[safeActiveIndex] ?? maps[0] ?? null;
   const options = maps.map((map, index) => ({
     id: map.id,
-    label: getMapLabel(index),
+    label: getMapLabel(map, index),
     title: map.name ?? null,
   }));
 
@@ -47,7 +47,7 @@ export default function MapSwitcher({
   return (
     <div className={containerClassName}>
       <MapNavigation
-        activeLabel={getMapLabel(safeActiveIndex)}
+        activeLabel={getMapLabel(activeMap, safeActiveIndex)}
         activeTitle={activeMap?.name ?? null}
         activeIndex={safeActiveIndex}
         totalMaps={maps.length}

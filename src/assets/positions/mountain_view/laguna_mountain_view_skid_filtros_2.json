@@ -1,0 +1,247 @@
+{
+  "lagoon_id": "laguna_mountain_view",
+  "map_id": "skid_filtros_2",
+  "layout_id": "layout5",
+  "svg_component": "layout5",
+  "aspect_ratio": "1393.0437 / 1150",
+  "map_name": "FILTER SKID No. 2",
+  "map_order": 2,
+  "tags": [
+    {
+      "tag": "PT213_R",
+      "name": "PT-213",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTRATION PUMP No. 2 DISCHARGE PRESSURE"
+    },
+    {
+      "tag": "PT313_R",
+      "name": "PT-313",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "BACKWASH PUMP No. 2 DISCHARGE PRESSURE"
+    },
+    {
+      "tag": "PT420_R",
+      "name": "PT-420",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTER INLET PRESSURE"
+    },
+    {
+      "tag": "PT422_R",
+      "name": "PT-422",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTER No. 1 OUTLET PRESSURE"
+    },
+    {
+      "tag": "PT424_R",
+      "name": "PT-424",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTER No. 2 OUTLET PRESSURE"
+    },
+    {
+      "tag": "PT426_R",
+      "name": "PT-426",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTER No. 3 OUTLET PRESSURE"
+    },
+    {
+      "tag": "FIT420_R",
+      "name": "FIT-420",
+      "unit": "L/s",
+      "type": "REAL",
+      "description": "."
+    },
+    {
+      "tag": "BACKWASH_2.DIFF_PRES",
+      "name": "PRESSURE DIFFERENTIAL",
+      "unit": "bar",
+      "type": "REAL",
+      "description": "FILTER SKID No. 2 PRESSURE DIFFERENTIAL"
+    },
+    {
+      "tag": "P310_ST",
+      "name": "P-310",
+      "unit": "-",
+      "type": "INT",
+      "description": "BACKWASH PUMP No. 2 STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "P210_ST",
+      "name": "P-210",
+      "unit": "-",
+      "type": "INT",
+      "description": "FILTRATION PUMP No. 2 STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": null,
+      "name": "FILTER BACKWASH",
+      "unit": "-",
+      "type": "BOOL",
+      "description": "FILTER BACKWASH",
+      "pendingTag": true
+    },
+    {
+      "tag": "MP421_ST",
+      "name": "MP-421",
+      "unit": "-",
+      "type": "INT",
+      "description": "A-C1LO BACKWASH PUMP No. 2 STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "MP420_ST",
+      "name": "MP-420",
+      "unit": "-",
+      "type": "INT",
+      "description": "F-H1LO BACKWASH PUMP No. 2 STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "VE420_ST",
+      "name": "VX-420",
+      "unit": "-",
+      "type": "INT",
+      "description": "VX-420 FILTER SKID No. 2 VALVE STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "VE422_ST",
+      "name": "VX-422",
+      "unit": "-",
+      "type": "INT",
+      "description": "VX-422 FILTER SKID No. 2 VALVE STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "VE434_ST",
+      "name": "VX-434",
+      "unit": "-",
+      "type": "INT",
+      "description": "VX-434 FILTER SKID No. 2 VALVE STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "VE436_ST",
+      "name": "VX-436",
+      "unit": "-",
+      "type": "INT",
+      "description": "VX-436 FILTER SKID No. 2 VALVE STATUS",
+      "states": { "0": "Red", "1": "Green", "2": "Blue", "3": "Yellow" }
+    },
+    {
+      "tag": "FILTRACION_2.ST",
+      "name": "FILTRATION STATUS",
+      "unit": "-",
+      "type": "INT",
+      "description": "FILTER SKID No. 2 FILTRATION STATUS",
+      "states": {
+        "0": "Stopped",
+        "1": "Stopped",
+        "2": "Switching to Service",
+        "3": "Starting Filtration",
+        "4": "Starting Filtration Pump",
+        "5": "Filtering",
+        "6": "Switching to Backwash",
+        "7": "Switching to Backwash",
+        "8": "Starting Backwash",
+        "9": "Backwashing",
+        "10": "Filtration Complete",
+        "11": "Stopping Backwash"
+      }
+    }
+  ],
+  "kpis": [
+    { "tag": "PT213_R", "label": "PT-213", "unit": "bar", "position": { "top": "41%", "left": "20.5%" }, "icon_type": "pressure" },
+    { "tag": "FIT420_R", "label": "FIT-420", "unit": "L/s", "position": { "top": "38%", "left": "30.7%" }, "icon_type": "flow" },
+    { "tag": "PT313_R", "label": "PT-313", "unit": "bar", "position": { "top": "73%", "left": "35%" }, "icon_type": "pressure" },
+    { "tag": "PT420_R", "label": "PT-420", "unit": "bar", "position": { "top": "24.7%", "left": "36.5%" }, "icon_type": "pressure" },
+    { "tag": "PT422_R", "label": "PT-422", "unit": "bar", "position": { "top": "58%", "left": "43%" }, "icon_type": "pressure" },
+    { "tag": "PT424_R", "label": "PT-424", "unit": "bar", "position": { "top": "58%", "left": "56.1%" }, "icon_type": "pressure" },
+    { "tag": "PT426_R", "label": "PT-426", "unit": "bar", "position": { "top": "58%", "left": "70.3%" }, "icon_type": "pressure" },
+    { "tag": "BACKWASH_2.DIFF_PRES", "label": "BACKWASH. DIFF", "unit": "bar", "position": { "top": "64%", "left": "36%" }, "icon_type": "pressure" }
+  ],
+  "pumps": [
+    { "tag": "P310_ST", "label": "P-310 BACKWASH", "svg_target": "PUMP-03", "panel": "pump-status", "type": "pump" },
+    { "tag": "P210_ST", "label": "P-210 FILTRATION", "svg_target": "PUMP-02", "panel": "pump-status", "type": "pump" },
+    { "tag": "MP421_ST", "label": "MP-421 A-C1LO", "svg_target": "PUMP-05", "type": "pump" },
+    { "tag": "MP420_ST", "label": "MP-420 F-H1LO", "svg_target": "PUMP-06", "type": "pump" }
+  ],
+  "valves": [
+    { "tag": "VE420_ST", "label": "VX-420", "svg_target": "VALVE01", "type": "valve" },
+    { "tag": "VE422_ST", "label": "VX-422", "svg_target": "VALVE02", "type": "valve" },
+    { "tag": "VE434_ST", "label": "VX-434", "svg_target": "VALVE05", "type": "valve" },
+    { "tag": "VE436_ST", "label": "VX-436", "svg_target": "VALVE03", "type": "valve" }
+  ],
+  "tanks": [],
+  "chemicals": [],
+  "plc_status": {
+    "position": { "top": "12%", "left": "14%" },
+    "status_tag": "FILTRACION_2.ST",
+    "status_fallback_tag": "FILTRACION_2_ST"
+  },
+  "labels": [
+    {
+      "id": "tank-label-bottom-cleaning",
+      "text": "BOTTOM\nCLEANING",
+      "source_svg_target": "TK01",
+      "source_element_type": "tank",
+      "position": { "top": "54%", "left": "16%" },
+      "align": "center"
+    },
+    {
+      "id": "tank-label-lagoon",
+      "text": "LAGOON",
+      "source_svg_target": "TK02",
+      "source_element_type": "tank",
+      "position": { "top": "83.2%", "left": "15%" },
+      "align": "center"
+    },
+    {
+      "id": "tank-label-setting",
+      "text": "SETTING\nTANK",
+      "source_svg_target": "TK03",
+      "source_element_type": "tank",
+      "position": { "top": "50.2%", "left": "92.1%" },
+      "align": "center"
+    },
+    {
+      "id": "pump-label-p210",
+      "text": "P-210\nFILTRATION",
+      "source_svg_target": "PUMP-02",
+      "source_element_type": "pump",
+      "position": { "top": "64.5%", "left": "18.5%" },
+      "align": "center"
+    },
+    {
+      "id": "pump-label-p310",
+      "text": "P-310\nBACKWASH",
+      "source_svg_target": "PUMP-03",
+      "source_element_type": "pump",
+      "position": { "top": "89%", "left": "18.3%" },
+      "align": "center"
+    },
+    {
+      "id": "pump-label-mp421",
+      "text": "MP-421\nA-C1LO",
+      "source_svg_target": "PUMP-05",
+      "source_element_type": "pump",
+      "position": { "top": "27%", "left": "88%" },
+      "align": "center"
+    },
+    {
+      "id": "pump-label-mp420",
+      "text": "MP-420\nF-H1LO",
+      "source_svg_target": "PUMP-06",
+      "source_element_type": "pump",
+      "position": { "top": "27%", "left": "94%" },
+      "align": "center"
+    }
+  ]
+}
