@@ -6,6 +6,126 @@ const SMALL_PUMP_ID = "g24-6";
 const SMALL_PUMP_NAME = "Pump recirculation";
 const FALLBACK_PUMP_COLOR = "#0e76e7";
 
+const TANK_LEVEL_BOTTOM = 2300;
+const TANK_LEVEL_HEIGHT = 3620;
+const TANK_LEVEL_MARKS = [0, 25, 50, 75, 100];
+const TANK_LEVEL_SIMULATION = [0, 25, 50, 75, 100, 75, 50, 25];
+const TANK_WATER_LEFT = 2800;
+const TANK_WATER_RIGHT = 7425;
+const TANK_WATER_CORNER_X = 390;
+const TANK_WATER_CORNER_Y = 330;
+
+function clampTankLevel(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return 0;
+  return Math.min(100, Math.max(0, numericValue));
+}
+
+function TankLevelVisual({ level }) {
+  const normalizedLevel = clampTankLevel(level);
+  const fillScale = normalizedLevel / 100;
+  const waterClipId = `tank-water-${React.useId().replace(/:/g, "")}`;
+  const tankLevelTop = TANK_LEVEL_BOTTOM + TANK_LEVEL_HEIGHT;
+  const animatedFillStyle = {
+    transform: `scaleY(${fillScale})`,
+    transformBox: "fill-box",
+    transformOrigin: "center top",
+    transition: "transform 450ms ease-in-out",
+  };
+
+  return (
+    <g
+      id="recirculation-tank-level"
+      data-level={normalizedLevel}
+      pointerEvents="none"
+      role="img"
+      aria-label={`Tank level ${Math.round(normalizedLevel)} percent`}
+    >
+      <title>{`Tank level: ${Math.round(normalizedLevel)}%`}</title>
+      <defs>
+        <clipPath id={waterClipId} clipPathUnits="userSpaceOnUse">
+          <path
+            d={`M ${TANK_WATER_LEFT},${tankLevelTop} H ${TANK_WATER_RIGHT} V ${
+              TANK_LEVEL_BOTTOM + TANK_WATER_CORNER_Y
+            } Q ${TANK_WATER_RIGHT},${TANK_LEVEL_BOTTOM} ${
+              TANK_WATER_RIGHT - TANK_WATER_CORNER_X
+            },${TANK_LEVEL_BOTTOM} H ${TANK_WATER_LEFT + TANK_WATER_CORNER_X} Q ${
+              TANK_WATER_LEFT
+            },${TANK_LEVEL_BOTTOM} ${TANK_WATER_LEFT},${
+              TANK_LEVEL_BOTTOM + TANK_WATER_CORNER_Y
+            } Z`}
+          />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${waterClipId})`}>
+        <rect
+          id="recirculation-tank-water"
+          x={TANK_WATER_LEFT}
+          y={TANK_LEVEL_BOTTOM}
+          width={TANK_WATER_RIGHT - TANK_WATER_LEFT}
+          height={TANK_LEVEL_HEIGHT}
+          fill="#35ade9"
+          fillOpacity={0.82}
+          stroke="none"
+          style={animatedFillStyle}
+        />
+      </g>
+
+      <g id="recirculation-tank-level-bar">
+        <rect
+          x={7810}
+          y={TANK_LEVEL_BOTTOM - 60}
+          width={570}
+          height={TANK_LEVEL_HEIGHT + 120}
+          rx={70}
+          fill="#ffffff"
+          fillOpacity={0.94}
+        />
+        <rect
+          x={7900}
+          y={TANK_LEVEL_BOTTOM}
+          width={390}
+          height={TANK_LEVEL_HEIGHT}
+          fill="#f4f7f9"
+        />
+        <rect
+          id="recirculation-tank-level-fill"
+          x={7900}
+          y={TANK_LEVEL_BOTTOM}
+          width={390}
+          height={TANK_LEVEL_HEIGHT}
+          fill="#35ade9"
+          style={animatedFillStyle}
+        />
+        {TANK_LEVEL_MARKS.map((mark) => {
+          const markY = TANK_LEVEL_BOTTOM + (TANK_LEVEL_HEIGHT * mark) / 100;
+          return (
+            <line
+              key={mark}
+              x1={7900}
+              x2={8290}
+              y1={markY}
+              y2={markY}
+              stroke="#2f3e49"
+              strokeWidth={mark === 0 || mark === 100 ? 36 : 22}
+              strokeOpacity={mark === 0 || mark === 100 ? 1 : 0.55}
+            />
+          );
+        })}
+        <rect
+          x={7900}
+          y={TANK_LEVEL_BOTTOM}
+          width={390}
+          height={TANK_LEVEL_HEIGHT}
+          fill="none"
+          stroke="#2f3e49"
+          strokeWidth={42}
+        />
+      </g>
+    </g>
+  );
+}
+
 function normalizePaintColor(value) {
   const color = String(value ?? "").trim();
   if (!color || color === "none" || color === "transparent") return null;
@@ -680,6 +800,9 @@ function DosifPopup({
 
 const SVGComponent = ({
   onClick,
+  level = null,
+  simulateLevel = true,
+  simulationInterval = 1200,
   canControl = true,
   pumpStateColor = FALLBACK_PUMP_COLOR,
   pumpStateLabel = "No data",
@@ -689,11 +812,28 @@ const SVGComponent = ({
   onWriteNumericControl = defaultNumericControlHandler,
   ...props
 }) => {
+  const hasExternalLevel = level !== null && level !== undefined && level !== "";
+  const externalLevel = hasExternalLevel ? clampTankLevel(level) : null;
+  const [simulatedLevel, setSimulatedLevel] = React.useState(0);
+  const tankLevel = externalLevel ?? (simulateLevel ? simulatedLevel : 0);
   const [pumpPopup, setPumpPopup] = React.useState(null);
   const [pendingPumpAction, setPendingPumpAction] = React.useState(null);
   const [pumpActionPending, setPumpActionPending] = React.useState(false);
   const [pumpActionError, setPumpActionError] = React.useState(null);
   const [dosifPopup, setDosifPopup] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!simulateLevel || externalLevel !== null) return undefined;
+
+    let simulationIndex = 0;
+    const interval = Math.max(500, Number(simulationInterval) || 1200);
+    const timer = window.setInterval(() => {
+      simulationIndex = (simulationIndex + 1) % TANK_LEVEL_SIMULATION.length;
+      setSimulatedLevel(TANK_LEVEL_SIMULATION[simulationIndex]);
+    }, interval);
+
+    return () => window.clearInterval(timer);
+  }, [externalLevel, simulateLevel, simulationInterval]);
 
   const closePumpPopup = React.useCallback(() => {
     setPumpPopup(null);
@@ -853,17 +993,17 @@ const SVGComponent = ({
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={2}
-      inkscape:cx={941}
-      inkscape:cy={620.25}
+      inkscape:zoom={0.5}
+      inkscape:cx={654}
+      inkscape:cy={587}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
       inkscape:window-x={-8}
       inkscape:window-y={-8}
       inkscape:window-maximized={1}
-      inkscape:current-layer="g1-2-1"
+      inkscape:current-layer="g21"
       showgrid="true"
-      showguides="true"
+      showguides="false"
       inkscape:antialias-rendering="true"
       showborder="true"
       inkscape:lockguides="false"
@@ -2858,6 +2998,20 @@ const SVGComponent = ({
           floodOpacity={0.25}
         />
       </filter>
+      <rect
+        x={307.20474}
+        y={928}
+        width={127.79525}
+        height={52}
+        id="rect9-3-0"
+      />
+      <rect
+        x={307.20474}
+        y={928}
+        width={127.79525}
+        height={52}
+        id="rect9-3-0-8"
+      />
     </defs>
     <style type="text/css" id="style1">
       {
@@ -2925,6 +3079,12 @@ const SVGComponent = ({
     </g>
     <g
       id="g24-6"
+      role="button"
+      tabIndex={0}
+      aria-label={`Open popup ${SMALL_PUMP_NAME}`}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={openPumpPopup}
+      onKeyDown={handlePumpKeyDown}
       transform="matrix(1.3372687,0,0,1.1041878,-147.07268,9.8892832)"
       style={{
         stroke: "#000000",
@@ -2933,22 +3093,6 @@ const SVGComponent = ({
         strokeOpacity: 1,
       }}
     >
-      <path
-        style={{
-          opacity: 1,
-          fill: "#000000",
-          fillOpacity: 0,
-          stroke: "#35ade9",
-          strokeWidth: 3.29176,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="m 342.41516,535.02465 709.54444,-0.6232 -0.029,-322.69924 -837.96182,-0.0523 -0.0839,85.85522"
-        id="path5"
-        sodipodi:nodetypes="ccccc"
-      />
       <g
         id="g278"
         transform="matrix(0.74779287,0,0,0.90564304,-396.72455,-450.5477)"
@@ -3009,28 +3153,24 @@ const SVGComponent = ({
           transform="matrix(1.3372687,0,0,1.1041878,531.02732,498.28934)"
         />
       </g>
-      <rect
-        id="pump-popup-hitbox"
-        role="button"
-        tabIndex={0}
-        aria-label={`Open popup ${SMALL_PUMP_NAME}`}
-        x={306}
-        y={522}
-        width={62}
-        height={58}
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={openPumpPopup}
-        onKeyDown={handlePumpKeyDown}
-        style={{
-          cursor: "pointer",
-          fill: "transparent",
-          outline: "none",
-          pointerEvents: "all",
-          stroke: "transparent",
-          strokeWidth: 0,
-        }}
-      />
     </g>
+    <path
+      style={{
+        opacity: 1,
+        fill: "#000000",
+        fillOpacity: 0,
+        stroke: "#35ade9",
+        strokeWidth: 3.29176,
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 344.03907,534.88249 709.54443,-0.6232 -1.6529,-322.55708 -837.96182,-0.0523 -0.0839,85.85522"
+      id="path5"
+      sodipodi:nodetypes="ccccc"
+      transform="matrix(1.3372687,0,0,1.1041878,-147.07268,9.8892832)"
+    />
     <path
       id="Vector_324-6-6-5-1-7-7-7-06"
       d="m 1267.0274,318.09194 c 0.025,1.26109 -0.8731,2.42718 -2.1065,2.45366 l -10.1766,0.21662 c -1.1308,0.0226 -2.181,-0.98591 -2.2107,-2.36152 -0.012,-0.63071 0.1783,-1.26557 0.5294,-1.67447 l 4.9655,-5.78363 c 0.7524,-0.87626 2.0373,-0.90343 2.9271,-0.17748 l 0.1054,0.11259 5.2108,5.56662 c 0.628,0.5028 0.742,1.01673 0.7557,1.64729 z"
@@ -3049,6 +3189,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.20461431}
       inkscape:transform-center-y={-0.66509277}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89"
@@ -3068,6 +3209,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={0.69886196}
       inkscape:transform-center-y={-0.14617663}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-0"
@@ -3087,6 +3229,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.16877715}
       inkscape:transform-center-y={-0.70738077}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-8"
@@ -3106,6 +3249,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.69708309}
       inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7"
@@ -3125,6 +3269,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.69708309}
       inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <text
       xmlSpace="preserve"
@@ -3330,12 +3475,12 @@ const SVGComponent = ({
       }}
       transform="translate(-38.656589,-11.635832)"
     >
-      <tspan x={1158.2432} y={49} id="tspan2">
+      <tspan x={1158.2432} y={49} id="tspan4">
         <tspan
           style={{
             fill: "#2c2c2c",
           }}
-          id="tspan1"
+          id="tspan2"
         >
           {"Equipment Operations"}
         </tspan>
@@ -3589,7 +3734,6 @@ const SVGComponent = ({
         onKeyDown={handleDosifKeyDown("dosif003", "DOSIF003")}
         transform="matrix(-0.01572811,0,0,0.01875805,1239.6103,712.40078)"
         style={{
-          cursor: "pointer",
           strokeWidth: 7.35888,
           strokeDasharray: "none",
         }}
@@ -3850,6 +3994,24 @@ const SVGComponent = ({
         id="path7-3-1"
         sodipodi:nodetypes="ccc"
       />
+      <rect
+        style={{
+          fill: "#7e808b",
+          fillOpacity: 1,
+          stroke: "#2f3e49",
+          strokeWidth: 0,
+          strokeLinecap: "square",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        id="rect4"
+        width={20.447123}
+        height={4.7973928}
+        x={368.53403}
+        y={694.58844}
+      />
       <path
         id="Vector_324-1-6-4-1-8"
         d="m 1250.5449,627.25168 c -0.014,0.86059 -0.7458,1.63383 -1.7057,1.62172 l -7.9196,-0.10096 c -0.8799,-0.0103 -1.6687,-0.7255 -1.654,-1.66426 0.011,-0.4303 0.1735,-0.85861 0.4578,-1.12889 l 4.0205,-3.8225 c 0.6091,-0.5792 1.6091,-0.56643 2.2811,-0.0494 l 0.079,0.0793 3.8989,3.92304 c 0.4745,0.35816 0.549,0.7113 0.5422,1.1416 z"
@@ -3868,6 +4030,7 @@ const SVGComponent = ({
         inkscape:transform-center-x={-0.10221554}
         inkscape:transform-center-y={-0.46324031}
         inkscape:highlight-color="#aa6a31"
+        onclick="12&#10;"
       />
       <rect
         style={{
@@ -3895,7 +4058,6 @@ const SVGComponent = ({
         onKeyDown={handleDosifKeyDown("dosif002", "DOSIF002")}
         transform="matrix(-0.01572811,0,0,0.01875805,986.466,712.79813)"
         style={{
-          cursor: "pointer",
           strokeWidth: 7.35888,
           strokeDasharray: "none",
         }}
@@ -4171,7 +4333,6 @@ const SVGComponent = ({
         onKeyDown={handleDosifKeyDown("dosif001", "DOSIF001")}
         transform="matrix(-0.01572811,0,0,0.01875805,714.24288,712.92979)"
         style={{
-          cursor: "pointer",
           strokeWidth: 7.35888,
           strokeDasharray: "none",
         }}
@@ -4438,160 +4599,6 @@ const SVGComponent = ({
           />
         </g>
       </g>
-      <rect
-        style={{
-          opacity: 1,
-          fill: "#35ade9",
-          fillOpacity: 1,
-          stroke: "#35ade9",
-          strokeWidth: 4,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        id="rect13"
-        width={99.999954}
-        height={41.972244}
-        x={353.49265}
-        y={743.02576}
-        rx={0.58314788}
-        ry={0.48026142}
-      />
-      <g
-        id="g12"
-        transform="matrix(0.48907766,0,0,0.52892151,341.16559,698.77817)"
-        style={{
-          strokeWidth: 1.96614,
-          stroke: "#2f3e49",
-          strokeOpacity: 1,
-        }}
-      >
-        <path
-          style={{
-            opacity: 0.922013,
-            fill: "#f1f1f1",
-            fillOpacity: 0,
-            stroke: "#2f3e49",
-            strokeWidth: 7.66796,
-            strokeLinecap: "butt",
-            strokeLinejoin: "round",
-            strokeMiterlimit: 10.7,
-            strokeDasharray: "none",
-            strokeOpacity: 1,
-          }}
-          d="M 130,170 19.516341,168.5 19.934641,42.248358 C 91.08586,2.9280965 162.00762,2.6492295 235.35948,41.411757 L 234.10457,168.5 Z"
-          id="path9-9"
-          sodipodi:nodetypes="cccccc"
-        />
-        <line
-          x1={30}
-          y1={82}
-          x2={230}
-          y2={82}
-          stroke="#8a8a8a"
-          strokeWidth={5.89843}
-          id="line5"
-          style={{
-            display: "inline",
-            opacity: 1,
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <line
-          x1={200}
-          y1={95}
-          x2={220}
-          y2={95}
-          stroke="#444444"
-          strokeWidth={7.86458}
-          id="line6"
-          style={{
-            display: "inline",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <line
-          x1={200}
-          y1={122}
-          x2={220}
-          y2={122}
-          stroke="#444444"
-          strokeWidth={7.86458}
-          id="line7"
-          style={{
-            display: "inline",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <line
-          x1={200}
-          y1={149}
-          x2={220}
-          y2={149}
-          stroke="#444444"
-          strokeWidth={7.86458}
-          id="line8"
-          style={{
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <rect
-          x={124}
-          y={170}
-          width={12}
-          height={52}
-          fill="#9b9b9b"
-          stroke="#666666"
-          strokeWidth={5.89843}
-          id="rect8-3"
-          style={{
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <polygon
-          points="90,254 90,210 130,232 "
-          fill="#9d9d9d"
-          stroke="#555555"
-          strokeWidth={5.89843}
-          id="polygon9"
-          style={{
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <polygon
-          points="170,254 170,210 130,232 "
-          fill="#9d9d9d"
-          stroke="#555555"
-          strokeWidth={5.89843}
-          id="polygon10"
-          style={{
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <rect
-          x={124}
-          y={220}
-          width={12}
-          height={24}
-          fill="#7f7f7f"
-          stroke="#555555"
-          strokeWidth={3.93229}
-          id="rect10-4"
-          style={{
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-      </g>
       <path
         style={{
           opacity: 1,
@@ -4605,9 +4612,210 @@ const SVGComponent = ({
           strokeDasharray: "none",
           strokeOpacity: 1,
         }}
-        d="m 427.73112,822.02571 178.94328,0 v -71 h 54.30672"
+        d="m 443.92232,815.77571 165.0588,-0.125 0.125,-64.45313 51.875,-0.17187"
         id="path12"
         sodipodi:nodetypes="cccc"
+      />
+      <path
+        style={{
+          fill: "#2f3e49",
+          fillOpacity: 0,
+          stroke: "#2f3e49",
+          strokeWidth: 3,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        d="m 720.60098,667.52271 53.38006,0.003"
+        id="path9-7"
+        sodipodi:nodetypes="cc"
+      />
+      <g
+        transform="matrix(0.0256218,0,0,-0.03112019,247.78744,940.53131)"
+        fill="#000000"
+        stroke="none"
+        id="g21"
+        style={{
+          strokeWidth: 7.08278497,
+          strokeDasharray: "none",
+          stroke: "#2f3e49",
+          strokeOpacity: 1,
+        }}
+      >
+        <rect
+          style={{
+            fill: "#a2a4af",
+            fillOpacity: 1,
+            stroke: "#2f3e49",
+            strokeWidth: 7.08278497,
+            strokeLinecap: "square",
+            strokeLinejoin: "round",
+            strokeMiterlimit: 10.7,
+            strokeDasharray: "none",
+            strokeOpacity: 1,
+          }}
+          id="rect5"
+          width={740}
+          height={179.7919}
+          x={4750.0005}
+          y={-8090.7925}
+          transform="matrix(1,0,0,-1,1.3442029e-4,-7.2100709e-5)"
+        />
+        <path
+          d="m 4736,8220 c -57,-29 -85,-58 -112,-115 -22,-46 -24,-63 -24,-212 v -162 l -47,-6 c -163,-21 -428,-70 -546,-100 -826,-210 -1331,-599 -1406,-1085 -9,-56 -11,-575 -9,-2030 3,-1862 4,-1958 21,-2010 30,-88 91,-182 165,-252 75,-71 145,-109 232,-127 41,-9 581,-11 2140,-9 2002,3 2087,4 2134,22 163,60 284,188 348,366 l 23,65 v 1990 1990 l -28,90 c -36,117 -66,180 -122,264 -117,175 -292,322 -552,465 -330,182 -715,292 -1260,361 l -53,7 v 159 c 0,171 -6,201 -56,266 -14,18 -47,44 -74,58 l -49,25 h -343 c -321,-1 -346,-2 -382,-20 z m 730,-163 c 19,-23 24,-39 24,-87 v -59 l -72,2 -73,1 -6,85 -5,86 -2,-87 -2,-88 -287,-2 -291.2178,0.2871 -1.7822,-5.71 287,0.4229 457.7295,-2.2034 v -64.6102 -93.3559 L 5038,7750 H 4750 V 7902.5771 8032 l 30,29 29,30 317,-3 316,-3 z m -16,-477 c 527,-37 1006,-155 1361,-336 362,-185 586,-413 655,-669 17,-64 19,-110 19,-575 0,-398 35.0338,-3.3816 26.0338,-2.3816 -7,1 -1081.7584,-1 -2374.7584,0 H 2761.517 v 0 c 0,0 1.483,560.3816 62.483,689.3816 52,108 104,179 202,273 181,174 406,300 734,412 323,110 678,178 1115,212 98,7 443,5 575,-4 z M 7480,3988 c 5.6725,-797.9869 -4,-1356 -10,-1391 -21,-132 -98,-233 -218,-290 l -67,-32 H 5115 3045 l -66,32 c -81,40 -140,102 -182,191 l -32,67 -3,1378 -0.483,1982.5177 H 5091.4687 7466.227 Z"
+          id="path1"
+          style={{
+            fill: "#2f3e49",
+            fillOpacity: 1,
+            stroke: "#2f3e49",
+            strokeWidth: 7.08278497,
+            strokeOpacity: 1,
+            strokeDasharray: "none",
+            opacity: 1,
+          }}
+          sodipodi:nodetypes="ccsccsccccccccccccccccsccccccsccccccccccccccccccccccccccscccscccccsccccccccccccs"
+        />
+        <TankLevelVisual level={tankLevel} />
+        <path
+          d="m 6804.9662,5548.0142 c -14,-27 -13,-124 3,-144 11,-16 36,-17 257,-15 l 245,3 v 85 85 l -247,3 c -236,2 -248,1 -258,-17 z"
+          id="path7-5"
+          style={{
+            fill: "#2f3e49",
+            fillOpacity: 1,
+            stroke: "#2f3e49",
+            strokeWidth: 7.08278497,
+            strokeOpacity: 1,
+            strokeDasharray: "none",
+          }}
+        />
+        <path
+          d="m 6802.9705,4691.2493 c -5,-11 -10,-46 -10,-79 0,-93 -3,-92 253,-92 118,0 227,4 242,10 25,10 26,11 23,92 l -3,83 -247,3 c -236,2 -248,1 -258,-17 z"
+          id="path13"
+          style={{
+            fill: "#2f3e49",
+            fillOpacity: 1,
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 6804.9662,3825.9229 c -5,-11 -10,-46 -10,-79 0,-93 -3,-92 253,-92 118,0 227,4 242,10 25,10 26,11 23,92 l -3,83 -247,3 c -236,2 -248,1 -258,-17 z"
+          id="path13-3"
+          style={{
+            fill: "#2f3e49",
+            fillOpacity: 1,
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 2881,2650 c 0,-8 4,-22 9,-30 12,-18 12,-2 0,25 -6,13 -9,15 -9,5 z"
+          id="path15"
+          style={{
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 7265,2629 c -4,-6 -5,-12 -2,-15 2,-3 7,2 10,11 7,17 1,20 -8,4 z"
+          id="path16"
+          style={{
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 2911,2578 c 25,-47 62,-88 107,-118 25,-16 50,-30 56,-30 6,0 2,6 -9,11 -59,32 -99,67 -127,111 -33,50 -47,64 -27,26 z"
+          id="path17"
+          style={{
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 7190,2515 c -24,-25 -42,-45 -39,-45 3,0 25,20 49,45 24,25 42,45 39,45 -3,0 -25,-20 -49,-45 z"
+          id="path18"
+          style={{
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+        <path
+          d="m 7114,2454 c -18,-14 -18,-15 4,-4 12,6 22,13 22,15 0,8 -5,6 -26,-11 z"
+          id="path19"
+          style={{
+            strokeWidth: 7.08278497,
+            strokeDasharray: "none",
+            stroke: "#2f3e49",
+            strokeOpacity: 1,
+          }}
+        />
+      </g>
+      <g id="recirculation-tank-level-readout" pointerEvents="none" aria-hidden="true">
+        <rect
+          x={443.4}
+          y={739.5}
+          width={24}
+          height={13}
+          rx={3}
+          fill="#ffffff"
+          fillOpacity={0.94}
+        />
+        <text
+          x={455.4}
+          y={749}
+          fill="#2f3e49"
+          fontFamily="Calibri, Arial, sans-serif"
+          fontSize={8.5}
+          fontWeight={700}
+          textAnchor="middle"
+        >
+          {`${Math.round(tankLevel)}%`}
+        </text>
+      </g>
+
+      <path
+        style={{
+          fill: "#2f3e49",
+          fillOpacity: 0,
+          stroke: "#2f3e49",
+          strokeWidth: 3,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        d="m 992.98113,667.52271 52.49987,0.003"
+        id="path9-7-8"
+        sodipodi:nodetypes="cc"
+      />
+      <path
+        style={{
+          fill: "#2f3e49",
+          fillOpacity: 0,
+          stroke: "#2f3e49",
+          strokeWidth: 3,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        d="m 1246.3165,667.78898 53.38,0.003"
+        id="path9-7-2"
+        sodipodi:nodetypes="cc"
       />
     </g>
     <path
@@ -4743,172 +4951,8 @@ const SVGComponent = ({
       inkscape:transform-center-x={1.6988668}
       inkscape:transform-center-y={-3.3961664}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
-    <text
-      xmlSpace="preserve"
-      id="text9-8"
-      style={{
-        fontSize: 10,
-        fontFamily: "Arial",
-        InkscapeFontSpecification: "Arial",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect9-3)",
-        display: "inline",
-        fill: "#2f3e49",
-        fillOpacity: 0,
-        stroke: "#2f3e49",
-        strokeWidth: 0.3,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10.7,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      transform="translate(293.00416,-178.92038)"
-    >
-      <tspan x={353.91504} y={937.00754} id="tspan4">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#2f3e35",
-            fillOpacity: 1,
-          }}
-          id="tspan3"
-        >
-          {"A - C1LO"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text9-8-8"
-      style={{
-        fontSize: 10,
-        fontFamily: "Arial",
-        InkscapeFontSpecification: "Arial",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect9-3-3)",
-        display: "inline",
-        fill: "#2f3e49",
-        fillOpacity: 0,
-        stroke: "#2f3e49",
-        strokeWidth: 0.3,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10.7,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      transform="translate(561.10533,-178.92038)"
-    >
-      <tspan x={354.06152} y={937.00754} id="tspan6">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#2f3e35",
-            fillOpacity: 1,
-          }}
-          id="tspan5"
-        >
-          {"F - H1LO"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text9-8-8-6"
-      style={{
-        fontSize: 10,
-        fontFamily: "Arial",
-        InkscapeFontSpecification: "Arial",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect9-3-3-7)",
-        display: "inline",
-        fill: "#2f3e49",
-        fillOpacity: 0,
-        stroke: "#2f3e49",
-        strokeWidth: 0.3,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10.7,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      transform="translate(814.75416,-178.6776)"
-    >
-      <tspan x={354.92578} y={937.00754} id="tspan8">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#2f3e35",
-            fillOpacity: 1,
-          }}
-          id="tspan7"
-        >
-          {"A - P2HI"}
-        </tspan>
-      </tspan>
-    </text>
-    <text
-      xmlSpace="preserve"
-      id="text9-8-7"
-      style={{
-        fontSize: 10,
-        fontFamily: "Arial",
-        InkscapeFontSpecification: "Arial",
-        textAlign: "center",
-        writingMode: "lr-tb",
-        direction: "ltr",
-        whiteSpace: "pre",
-        shapeInside: "url(#rect9-3-2)",
-        display: "inline",
-        fill: "#2f3e49",
-        fillOpacity: 0,
-        stroke: "#2f3e49",
-        strokeWidth: 0.3,
-        strokeLinejoin: "round",
-        strokeMiterlimit: 10.7,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      transform="translate(-81.102539,-292.00754)"
-    >
-      <tspan x={357.32324} y={937.00754} id="tspan10">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#2f3e35",
-            fillOpacity: 1,
-          }}
-          id="tspan9"
-        >
-          {"PUMP \n"}
-        </tspan>
-      </tspan>
-      <tspan x={338.69531} y={949.76511} id="tspan14">
-        <tspan
-          style={{
-            fontFamily: "Calibri",
-            InkscapeFontSpecification: "Calibri",
-            fill: "#2f3e35",
-            fillOpacity: 1,
-          }}
-          id="tspan11"
-        >
-          {"RECIRCULATION"}
-        </tspan>
-      </tspan>
-    </text>
     <path
       id="Vector_324-1-6-4"
       d="m 626.1294,608.95444 c -0.0142,0.86059 -0.74586,1.63383 -1.70575,1.62172 l -7.91956,-0.10096 c -0.87989,-0.0103 -1.66875,-0.7255 -1.65399,-1.66426 0.0106,-0.4303 0.17344,-0.85861 0.45773,-1.12889 l 4.02053,-3.8225 c 0.60914,-0.5792 1.60912,-0.56643 2.28108,-0.0494 l 0.0789,0.0793 3.89893,3.92304 c 0.47448,0.35816 0.54897,0.7113 0.54225,1.1416 z"
@@ -4927,6 +4971,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.10221554}
       inkscape:transform-center-y={-0.46324031}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-6-4-1"
@@ -4946,6 +4991,7 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.10221554}
       inkscape:transform-center-y={-0.46324031}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-6-4-4"
@@ -4965,8 +5011,9 @@ const SVGComponent = ({
       inkscape:transform-center-x={-0.4632875}
       inkscape:transform-center-y={0.10224177}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
-      </svg>
+  </svg>
       {pumpPopup ? (
         <SmallPumpPopup
           pumpPopup={pumpPopup}

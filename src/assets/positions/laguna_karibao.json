@@ -1,4 +1,4 @@
-{
+﻿{
   "lagoon_id": "laguna_karibao",
   "layout_id": "layout1",
   "svg_component": "layout1",
@@ -6,322 +6,222 @@
   "kpis": [
     {
       "tag": "PT117_R_SCADA",
-      "label": "PT117_R_SCADA",
+      "label": "PT-117",
       "unit": "bar",
-      "position": {
-        "top": "40%",
-        "left": "20.5%"
-      },
+      "position": { "top": "40%", "left": "20.5%" },
       "icon_type": "pressure"
     },
     {
-      "tag": "PT148_R_SCADA",
-      "label": "PT148_R_SCADA",
+      "tag": "PT120_R_SCADA",
+      "label": "PT-120",
       "unit": "bar",
-      "position": {
-        "top": "24.7%",
-        "left": "36.5%"
-      },
+      "position": { "top": "24.7%", "left": "36.5%" },
       "icon_type": "pressure"
     },
     {
-      "tag": "PT141_R_SCADA",
-      "label": "PT141_R_SCADA",
+      "tag": "PT122_R_SCADA",
+      "label": "PT-122",
       "unit": "bar",
-      "position": {
-        "top": "58%",
-        "left": "56%"
-      },
+      "position": { "top": "57.5%", "left": "69.5%" },
       "icon_type": "pressure"
     },
     {
-      "tag": "PT145_R_SCADA",
-      "label": "PT145_R_SCADA",
-      "unit": "bar",
-      "position": {
-        "top": "55%",
-        "left": "82.3%"
-      },
-      "icon_type": "pressure"
-    },
-    {
-      "tag": "PT143_R_SCADA",
-      "label": "PT143_R_SCADA",
-      "unit": "bar",
-      "position": {
-        "top": "58%",
-        "left": "69.7%"
-      },
-      "icon_type": "pressure"
-    },
-    {
-      "tag": "FIT003_R_SCADA",
-      "label": "FIT003_R_SCADA",
-      "unit": "l/s",
-      "position": {
-        "top": "51.5%",
-        "left": "21.3%"
-      },
-      "icon_type": "flow"
-    },
-    {
-      "tag": "WM01_TOT_SCADA",
-      "label": "WM01_TOT_SCADA",
+      "tag": "WM01_TOT",
+      "label": "WM-001",
       "unit": "m3",
-      "position": {
-        "top": "92%",
-        "left": "42%"
-      },
+      "position": { "top": "92%", "left": "42%" },
       "icon_type": "volume"
     },
     {
-      "tag": "DIF_PRES_SCADA",
-      "label": "BACKWASH.DP",
+      "tag": "BACKWASH.DIFF_PRES",
+      "label": "DIFF.PRESS",
       "unit": "bar",
-      "position": {
-        "top": "58%",
-        "left": "42.3%"
-      },
+      "position": { "top": "58%", "left": "42.3%" },
       "icon_type": "pressure"
     }
   ],
   "pumps": [
     {
       "tag": "P002_STS_SCADA",
-      "label": "Pump Retrolavado",
+      "label": "BACKWASH PUMP",
       "svg_target": "PUMP-03",
       "panel": "pump-status",
       "type": "pump"
     },
     {
       "tag": "P006_STS_SCADA",
-      "label": "Pump Filtracion",
+      "label": "FILTRATION PUMP",
       "svg_target": "PUMP-02",
       "panel": "pump-status",
       "type": "pump"
     },
     {
       "tag": "P007_STS_SCADA",
-      "label": "Pump Retorno Clarificado",
+      "label": "CLARIFIED RETURN PUMP",
       "svg_target": "PUMP-04",
       "panel": "pump-status",
       "type": "pump"
     },
     {
-      "tag": "P015_STS_SCADA",
-      "label": "P-015",
-      "svg_target": "P-015",
-      "type": "pump"
-    },
-    {
-      "tag": "P016_STS_SCADA",
-      "label": "P-016",
-      "svg_target": "P-016",
-      "type": "pump"
-    },
-    {
-      "tag": "RETRO_SCADA",
-      "label": "Retrolavado Filtros",
+      "tag": "P017_STS_SCADA",
+      "label": "CL-FLO12 PUMP",
+      "svg_target": "PUMP-01",
       "panel": "pump-status",
-      "always_visible": true,
       "type": "pump"
-    }
-  ],
-  "valves": [
-    {
-      "tag": "VE288_ST",
-      "label": "VE-288",
-      "svg_target": "VE-288",
-      "type": "valve"
-    },
-    {
-      "tag": "VE322_ST",
-      "label": "VE-322",
-      "svg_target": "VE-322",
-      "type": "valve"
-    },
-    {
-      "tag": "VE320_ST",
-      "label": "VE-320",
-      "svg_target": "VE-320",
-      "type": "valve"
-    },
-    {
-      "tag": "VE318_ST",
-      "label": "VE-318",
-      "svg_target": "VE-318",
-      "type": "valve"
-    }
-  ],
+    }],
+  "valves": [],
   "labels": [
     {
-      "id": "pump-title-pump-retrolavado",
-      "text": "Pump Retrolavado",
+      "id": "pump-title-p-002",
+      "text": "BACKWASH \n PUMP",
       "source_svg_target": "PUMP-03",
       "source_element_type": "pump",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "88.8%", "left": "19%" }
     },
     {
-      "id": "pump-title-pump-filtracion",
-      "text": "Pump Filtracion",
+      "id": "pump-title-p-006",
+      "text": "FILTRATION \n PUMP",
       "source_svg_target": "PUMP-02",
       "source_element_type": "pump",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "73.8%", "left": "23%" }
     },
     {
-      "id": "pump-title-pump-retorno-clarificado",
-      "text": "Pump Retorno Clarificado",
+      "id": "pump-title-p-007",
+      "text": "CLARIFIED  \n RETURN PUMP",
       "source_svg_target": "PUMP-04",
       "source_element_type": "pump",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "75%", "left": "92%" }
     },
     {
-      "id": "pump-title-p-015",
-      "text": "P-015",
-      "source_svg_target": "P-015",
+      "id": "pump-title-p-017",
+      "text": "CL-FLO12  \n PUMP",
+      "source_svg_target": "PUMP-01",
       "source_element_type": "pump",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "40%", "left": "10%" }
     },
     {
-      "id": "pump-title-p-016",
-      "text": "P-016",
-      "source_svg_target": "P-016",
+      "id": "pump-title-FLO12",
+      "text": "CL-FLO12",
+      "source_svg_target": "PUMP-01",
       "source_element_type": "pump",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "49%", "left": "3%" }
     },
     {
       "id": "valve-title-ve-288",
       "text": "VE-288",
-      "source_svg_target": "VE-288",
+      "source_svg_target": "VALVE01",
       "source_element_type": "valve",
-      "position": {
-        "top": "",
-        "left": ""
-      }
-    },
-    {
-      "id": "valve-title-ve-322",
-      "text": "VE-322",
-      "source_svg_target": "VE-322",
-      "source_element_type": "valve",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "28%", "left": "31.5%" }
     },
     {
       "id": "valve-title-ve-320",
       "text": "VE-320",
-      "source_svg_target": "VE-320",
+      "source_svg_target": "VALVE03",
       "source_element_type": "valve",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "24.5%", "left": "76.5%" }
+    },
+    {
+      "id": "pump-title-p-015",
+      "text": "P-015",
+      "source_svg_target": "PUMP-05",
+      "source_element_type": "pump",
+      "position": { "top": "27%", "left": "88.5%" }
+    },
+    {
+      "id": "pump-title-p-016",
+      "text": "P-016",
+      "source_svg_target": "PUMP-06",
+      "source_element_type": "pump",
+      "position": { "top": "27%", "left": "94.5%" }
+    },
+    {
+      "id": "area-a-c1lo-label",
+      "text": "A-C1LO",
+      "source_svg_target": "PUMP-05",
+      "source_element_type": "pump",
+      "position": { "top": "37%", "left": "89.5%" }
+    },
+    {
+      "id": "area-f-h1lo-label",
+      "text": "F-H1LO",
+      "source_svg_target": "PUMP-06",
+      "source_element_type": "pump",
+      "position": { "top": "37%", "left": "96%" }
+    },
+    {
+      "id": "valve-title-ve-322",
+      "text": "VE-322",
+      "source_svg_target": "VALVE02",
+      "source_element_type": "valve",
+      "position": { "top": "53%", "left": "32.3%" }
     },
     {
       "id": "valve-title-ve-318",
       "text": "VE-318",
-      "source_svg_target": "VE-318",
+      "source_svg_target": "VALVE04",
       "source_element_type": "valve",
-      "position": {
-        "top": "",
-        "left": ""
-      }
+      "position": { "top": "59.8%", "left": "80.8%" }
+    },
+    {
+      "id": "txt-lagoon",
+      "text": "LAGOON",
+      "source_svg_target": "",
+      "source_element_type": "valve",
+      "position": { "top": "87%", "left": "10%" }
+    },
+    {
+      "id": "tK-botoon-cleanning",
+      "text": "TK BOTOON \n CLEANING",
+      "source_svg_target": "",
+      "source_element_type": "valve",
+      "position": { "top": "67%", "left": "9.5%" }
+    },
+    {
+      "id": "tK-settling",
+      "text": "SETTLING \n TANK",
+      "source_svg_target": "",
+      "source_element_type": "valve",
+      "position": { "top": "51%", "left": "92%" }
     }
   ],
   "plc_status": {
-    "position": {
-      "top": "12%",
-      "left": "14%"
-    }
+    "position": { "top": "12%", "left": "14%" }
   },
   "render_rules": {
     "tank": {
       "mode": "binary_level",
       "states": {
-        "0": {
-          "level": 0,
-          "color": "#9ad9e8"
-        },
-        "1": {
-          "level": 100,
-          "color": "#0077b6"
-        }
+        "0": { "level": 0, "color": "#9ad9e8" },
+        "1": { "level": 100, "color": "#0077b6" }
       },
-      "animation": {
-        "type": "smooth",
-        "duration_ms": 600
-      }
+      "animation": { "type": "smooth", "duration_ms": 600 }
     },
     "valve": {
       "mode": "pulse",
       "states": {
-        "0": {
-          "color": "#FF0000"
-        },
-        "1": {
-          "color": "#00FF00"
-        },
-        "2": {
-          "color": "#0099FF"
-        },
-        "3": {
-          "color": "#FFFF00"
-        }
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
       },
-      "animation": {
-        "pulse": true,
-        "duration_ms": 800
-      }
+      "animation": { "pulse": true, "duration_ms": 800 }
     },
     "pump": {
       "mode": "color",
       "states": {
-        "0": {
-          "color": "#FF0000"
-        },
-        "1": {
-          "color": "#00FF00"
-        },
-        "2": {
-          "color": "#0099FF"
-        },
-        "3": {
-          "color": "#FFFF00"
-        }
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
       }
     },
     "chemical": {
       "mode": "color",
       "states": {
-        "0": {
-          "color": "#FF0000"
-        },
-        "1": {
-          "color": "#00FF00"
-        },
-        "2": {
-          "color": "#0099FF"
-        },
-        "3": {
-          "color": "#FFFF00"
-        }
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
       }
     }
   }

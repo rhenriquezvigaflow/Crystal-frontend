@@ -154,3 +154,4 @@ Funciones visuales relevantes:
 - `docs/SCADA_UI_CHANGES.md`
 - `docs/SVG_EDITING_GUIDE.md`
 - `docs/GUIA_NUEVA_LAGUNA.md`
+- `docs/HTTPS_IIS.md`

@@ -4,6 +4,7 @@ import {
   buildScadaOverlayStyle,
   type ScadaOverlayPlacement,
 } from "../../scada/scadaLayoutPosition";
+import { SCADA_FONT_FAMILY } from "../../scada/scadaTypography";
 import type { ScadaLayoutPosition } from "../../types/scada-layouts";
 
 interface Props {
@@ -80,7 +81,7 @@ function KPIComponent({ tag, label, value, unit, position, scale = 1, placement 
         ...overlayStyle,
         backgroundColor: KPI_BACKGROUND,
         borderColor: KPI_BORDER_COLOR,
-        fontFamily: "inherit",
+        fontFamily: SCADA_FONT_FAMILY,
       }}
     >
       {showLabel ? (

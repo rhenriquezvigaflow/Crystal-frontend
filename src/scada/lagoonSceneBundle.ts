@@ -1071,6 +1071,7 @@ function buildLagoonMetricsOverlay(
   if (!metrics.length) return null;
 
   return {
+    title: pickFirstString(overlayRecord.title, overlayRecord.heading),
     position: normalizeScadaPosition(overlayRecord.position as never),
     width: pickFirstSize(overlayRecord.width, overlayRecord.w),
     z_index: pickFirstNumber(overlayRecord.z_index, overlayRecord.zIndex),
@@ -1214,7 +1215,6 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
             ? label.max_width
             : null,
         color: pickFirstString(label.color),
-        font_family: pickFirstString(label.font_family, label.fontFamily),
         font_size:
           typeof label.font_size === "number" && Number.isFinite(label.font_size)
             ? label.font_size
@@ -1223,6 +1223,10 @@ function buildLabels(raw: unknown, sceneRecord: JsonRecord): ResolvedScadaTextLa
           typeof label.font_weight === "number" && Number.isFinite(label.font_weight)
             ? label.font_weight
             : null,
+        background_color: pickFirstString(
+          label.background_color,
+          label.backgroundColor,
+        ),
         text_shadow: pickFirstString(label.text_shadow),
         source_svg_target: pickFirstString(
           label.source_svg_target,

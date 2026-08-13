@@ -17,6 +17,9 @@ coverage
 .env
 .env.local
 .env.*.local
+*.pfx
+*.p12
+*.key
 
 # Editor directories and files
 .vscode/*

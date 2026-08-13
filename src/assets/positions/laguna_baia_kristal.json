@@ -205,14 +205,14 @@
       "text": "VE-240",
       "source_svg_target": "VALVE05",
       "source_element_type": "valve",
-      "position": { "top": "40.9%", "left": "69.5%" }
+      "position": { "top": "40.9%", "left": "75.5%" }
     },
     {
       "id": "valve-title-valve06",
       "text": "VE-244",
       "source_svg_target": "VALVE06",
       "source_element_type": "valve",
-      "position": { "top": "52.8%", "left": "75.8%" }
+      "position": { "top": "52.8%", "left": "75.4%" }
     },
     {
       "id": "valve-title-valve007",

@@ -5,6 +5,7 @@ import {
   getScadaOverlayAnchor,
   type ScadaOverlayPlacement,
 } from "../../scada/scadaLayoutPosition";
+import { SCADA_FONT_FAMILY } from "../../scada/scadaTypography";
 import type { ResolvedScadaTextLabel } from "../../types/scada-layouts";
 
 interface Props {
@@ -53,10 +54,13 @@ function EquipmentLabel({ label, text, stateColor, scale = 1, placement }: Props
         ...overlayStyle,
         textAlign: getTextAlign(label.align),
         maxWidth: label.max_width ? `${label.max_width}px` : undefined,
-        fontFamily: label.font_family ?? "inherit",
+        fontFamily: SCADA_FONT_FAMILY,
         color: label.color ?? undefined,
         fontSize: `${label.font_size ?? DEFAULT_SCADA_LABEL_FONT_SIZE}px`,
         fontWeight: label.font_weight ?? DEFAULT_SCADA_LABEL_FONT_WEIGHT,
+        backgroundColor: label.background_color ?? undefined,
+        padding: label.background_color ? "2px 8px" : undefined,
+        borderRadius: label.background_color ? "2px" : undefined,
         textShadow: label.text_shadow ?? "0 1px 1px rgba(255, 255, 255, 0.88)",
       }}
     >

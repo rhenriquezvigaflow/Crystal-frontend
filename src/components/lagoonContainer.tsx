@@ -462,11 +462,15 @@ function getConfiguredScadaStatusLabel(
     return definitionTag && statusTagIds.has(definitionTag);
   });
 
-  return (
-    stateLabel?.states?.[stateKey]?.text ??
-    statusTagDefinition?.states?.[stateKey] ??
-    stateKey
-  );
+  const labelStateText = stateLabel?.states?.[stateKey]?.text;
+  if (labelStateText) return labelStateText;
+
+  const configuredStates = statusTagDefinition?.states ?? stateLabel?.states;
+  if (configuredStates) {
+    return statusTagDefinition?.states?.[stateKey] ?? "NO DATA";
+  }
+
+  return stateKey;
 }
 
 function isKirahMapOne(lagoonId: string, activeMap: ResolvedScadaMap | null): boolean {

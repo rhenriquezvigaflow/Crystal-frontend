@@ -1,0 +1,150 @@
+{
+  "lagoon_id": "laguna_aquaterra",
+  "layout_id": "layout7",
+  "svg_component": "layout7",
+  "aspect_ratio": "1393.0437 / 1150",
+  "kpis": [
+    {
+      "tag": "PT117_R_SCADA",
+      "label": "PT-117",
+      "unit": "bar",
+      "position": { "top": "38%", "left": "15%" },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT120_R_SCADA",
+      "label": "PT-120",
+      "unit": "bar",
+      "position": { "top": "26%", "left": "30%" },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT121_R_SCADA",
+      "label": "PT-121",
+      "unit": "bar",
+      "position": { "top": "59%", "left": "49%" },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "PT122_R_SCADA",
+      "label": "PT-122",
+      "unit": "bar",
+      "position": { "top": "59%", "left": "61%" },
+      "icon_type": "pressure"
+    },
+    {
+      "tag": "WM01_TOT",
+      "label": "WM-001",
+      "unit": "m3",
+      "position": { "top": "88%", "left": "41%" },
+      "icon_type": "volume"
+    },
+    {
+      "tag": "BACKWASH.DIFF_PRES",
+      "label": "DIFF.PRESS",
+      "unit": "bar",
+      "position": { "top": "59%", "left": "37%" },
+      "icon_type": "pressure"
+    }
+  ],
+  "pumps": [
+    {
+      "tag": "P002_STS_SCADA",
+      "label": "BACKWASH PUMP",
+      "svg_target": "PUMP-03",
+      "panel": "pump-status",
+      "type": "pump"
+    },
+    {
+      "tag": "P006_STS_SCADA",
+      "label": "FILTRATION PUMP",
+      "svg_target": "PUMP-02",
+      "panel": "pump-status",
+      "type": "pump"
+    },
+    {
+      "tag": "P007_STS_SCADA",
+      "label": "CLARIFIED RETURN PUMP",
+      "svg_target": "PUMP-04",
+      "panel": "pump-status",
+      "type": "pump"
+    }
+  ],
+  "valves": [],
+  "labels": [
+    { "id": "pump-title-p-017", "text": "PUMP \n CL-FLO12", "source_svg_target": "PUMP-01", "source_element_type": "pump", "position": { "top": "48%", "left": "9.8%" } },
+    { "id": "area-cl-flo12-label", "text": "CL-FLO12", "source_svg_target": "PUMP-01", "source_element_type": "pump", "position": { "top": "38%", "left": "3%" } },
+    { "id": "valve-title-ve-288", "text": "VE-288", "source_svg_target": "VALVE01", "source_element_type": "valve", "position": { "top": "33.3%", "left": "25.5%" } },
+    { "id": "valve-title-ve-320", "text": "VE-320", "source_svg_target": "VALVE03", "source_element_type": "valve", "position": { "top": "24.6%", "left": "76.5%" } },
+    { "id": "pump-title-p-015", "text": "P-015", "source_svg_target": "PUMP-05", "source_element_type": "pump", "position": { "top": "27%", "left": "88%" } },
+    { "id": "pump-title-p-016", "text": "P-016", "source_svg_target": "PUMP-06", "source_element_type": "pump", "position": { "top": "27%", "left": "94.5%" } },
+    { "id": "area-a-c1lo-label", "text": "A-C1LO", "source_svg_target": "PUMP-05", "source_element_type": "pump", "position": { "top": "36.7%", "left": "89.5%" } },
+    { "id": "area-f-h1lo-label", "text": "F-H1LO", "source_svg_target": "PUMP-06", "source_element_type": "pump", "position": { "top": "36.7%", "left": "96%" } },
+    { "id": "valve-title-ve-322", "text": "VE-322", "source_element_type": "valve", "position": { "top": "53%", "left": "26%" } },
+    { "id": "valve-title-ve-318", "text": "VE-318", "source_svg_target": "VALVE05", "source_element_type": "valve", "position": { "top": "60%", "left": "85.2%" } },
+    { "id": "tank-title-cleaning-bottom", "text": "DEEP\nCLEANNING", "source_element_type": "tank", "position": { "top": "67%", "left": "7%" } },
+    { "id": "lagoon-title", "text": "LAGOON", "source_element_type": "tank", "position": { "top": "88%", "left": "8%" } },
+    {
+      "id": "pump-title-p-002",
+      "text": "BACKWASH\nPUMP",
+      "source_svg_target": "PUMP-03",
+      "source_element_type": "pump",
+      "position": { "top": "89%", "left": "18.8%" }
+    },
+    {
+      "id": "pump-title-p-006",
+      "text": "FILTRATION\n PUMP",
+      "source_svg_target": "PUMP-02",
+      "source_element_type": "pump",
+      "position": { "top": "73.6%", "left": "17.5%" }
+    },
+    {
+      "id": "pump-title-p-007",
+      "text": "CLARIFIED RETURN PUMP",
+      "source_svg_target": "PUMP-04",
+      "source_element_type": "pump",
+      "max_width": 160,
+      "position": { "top": "75%", "left": "92.43%" }
+    }
+  ],  "plc_status": {
+    "position": { "top": "12%", "left": "14%" }
+  },
+  "render_rules": {
+    "tank": {
+      "mode": "binary_level",
+      "states": {
+        "0": { "level": 0, "color": "#9ad9e8" },
+        "1": { "level": 100, "color": "#0077b6" }
+      },
+      "animation": { "type": "smooth", "duration_ms": 600 }
+    },
+    "valve": {
+      "mode": "pulse",
+      "states": {
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
+      },
+      "animation": { "pulse": true, "duration_ms": 800 }
+    },
+    "pump": {
+      "mode": "color",
+      "states": {
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
+      }
+    },
+    "chemical": {
+      "mode": "color",
+      "states": {
+        "0": { "color": "#FF0000" },
+        "1": { "color": "#00FF00" },
+        "2": { "color": "#0099FF" },
+        "3": { "color": "#FFFF00" }
+      }
+    }
+  }
+}

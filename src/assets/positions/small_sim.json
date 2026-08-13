@@ -51,11 +51,44 @@
         "left": "70%"
       },
       "always_visible": true
+    },
+    {
+      "id": "pt-123-line",
+      "tag": "PT-01",
+      "label": "PT-01",
+      "unit": "Bar",
+      "position": {
+        "top": "64.5%",
+        "left": "52%"
+      },
+      "always_visible": true
+    },
+    {
+      "id": "ae-100-line",
+      "tag": "PT-02",
+      "label": "PT-02",
+      "unit": "mV",
+      "position": {
+        "top": "64.5%",
+        "left": "71%"
+      },
+      "always_visible": true
+    },
+    {
+      "id": "ae-022-line",
+      "tag": "AE-022",
+      "label": "AE-022",
+      "unit": "pH",
+      "position": {
+        "top": "64.5%",
+        "left": "90%"
+      },
+      "always_visible": true
     }
   ],
   "pumps": [
     {
-      "tag": "TAGS_03_BOOL",
+      "tag": "Motor",
       "label": "Pump recirculation",
       "svg_target": "circle280",
       "control_id": "recirculation_pump",
@@ -66,32 +99,12 @@
   "numeric_controls": [
     {
       "id": "dosif001",
-      "tag": "TAGS_03_INT",
-      "label": "TAGS_03_INT",
-      "module_id": "recirculation_pump",
-      "command_id": "set_tags_03_int",
+      "tag": "CONTADOR",
+      "label": "CONTADOR",
+      "module_id": "dosif001",
+      "command_id": "set_contador",
       "min": 0,
-      "max": 100,
-      "step": 1
-    },
-    {
-      "id": "dosif002",
-      "tag": "TAGS_02_INT",
-      "label": "TAGS_02_INT",
-      "module_id": "recirculation_pump",
-      "command_id": "set_tags_02_int",
-      "min": 0,
-      "max": 100,
-      "step": 1
-    },
-    {
-      "id": "dosif003",
-      "tag": "TAGS_04_INT",
-      "label": "TAGS_04_INT",
-      "module_id": "recirculation_pump",
-      "command_id": "set_tags_04_int",
-      "min": 0,
-      "max": 100,
+      "max": 2147483647,
       "step": 1
     }
   ],
@@ -115,11 +128,12 @@
     }
   },
   "lagoon_metrics_overlay": {
+    "title": "ORP Perimetro",
     "position": {
       "top": "41.5%",
       "left": "16.5%"
     },
-    "width": "24%",
+    "width": "18%",
     "z_index": 2,
     "metrics": [
       {
@@ -135,13 +149,6 @@
         "label": "ORP",
         "unit": "mV",
         "static_value": 650
-      },
-      {
-        "key": "dosage",
-        "tag": "Dosif",
-        "label": "Dosif",
-        "unit": "ppm",
-        "static_value": 1.25
       }
     ]
   },
@@ -153,5 +160,74 @@
       "left": "14%"
     }
   },
-  "labels": []
+  "labels": [
+    {
+      "id": "pump-recirculation-label",
+      "text": "RECIRCULATION \n PUMP",
+      "source_svg_target": "circle280",
+      "source_element_type": "pump",
+      "position": {
+        "top": "57%",
+        "left": "20.78%"
+      },
+      "align": "center",
+      "max_width": 220,
+      "color": "#2f3e35",
+      "font_size": 21,
+      "font_weight": 400,
+      "background_color": "#ffffff",
+      "text_shadow": "none"
+    },
+    {
+      "id": "area-a-c1lo-label",
+      "text": "A - C1LO",
+      "source_svg_target": "text9-8",
+      "source_element_type": "label",
+      "position": {
+        "top": "75.01%",
+        "left": "48.10%"
+      },
+      "align": "center",
+      "max_width": 180,
+      "color": "#2f3e35",
+      "font_size": 22,
+      "font_weight": 400,
+      "background_color": "#ffffff",
+      "text_shadow": "none"
+    },
+    {
+      "id": "area-f-h1lo-label",
+      "text": "F-H1LO",
+      "source_svg_target": "text9-8-8",
+      "source_element_type": "label",
+      "position": {
+        "top": "75.01%",
+        "left": "67.03%"
+      },
+      "align": "center",
+      "max_width": 180,
+      "color": "#2f3e35",
+      "font_size": 22,
+      "font_weight": 400,
+      "background_color": "#ffffff",
+      "text_shadow": "none"
+    },
+    {
+      "id": "area-a-p2hi-label",
+      "text": "A-P2HI",
+      "source_svg_target": "text9-8-8-5",
+      "source_element_type": "label",
+      "position": {
+        "top": "75.01%",
+        "left": "85.25%"
+      },
+      "align": "center",
+      "max_width": 180,
+      "color": "#2f3e35",
+      "font_size": 22,
+      "font_weight": 400,
+      "background_color": "#ffffff",
+      "text_shadow": "none"
+    }
+  ]
 }

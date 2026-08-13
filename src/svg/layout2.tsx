@@ -26,9 +26,9 @@ const SVGComponent = (props) => (
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={1.8815189}
-      inkscape:cx={1256.166}
-      inkscape:cy={489.23239}
+      inkscape:zoom={0.66521739}
+      inkscape:cx={577.25491}
+      inkscape:cy={636.63399}
       inkscape:window-width={1920}
       inkscape:window-height={1009}
       inkscape:window-x={-8}
@@ -556,6 +556,356 @@ const SVGComponent = (props) => (
         width={83.514327}
         height={18.274169}
         id="rect35-1"
+      />
+      <linearGradient id="swatch12-8" inkscape:swatch="solid">
+        <stop
+          style={{
+            stopColor: "#11063d",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop12-82"
+        />
+      </linearGradient>
+      <inkscape:path-effect
+        effect="fillet_chamfer"
+        id="path-effect13"
+        is_visible="true"
+        lpeversion={1}
+        nodesatellites_param="F,0,0,1,0,18.239822,0,1 @ F,0,0,1,0,18.239822,0,1 @ F,0,0,1,0,18.239822,0,1 @ F,0,0,1,0,18.239822,0,1"
+        radius={0}
+        unit="px"
+        method="auto"
+        mode="F"
+        chamfer_steps={1}
+        flexible="false"
+        use_knot_distance="true"
+        apply_no_radius="true"
+        apply_with_radius="true"
+        only_selected="false"
+        hide_knots="false"
+      />
+      <rect
+        x={1134.4766}
+        y={31.500916}
+        width={230.26724}
+        height={31.500916}
+        id="rect2-4"
+      />
+      <linearGradient id="swatch49" inkscape:swatch="solid">
+        <stop
+          style={{
+            stopColor: "#000000",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop49"
+        />
+      </linearGradient>
+      <linearGradient id="linearGradient26-2" inkscape:swatch="gradient">
+        <stop
+          style={{
+            stopColor: "#000000",
+            stopOpacity: 0.88195992,
+          }}
+          offset={0}
+          id="stop40"
+        />
+        <stop
+          style={{
+            stopColor: "#000000",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop41"
+        />
+      </linearGradient>
+      <linearGradient id="swatch35" inkscape:swatch="solid">
+        <stop
+          style={{
+            stopColor: "#5d8a54",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop35"
+        />
+      </linearGradient>
+      <inkscape:path-effect
+        effect="bspline"
+        id="path-effect15"
+        is_visible="true"
+        lpeversion={1.3}
+        weight={33.333333}
+        steps={2}
+        helper_size={0}
+        apply_no_weight="true"
+        apply_with_weight="true"
+        only_selected="false"
+        uniform="false"
+      />
+      <inkscape:path-effect
+        effect="bspline"
+        id="path-effect14"
+        is_visible="true"
+        lpeversion={1.3}
+        weight={33.333333}
+        steps={2}
+        helper_size={0}
+        apply_no_weight="true"
+        apply_with_weight="true"
+        only_selected="false"
+        uniform="false"
+      />
+      <inkscape:path-effect
+        effect="bspline"
+        id="path-effect7"
+        is_visible="true"
+        lpeversion={1.3}
+        weight={33.333333}
+        steps={2}
+        helper_size={0}
+        apply_no_weight="true"
+        apply_with_weight="true"
+        only_selected="false"
+        uniform="false"
+      />
+      <inkscape:path-effect
+        effect="bspline"
+        id="path-effect6"
+        is_visible="true"
+        lpeversion={1.3}
+        weight={33.333333}
+        steps={2}
+        helper_size={0}
+        apply_no_weight="true"
+        apply_with_weight="true"
+        only_selected="false"
+        uniform="false"
+      />
+      <inkscape:path-effect
+        effect="bspline"
+        id="path-effect4"
+        is_visible="true"
+        lpeversion={1.3}
+        weight={33.333333}
+        steps={2}
+        helper_size={0}
+        apply_no_weight="true"
+        apply_with_weight="true"
+        only_selected="false"
+        uniform="false"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-55"
+      />
+      <rect
+        x={601.66895}
+        y={165.48366}
+        width={257.36414}
+        height={39.518486}
+        id="rect39-1"
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38-7"
+      />
+      <rect
+        x={241.01518}
+        y={625.94092}
+        width={113.17235}
+        height={22.355032}
+        id="rect36-1"
+      />
+      <rect
+        x={141.81474}
+        y={523.94604}
+        width={60.777744}
+        height={21.656437}
+        id="rect35-15"
+      />
+      <rect
+        x={28.642385}
+        y={656.67908}
+        width={76.845421}
+        height={20.957844}
+        id="rect34-2"
+      />
+      <rect
+        x={653.8847}
+        y={527.43903}
+        width={107.58359}
+        height={39.121307}
+        id="rect31-7"
+      />
+      <linearGradient id="swatch25-6">
+        <stop
+          style={{
+            stopColor: "#020907",
+            stopOpacity: 1,
+          }}
+          offset={0}
+          id="stop25-1"
+        />
+      </linearGradient>
+      <rect
+        x={669.95239}
+        y={522.54889}
+        width={69.160881}
+        height={27.94379}
+        id="rect20-4"
+      />
+      <rect
+        x={655.28186}
+        y={521.85028}
+        width={96.406075}
+        height={27.94379}
+        id="rect18-2"
+      />
+      <rect
+        x={836.9165}
+        y={520.45306}
+        width={101.29624}
+        height={32.135361}
+        id="rect17-3"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-6-2"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67-21"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-1-6"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67-2-8"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-67-1-5"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-6-9-7"
+      />
+      <rect
+        x={322.32266}
+        y={656.74786}
+        width={49.6451}
+        height={24.452065}
+        id="rect47-5-6"
+      />
+      <linearGradient
+        xlinkHref="#linearGradient13"
+        id="linearGradient16"
+        gradientUnits="userSpaceOnUse"
+        gradientTransform="matrix(0.98512187,0,0,1.000351,-1208.0367,-43.738231)"
+        x1={1291.6862}
+        y1={314.18967}
+        x2={1278.1874}
+        y2={302.11124}
+      />
+      <linearGradient id="linearGradient13">
+        <stop
+          style={{
+            stopColor: "#160a0a",
+            stopOpacity: 0.232346,
+          }}
+          offset={0}
+          id="stop13"
+        />
+        <stop
+          style={{
+            stopColor: "#140c0c",
+            stopOpacity: 0,
+          }}
+          offset={1}
+          id="stop14"
+        />
+      </linearGradient>
+      <linearGradient
+        xlinkHref="#linearGradient13"
+        id="linearGradient16-8"
+        gradientUnits="userSpaceOnUse"
+        gradientTransform="matrix(1.4032878,0,0,1.0332772,-651.20797,-854.40745)"
+        x1={1291.6862}
+        y1={314.18967}
+        x2={1278.1874}
+        y2={302.11124}
+      />
+      <linearGradient
+        xlinkHref="#linearGradient13"
+        id="linearGradient1"
+        gradientUnits="userSpaceOnUse"
+        gradientTransform="matrix(1.4032878,0,0,1.0332772,-500.97842,-853.21253)"
+        x1={1291.6862}
+        y1={314.18967}
+        x2={1278.1874}
+        y2={302.11124}
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38-8-1"
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38-8-0"
+      />
+      <rect
+        x={523.12598}
+        y={339.85898}
+        width={100.27816}
+        height={22.229149}
+        id="rect38-8-0-5"
+      />
+      <rect
+        x={653.8847}
+        y={527.43903}
+        width={107.58359}
+        height={39.121307}
+        id="rect31-6"
+      />
+      <rect
+        x={653.8847}
+        y={527.43903}
+        width={107.58359}
+        height={39.121307}
+        id="rect31-6-7"
       />
     </defs>
     <style type="text/css" id="style1">
@@ -1095,6 +1445,93 @@ const SVGComponent = (props) => (
         enableBackground: "new",
       }}
     />
+    <g
+      id="g5-6-1"
+      transform="matrix(0.34602378,0,0,0.31200433,758.05907,432.54981)"
+      style={{
+        strokeWidth: 1.07326,
+      }}
+    >
+      <path
+        className="st0"
+        d="M 61.2,44.4 C 50.7,53.8 53,65.6 61.7,70.7 71,76 81.2,71.9 88.1,62.7 99.6,47.3 94.2,14.7 63,3.5 70.8,9.7 76.1,30.9 61.2,44.4"
+        id="path1-24-1-7"
+        style={{
+          fill: "#00a09a",
+          stroke: "#008ba3",
+          strokeWidth: 4.29303,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st1"
+        d="M 43.7,61 C 40.1,47.4 28.5,44.1 20,49.5 c -8.9,5.9 -9.9,16.8 -4.8,27.1 8.5,17.2 40,27.2 64.1,4.5 C 70.3,85.4 49,80.5 43.7,61"
+        id="path2-8-8-7"
+        style={{
+          fill: "#6d7279",
+          stroke: "#00aeed",
+          strokeWidth: 4.29303,
+          strokeMiterlimit: 10,
+        }}
+      />
+      <path
+        className="st2"
+        d="M 39.9,37.4 C 53.5,40.9 62.1,32.4 61.4,22.3 60.6,11.7 51.6,5.5 40.1,4.9 20.8,4 -4.2,23.5 2.5,59.3 3.3,49.4 20.4,32.6 39.9,37.4"
+        id="path3-5-9-7"
+        style={{
+          fill: "#004b84",
+          strokeWidth: 1.07326,
+        }}
+      />
+      <path
+        className="st3"
+        d="m 306,87.7 h -6.2 l -9,35.5 h -0.2 L 282,87.7 h -8.5 l -8.7,35.5 h -0.2 l -9,-35.5 h -6.1 l 10.7,39.6 h 8.8 l 8.5,-35.5 h 0.2 l 8.5,35.5 h 8.7 z m -89.6,19.8 c 0,-13.8 0.8,-15.5 11.4,-15.5 10.6,0 11.4,1.7 11.4,15.5 0,13.7 -0.8,15.4 -11.4,15.4 -10.7,0 -11.4,-1.6 -11.4,-15.4 m -6.2,0 c 0,16.7 2.9,20.2 17.6,20.2 14.7,0 17.6,-3.5 17.6,-20.2 0,-16.8 -2.9,-20.3 -17.6,-20.3 -14.7,0 -17.6,3.6 -17.6,20.3 M 201.1,82 h -6 v 45.3 h 6 z m -23,15.4 v -6.1 c 0,-4.2 3.2,-4.6 6.2,-4.7 1.2,0 3.1,0 4.3,0.1 v -5 c -1.2,-0.1 -2.5,-0.1 -3.7,-0.1 -9.7,0 -12.8,2.4 -12.8,10.1 v 5.6 h -6 v 4.8 h 6 v 25.1 h 6 v -25.1 h 10.5 v -4.8 h -10.5 z"
+        id="path4-6-27-7"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.07326,
+        }}
+      />
+      <polyline
+        className="st3"
+        points="248,75.4 268.3,7.3 285.7,7.3 306,75.2 294.5,75.2 290.2,62.6 273.1,62.6 271.5,52.5 287.5,52.5    277,16.6 260,75.2 247.7,75.2  "
+        id="polyline4-9-3"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.07326,
+        }}
+      />
+      <path
+        className="st3"
+        d="m 228.1,8 c -3.2,-0.3 -7,-0.2 -10.7,-0.2 -18.9,0 -26.9,4 -26.9,26.6 V 50 c 0,23 7.3,26.8 26.9,26.8 21.8,0 26.3,-4.2 26.3,-24.3 V 40.2 h -27.1 v 9.9 H 232 v 2.4 c 0,12.9 -3.4,13.1 -14.6,13.1 -13,0 -15,-1.4 -15.2,-15.7 V 34.4 c 0.2,-13.1 1.5,-15.5 15.2,-15.5 3.3,0 6,-0.1 8.2,0.2"
+        id="path5-1-5-3"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.07326,
+        }}
+      />
+      <rect
+        x={167.8}
+        y={8.1999998}
+        className="st3"
+        width={11.7}
+        height={67.900002}
+        id="rect5-4-5"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.07326,
+        }}
+      />
+      <polygon
+        className="st3"
+        points="140,76.1 159.7,8.2 147.5,8.2 131.2,65.2 131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 "
+        id="polygon5-3-9"
+        style={{
+          fill: "#394049",
+          strokeWidth: 1.07326,
+        }}
+      />
+    </g>
     <ellipse
       style={{
         fill: "#ffffff",
@@ -1129,68 +1566,6 @@ const SVGComponent = (props) => (
       rx={17.938143}
       ry={15.715229}
     />
-    <g
-      id="Group_32-5-67-3"
-      transform="matrix(1.1999998,0,0,1.1317859,351.31826,-159.95624)"
-      style={{
-        strokeWidth: 0.858079,
-      }}
-    >
-      <path
-        id="VALVE05"
-        d="m 524.44314,586.62745 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
-        fill="#323e48"
-        style={{
-          strokeWidth: 0.858079,
-        }}
-        inkscape:label="VE-240"
-      />
-      <g
-        id="Group_33-3-7-4"
-        transform="translate(-72.156863,0.62745098)"
-        style={{
-          strokeWidth: 0.858079,
-        }}
-      >
-        <path
-          id="Vector_66-1-7-1"
-          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
-          fill="#323e48"
-          style={{
-            strokeWidth: 0.858079,
-          }}
-        />
-        <path
-          id="Vector_67-2-19-1"
-          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
-          fill="#323e48"
-          style={{
-            strokeWidth: 0.858079,
-          }}
-        />
-      </g>
-      <path
-        id="Vector_68-3-16-5"
-        d="m 517.04314,585.62745 v 10"
-        stroke="#323e48"
-        strokeWidth={3.43231}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_69-3-2-9"
-        d="m 508.04314,577.62745 h 18"
-        stroke="#ffffff"
-        strokeWidth={1.71616}
-        strokeMiterlimit={10}
-      />
-      <path
-        id="Vector_70-4-7-5"
-        d="m 517.04314,578.62745 v 8"
-        stroke="#ffffff"
-        strokeWidth={1.71616}
-        strokeMiterlimit={10}
-      />
-    </g>
     <g
       id="Group_32-5-67-3-0"
       transform="matrix(1.1999997,0,0,1.131786,371.65623,-280.72483)"
@@ -1264,6 +1639,20 @@ const SVGComponent = (props) => (
         fill: "#0e76e7",
         strokeWidth: 1,
       }}
+    />
+    <path
+      style={{
+        fill: "#35aee9",
+        fillOpacity: 0,
+        stroke: "#35aee9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+      }}
+      d="m 550.60272,988.10839 127.57277,0"
+      id="path1"
+      sodipodi:nodetypes="cc"
     />
     <path
       className="st23"
@@ -1589,54 +1978,6 @@ const SVGComponent = (props) => (
         "\n\t.st0{fill:#00A09A;}\n\t.st1{fill:#6D7279;}\n\t.st2{fill:#004B84;}\n\t.st3{fill:#394049;}\n"
       }
     </style>
-    <g
-      id="g5"
-      transform="matrix(0.38243145,0,0,0.32517787,753.22444,425.50344)"
-    >
-      <path
-        className="st0"
-        d="M 61.2,44.4 C 50.7,53.8 53,65.6 61.7,70.7 71,76 81.2,71.9 88.1,62.7 99.6,47.3 94.2,14.7 63,3.5 70.8,9.7 76.1,30.9 61.2,44.4"
-        id="path1"
-      />
-      <path
-        className="st1"
-        d="M 43.7,61 C 40.1,47.4 28.5,44.1 20,49.5 c -8.9,5.9 -9.9,16.8 -4.8,27.1 8.5,17.2 40,27.2 64.1,4.5 C 70.3,85.4 49,80.5 43.7,61"
-        id="path2-8"
-      />
-      <path
-        className="st2"
-        d="M 39.9,37.4 C 53.5,40.9 62.1,32.4 61.4,22.3 60.6,11.7 51.6,5.5 40.1,4.9 20.8,4 -4.2,23.5 2.5,59.3 3.3,49.4 20.4,32.6 39.9,37.4"
-        id="path3"
-      />
-      <path
-        className="st3"
-        d="m 306,87.7 h -6.2 l -9,35.5 h -0.2 L 282,87.7 h -8.5 l -8.7,35.5 h -0.2 l -9,-35.5 h -6.1 l 10.7,39.6 h 8.8 l 8.5,-35.5 h 0.2 l 8.5,35.5 h 8.7 z m -89.6,19.8 c 0,-13.8 0.8,-15.5 11.4,-15.5 10.6,0 11.4,1.7 11.4,15.5 0,13.7 -0.8,15.4 -11.4,15.4 -10.7,0 -11.4,-1.6 -11.4,-15.4 m -6.2,0 c 0,16.7 2.9,20.2 17.6,20.2 14.7,0 17.6,-3.5 17.6,-20.2 0,-16.8 -2.9,-20.3 -17.6,-20.3 -14.7,0 -17.6,3.6 -17.6,20.3 M 201.1,82 h -6 v 45.3 h 6 z m -23,15.4 v -6.1 c 0,-4.2 3.2,-4.6 6.2,-4.7 1.2,0 3.1,0 4.3,0.1 v -5 c -1.2,-0.1 -2.5,-0.1 -3.7,-0.1 -9.7,0 -12.8,2.4 -12.8,10.1 v 5.6 h -6 v 4.8 h 6 v 25.1 h 6 v -25.1 h 10.5 v -4.8 h -10.5 z"
-        id="path4-6"
-      />
-      <polyline
-        className="st3"
-        points="248,75.4 268.3,7.3 285.7,7.3 306,75.2 294.5,75.2 290.2,62.6 273.1,62.6 271.5,52.5 287.5,52.5    277,16.6 260,75.2 247.7,75.2  "
-        id="polyline4"
-      />
-      <path
-        className="st3"
-        d="m 228.1,8 c -3.2,-0.3 -7,-0.2 -10.7,-0.2 -18.9,0 -26.9,4 -26.9,26.6 V 50 c 0,23 7.3,26.8 26.9,26.8 21.8,0 26.3,-4.2 26.3,-24.3 V 40.2 h -27.1 v 9.9 H 232 v 2.4 c 0,12.9 -3.4,13.1 -14.6,13.1 -13,0 -15,-1.4 -15.2,-15.7 V 34.4 c 0.2,-13.1 1.5,-15.5 15.2,-15.5 3.3,0 6,-0.1 8.2,0.2"
-        id="path5-1"
-      />
-      <rect
-        x={167.8}
-        y={8.1999998}
-        className="st3"
-        width={11.7}
-        height={67.900002}
-        id="rect5"
-      />
-      <polygon
-        className="st3"
-        points="131,65.2 114.7,8.2 102.7,8.2 122.3,76.1 140,76.1 159.7,8.2 147.5,8.2 131.2,65.2 "
-        id="polygon5"
-      />
-    </g>
     <path
       d="m 523.93388,349.48794 0.0635,40.40762"
       style={{
@@ -2062,8 +2403,9 @@ const SVGComponent = (props) => (
         strokeLinejoin: "round",
         strokeOpacity: 1,
       }}
-      d="m 832.01663,514.092 126.96699,1.08376"
+      d="m 832.01662,514.092 148.77119,0.91934"
       id="path7"
+      sodipodi:nodetypes="cc"
     />
     <path
       style={{
@@ -2210,6 +2552,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-5"
@@ -2226,6 +2569,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-7"
@@ -2242,6 +2586,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-1"
@@ -2258,6 +2603,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-2"
@@ -2274,7 +2620,70 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
+    <g
+      id="Group_32-5-67-3"
+      transform="matrix(1.1999998,0,0,1.1317859,434.3031,-158.98736)"
+      style={{
+        strokeWidth: 0.858079,
+      }}
+    >
+      <path
+        id="VALVE05"
+        d="m 524.44314,586.62745 h -14.8 c -0.9,0 -1.6,-0.7 -1.6,-1.6 v -14.8 c 0,-0.9 0.7,-1.6 1.6,-1.6 h 14.8 c 0.9,0 1.6,0.7 1.6,1.6 v 14.8 c 0,0.9 -0.7,1.6 -1.6,1.6 z"
+        fill="#323e48"
+        style={{
+          strokeWidth: 0.858079,
+        }}
+        inkscape:label="VE-240"
+      />
+      <g
+        id="Group_33-3-7-4"
+        transform="translate(-72.156863,0.62745098)"
+        style={{
+          strokeWidth: 0.858079,
+        }}
+      >
+        <path
+          id="Vector_66-1-7-1"
+          d="m 581.4,589.9 7.9,4.6 c 0.5,0.3 0.5,1 0,1.3 l -7.9,4.6 c -0.5,0.3 -1.2,-0.1 -1.2,-0.7 v -9.2 c 0,-0.5 0.7,-0.9 1.2,-0.6 z"
+          fill="#323e48"
+          style={{
+            strokeWidth: 0.858079,
+          }}
+        />
+        <path
+          id="Vector_67-2-19-1"
+          d="m 597,600.5 -7.9,-4.6 c -0.5,-0.3 -0.5,-1 0,-1.3 L 597,590 c 0.5,-0.3 1.2,0.1 1.2,0.7 v 9.2 c 0,0.5 -0.7,0.9 -1.2,0.6 z"
+          fill="#323e48"
+          style={{
+            strokeWidth: 0.858079,
+          }}
+        />
+      </g>
+      <path
+        id="Vector_68-3-16-5"
+        d="m 517.04314,585.62745 v 10"
+        stroke="#323e48"
+        strokeWidth={3.43231}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_69-3-2-9"
+        d="m 508.04314,577.62745 h 18"
+        stroke="#ffffff"
+        strokeWidth={1.71616}
+        strokeMiterlimit={10}
+      />
+      <path
+        id="Vector_70-4-7-5"
+        d="m 517.04314,578.62745 v 8"
+        stroke="#ffffff"
+        strokeWidth={1.71616}
+        strokeMiterlimit={10}
+      />
+    </g>
     <path
       style={{
         opacity: 0.994302,
@@ -2306,6 +2715,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="CLFLO12"
@@ -2329,6 +2739,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-3"
@@ -2345,6 +2756,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-21"
@@ -2361,6 +2773,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-8"
@@ -2377,6 +2790,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-76"
@@ -2393,6 +2807,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-89"
@@ -2409,22 +2824,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-    />
-    <path
-      id="Vector_324-6-6-5-1-0-79"
-      d="m 1050.0741,520.89812 c -1.2611,-0.0248 -2.3901,-0.96977 -2.367,-2.20329 l 0.1926,-10.1771 c 0.02,-1.13073 1.0727,-2.13957 2.4484,-2.11408 0.6307,0.007 1.2573,0.229 1.6519,0.59635 l 5.5795,5.19369 c 0.8453,0.78701 0.821,2.07191 0.06,2.93192 l -0.1167,0.10076 -5.7715,4.98313 c -0.5277,0.60726 -1.0457,0.70049 -1.6762,0.68887 z"
-      fill="#00aeed"
-      stroke="#ffffff"
-      strokeWidth={2.1717}
-      strokeMiterlimit={10}
-      style={{
-        fill: "#007eea",
-        fillOpacity: 1,
-        stroke: "#ffffff",
-        strokeWidth: 2,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-43"
@@ -2441,6 +2841,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-23"
@@ -2457,6 +2858,38 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
+    />
+    <path
+      style={{
+        fill: "#35aee9",
+        fillOpacity: 0,
+        stroke: "#35aee9",
+        strokeWidth: 4,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+      }}
+      d="m 511.11541,988.10839 h -51.49122 l -0.0228,72.04861"
+      id="path3"
+      sodipodi:nodetypes="ccc"
+    />
+    <path
+      id="Vector_324-6-6-5-1-0-21-6"
+      d="m 467.02731,1026.9905 c -0.0192,1.2613 -0.95901,2.3945 -2.19261,2.377 l -10.17787,-0.1468 c -1.13082,-0.015 -2.14437,-1.0631 -2.12507,-2.4389 0.004,-0.6308 0.22333,-1.2584 0.5889,-1.6546 l 5.16852,-5.6028 c 0.7832,-0.8488 2.06821,-0.8303 2.93163,-0.073 l 0.10126,0.1163 5.00905,5.749 c 0.60961,0.5249 0.70517,1.0424 0.69639,1.6731 z"
+      fill="#00aeed"
+      stroke="#ffffff"
+      strokeWidth={2.1717}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#ffffff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-0-41"
@@ -2473,6 +2906,7 @@ const SVGComponent = (props) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-1"
@@ -2492,6 +2926,7 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-8"
@@ -2511,6 +2946,7 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-1-8-4"
@@ -2530,8 +2966,162 @@ const SVGComponent = (props) => (
       inkscape:transform-center-x={0.10424131}
       inkscape:transform-center-y={0.46623384}
       inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
+    <style type="text/css" id="style1-9">
+      {
+        ".st0{fill:none;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st1{fill:none;stroke:#00AEED;stroke-width:4;stroke-miterlimit:10;}\n\t.st2{fill:#FFFFFF;}\n\t.st3{fill:#E33F09;}\n\t.st4{fill:#00CD98;}\n\t.st5{fill:#3574E0;}\n\t.st6{fill:#FBC43B;}\n\t.st7{fill:#FF6200;}\n\t.st8{fill:#666666;}\n\t.st9{font-family:'ArialMT';}\n\t.st10{font-size:14px;}\n\t.st11{fill:#606060;}\n\t.st12{font-family:'Arial-BoldMT';}\n\t.st13{font-size:17px;}\n\t.st14{fill:#00E098;}\n\t.st15{opacity:0.5;fill:none;stroke:#B3B3B3;stroke-width:0.5;stroke-miterlimit:10;enable-background:new    ;}\n\t.st16{opacity:7.000000e-02;fill:#323E48;enable-background:new    ;}\n\t.st17{fill:#2F3E49;}\n\t.st18{fill:#00AEED;}\n\t.st19{opacity:0.15;fill:#0E76E7;enable-background:new    ;}\n\t.st20{font-size:11px;}\n\t.st21{opacity:0.6;fill:none;stroke:#CBCBCB;stroke-width:2;stroke-miterlimit:10;enable-background:new    ;}\n\t.st22{fill:#CBCBCB;}\n\t.st23{fill:none;stroke:#2F3E49;stroke-width:4;stroke-miterlimit:10;}\n\t.st24{fill:#00A39B;}\n\t.st25{fill:none;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st26{fill:#0E76E7;}\n\t.st27{fill:#323E48;}\n\t.st28{fill:none;stroke:#323E48;stroke-width:4;stroke-miterlimit:10;}\n\t.st29{fill:none;stroke:#FFFFFF;stroke-width:2;stroke-miterlimit:10;}\n\t.st30{fill:#7C7C7C;}\n\t.st31{font-size:9px;}\n\t.st32{fill:none;stroke:#2F3E49;stroke-width:3;stroke-miterlimit:10;}\n\t.st33{font-size:16px;}\n\t.st34{font-size:13px;}\n\t.st35{fill:#C6C6C6;}\n\t.st36{font-size:10px;}\n\t.st37{fill:#FFFFFF;stroke:#35ACE8;stroke-width:4;stroke-miterlimit:10;}\n\t.st38{enable-background:new    ;}\n\t.st39{fill:#FFFFFF;stroke:#008BA3;stroke-width:4;stroke-miterlimit:10;}\n\t.st40{fill:#00AEED;stroke:#FFFFFF;stroke-width:4;stroke-miterlimit:10;}"
+      }
+    </style>
+    <style id="style1-8-6">
+      {
+        ".bg { fill:#e9eaec; }\n    .panel { fill:#ffffff; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .pipe { fill:none; stroke:#7b8794; stroke-width:8; }\n    .flow { fill:#2f80ff; }\n    .equip { fill:#e7b84b; stroke:#9c7a1e; stroke-width:2; rx:10; }\n    .tank { fill:#f5f7fa; stroke:#9aa3ad; stroke-width:2; rx:10; }\n    .lagoon { fill:#2fd0e6; stroke:#0aa; stroke-width:2; rx:18; }\n    .label { font-family: Arial, Helvetica, sans-serif; fill:#1f2937; font-size:16px; }\n    .small { font-size:14px; }\n    .title { font-size:28px; font-weight:bold; }\n    .status-green { fill:#22c55e; }\n    .status-red { fill:#ef4444; }\n    .status-yellow { fill:#f59e0b; }"
+      }
+    </style>
+    <g
+      id="g34"
+      transform="matrix(0.39487317,0,0,0.37602389,499.26921,961.78672)"
+      style={{
+        strokeWidth: 2.59516,
+      }}
+    >
+      <rect
+        x={30}
+        y={45}
+        width={100}
+        height={50}
+        rx={6}
+        fill="#1e40af"
+        id="rect1-73"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={6}
+      />
+      <rect
+        x={20}
+        y={90}
+        width={120}
+        height={16}
+        rx={4}
+        fill="#1e3a8a"
+        id="rect2-0"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={4}
+      />
+      <rect
+        x={45}
+        y={30}
+        width={70}
+        height={22}
+        rx={5}
+        fill="#2563eb"
+        id="rect3-38"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={5}
+      />
+      <rect
+        x={55}
+        y={22}
+        width={50}
+        height={10}
+        rx={4}
+        fill="#60a5fa"
+        id="rect4-25"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={4}
+      />
+      <path
+        d="m 60,22 c 0,-12 40,-12 40,0"
+        fill="none"
+        stroke="#6b7280"
+        strokeWidth={10.3806}
+        strokeLinecap="round"
+        id="path4-2"
+      />
+    </g>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 14,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#374250",
+        fillOpacity: 1,
+        stroke: "#374250",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={459.25323}
+      y={1075.2595}
+      id="text13-6-3"
+    >
+      <tspan
+        id="tspan13-1-8"
+        x={459.25323}
+        y={1075.2595}
+        style={{
+          fontSize: 14,
+          fill: "#374250",
+          fillOpacity: 1,
+          stroke: "#374250",
+          strokeOpacity: 1,
+        }}
+      >
+        {"FILL"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 14,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#374250",
+        fillOpacity: 1,
+        stroke: "#374250",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={459.25323}
+      y={1086.6746}
+      id="text13-6-3-2"
+    >
+      <tspan
+        id="tspan13-1-8-5"
+        x={459.25323}
+        y={1086.6746}
+        style={{
+          fontSize: 14,
+          fill: "#374250",
+          fillOpacity: 1,
+          stroke: "#374250",
+          strokeOpacity: 1,
+        }}
+      >
+        {"WATER"}
+      </tspan>
+    </text>
   </svg>
 );
 export default SVGComponent;
-

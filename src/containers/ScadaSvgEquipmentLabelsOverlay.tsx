@@ -1,6 +1,8 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import type { RefObject } from "react";
 
+import { SCADA_FONT_FAMILY } from "../scada/scadaTypography";
+
 import type {
   ResolvedScadaElement,
   ResolvedScadaTextLabel,
@@ -18,6 +20,7 @@ interface EquipmentLabelPlacement {
   type: "pump" | "valve";
   top: string;
   left: string;
+  styleOverride: ResolvedScadaTextLabel | null;
 }
 
 function hasManualPosition(element: ResolvedScadaElement): boolean {
@@ -55,6 +58,7 @@ function toPercent(value: number): string {
 function buildPlacement(
   stage: HTMLDivElement,
   element: ResolvedScadaElement & { type: "pump" | "valve" },
+  styleOverride: ResolvedScadaTextLabel | null,
 ): EquipmentLabelPlacement | null {
   const svgRoot = stage.querySelector("svg.scada-svg");
   if (!(svgRoot instanceof SVGSVGElement) || !element.svg_target) return null;
@@ -79,10 +83,11 @@ function buildPlacement(
 
   return {
     id: `${element.id}__svg_label`,
-    label: element.label,
+    label: styleOverride?.text.trim() || element.label,
     type: element.type,
     left: toPercent(clamp(centerX * 100, 3, 97)),
     top: toPercent(clamp(topY * 100, 4, 96)),
+    styleOverride,
   };
 }
 
@@ -112,6 +117,17 @@ function ScadaSvgEquipmentLabelsOverlay({
       ),
     [elements, manualLabelTargets],
   );
+  const labelStylesByTarget = useMemo(() => {
+    const styles = new Map<string, ResolvedScadaTextLabel>();
+
+    labels.forEach((label) => {
+      const target = label.source_svg_target?.trim().toUpperCase();
+      if (!target || label.position?.top || label.position?.left) return;
+      styles.set(target, label);
+    });
+
+    return styles;
+  }, [labels]);
   const [placements, setPlacements] = useState<EquipmentLabelPlacement[]>([]);
   const hasLabelCandidates = labelCandidates.length > 0;
 
@@ -127,7 +143,13 @@ function ScadaSvgEquipmentLabelsOverlay({
       animationFrame = window.requestAnimationFrame(() => {
         setPlacements(
           labelCandidates
-            .map((element) => buildPlacement(stage, element))
+            .map((element) =>
+              buildPlacement(
+                stage,
+                element,
+                labelStylesByTarget.get(element.svg_target.trim().toUpperCase()) ?? null,
+              ),
+            )
             .filter(
               (placement): placement is EquipmentLabelPlacement =>
                 placement !== null,
@@ -159,7 +181,7 @@ function ScadaSvgEquipmentLabelsOverlay({
       resizeObserver?.disconnect();
       window.removeEventListener("resize", updatePlacements);
     };
-  }, [hasLabelCandidates, labelCandidates, stageRef]);
+  }, [hasLabelCandidates, labelCandidates, labelStylesByTarget, stageRef]);
 
   if (!hasLabelCandidates || !placements.length) return null;
 
@@ -170,14 +192,26 @@ function ScadaSvgEquipmentLabelsOverlay({
           key={placement.id}
           className={[
             "absolute max-w-[9.5rem] -translate-x-1/2 -translate-y-[calc(100%+6px)]",
-            "whitespace-pre-line text-center text-[12px] font-bold text-slate-800",
+            "whitespace-pre-line text-center text-slate-800",
           ].join(" ")}
           style={{
             left: placement.left,
             top: placement.top,
             lineHeight: 1.15,
+            maxWidth: placement.styleOverride?.max_width
+              ? `${placement.styleOverride.max_width}px`
+              : undefined,
+            color: placement.styleOverride?.color ?? undefined,
+            fontFamily: SCADA_FONT_FAMILY,
+            fontSize: `${placement.styleOverride?.font_size ?? 12}px`,
+            fontWeight: placement.styleOverride?.font_weight ?? 700,
+            backgroundColor: placement.styleOverride?.background_color ?? undefined,
+            padding: placement.styleOverride?.background_color ? "2px 8px" : undefined,
+            borderRadius: placement.styleOverride?.background_color ? "2px" : undefined,
             textWrap: "balance",
-            textShadow: "0 1px 1px rgba(255, 255, 255, 0.88)",
+            textShadow:
+              placement.styleOverride?.text_shadow ??
+              "0 1px 1px rgba(255, 255, 255, 0.88)",
           }}
           title={placement.label}
         >

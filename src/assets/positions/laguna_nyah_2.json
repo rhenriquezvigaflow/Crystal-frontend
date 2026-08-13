@@ -5,6 +5,28 @@
   "aspect_ratio": "1400 / 1150",
   "map_name": "Skid Cleaning Fund 02",
   "map_order": 2,
+  "tags": [
+    {
+      "tag": "FIL_ST",
+      "name": "FILTRATION STATUS",
+      "unit": "-",
+      "type": "INT",
+      "description": "FILTER FILTRATION STATUS",
+      "states": {
+        "0": "DISABLED",
+        "1": "ENABLED",
+        "2": "STANDBY",
+        "3": "TO FILTER",
+        "4": "FILTERING",
+        "5": "BACKWASH",
+        "6": "BACKWASH",
+        "7": "TO RINSE",
+        "8": "RINSING",
+        "9": "FAULT",
+        "10": "STOPPED"
+      }
+    }
+  ],
   "kpis": [],
   "pumps": [],
   "valves": [],
@@ -14,7 +36,8 @@
     "position": {
       "top": "12%",
       "left": "14%"
-    }
+    },
+    "status_tag": "FIL_ST"
   },
   "labels": []
 }

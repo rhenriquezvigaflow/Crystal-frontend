@@ -20,6 +20,7 @@ import {
 import { getDiscreteStateLabel, getRealtimeValue } from "../../scada/layoutSceneResolver";
 import { getScadaEquipmentStateColor } from "../../scada/svgEquipmentState";
 import { resolveScadaSvgRegistryEntry } from "../../scada/svgRegistry";
+import { SCADA_FONT_FAMILY } from "../../scada/scadaTypography";
 import type {
   RealtimeTagLookup,
   ResolvedLagoonMetricsOverlay,
@@ -124,6 +125,8 @@ function resolveLagoonMetrics(
 
   return {
     ...values,
+    activeKeys: overlay.metrics.map((metric) => metric.key),
+    title: overlay.title,
     labels,
     units,
   };
@@ -369,6 +372,7 @@ export default function ScadaMapRenderer({
             data-scada-map-id={activeMap?.id ?? ""}
             data-scada-heading={heading}
             data-scada-title={title}
+            style={{ fontFamily: SCADA_FONT_FAMILY }}
           >
             {SvgComponent ? (
               <SvgComponent
@@ -394,6 +398,8 @@ export default function ScadaMapRenderer({
                 temperature={lagoonMetrics.temperature}
                 orp={lagoonMetrics.orp}
                 dosage={lagoonMetrics.dosage}
+                activeKeys={lagoonMetrics.activeKeys}
+                title={lagoonMetrics.title}
                 labels={lagoonMetrics.labels}
                 units={lagoonMetrics.units}
                 style={lagoonMetricsStyle}

@@ -6,6 +6,8 @@ export interface LagoonMetricsProps {
   temperature: number;
   orp: number;
   dosage: number;
+  activeKeys?: LagoonMetricKey[];
+  title?: string | null;
   className?: string;
   style?: CSSProperties;
   labels?: Partial<Record<LagoonMetricKey, string>>;
@@ -13,6 +15,7 @@ export interface LagoonMetricsProps {
 }
 
 interface MetricItem {
+  key: LagoonMetricKey;
   label: string;
   value: string;
   unit: string;
@@ -34,6 +37,8 @@ export default function LagoonMetricsOverlay({
   temperature,
   orp,
   dosage,
+  activeKeys,
+  title,
   className,
   style,
   labels,
@@ -44,21 +49,27 @@ export default function LagoonMetricsOverlay({
   );
   const metrics: MetricItem[] = [
     {
+      key: "temperature",
       label: labels?.temperature ?? "TEMP",
       value: formatTemperature(temperature),
       unit: units?.temperature ?? "C",
     },
     {
+      key: "orp",
       label: labels?.orp ?? "ORP",
       value: formatInteger(orp),
       unit: units?.orp ?? "mV",
     },
     {
+      key: "dosage",
       label: labels?.dosage ?? "Dosif",
       value: formatDosage(dosage),
       unit: units?.dosage ?? "ppm",
     },
-  ];
+  ].filter((metric) => !activeKeys || activeKeys.includes(metric.key));
+  const normalizedTitle = title?.trim();
+
+  if (!metrics.length) return null;
 
   return (
     <div
@@ -72,10 +83,20 @@ export default function LagoonMetricsOverlay({
       style={style}
       aria-hidden="true"
     >
-      <div className="grid grid-cols-3">
+      {normalizedTitle ? (
+        <div className="px-[clamp(0.45rem,1.1vw,0.8rem)] pt-[clamp(0.38rem,0.75vw,0.58rem)] text-center text-[clamp(0.52rem,0.78vw,0.74rem)] font-semibold leading-none text-slate-700/80">
+          {normalizedTitle}
+        </div>
+      ) : null}
+      <div
+        className="grid"
+        style={{
+          gridTemplateColumns: `repeat(${metrics.length}, minmax(0, 1fr))`,
+        }}
+      >
         {metrics.map((metric, index) => (
           <div
-            key={metric.label}
+            key={metric.key}
             className={[
               "flex min-w-0 flex-col items-center justify-center",
               "px-[clamp(0.45rem,1.1vw,0.8rem)] py-[clamp(0.45rem,0.9vw,0.7rem)]",

@@ -1,6 +1,8 @@
 import { FormControl, MenuItem, Select } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 
+import { SCADA_FONT_FAMILY } from "../../scada/scadaTypography";
+
 interface MapDropdownOption {
   id: string;
   label: string;
@@ -31,7 +33,7 @@ const MAP_MENU_PROPS = {
       border: "1px solid #dceaf3",
       borderRadius: 2,
       boxShadow: "0 16px 32px -18px rgba(15, 23, 42, 0.34)",
-      fontFamily: "Inter, system-ui, sans-serif",
+      fontFamily: SCADA_FONT_FAMILY,
       "& .MuiMenuItem-root": {
         minHeight: 36,
         px: 1.5,
@@ -84,7 +86,7 @@ export default function MapDropdown({
             borderRadius: "12px",
             background: "linear-gradient(180deg, rgba(255,255,255,0.98), rgba(244,249,252,0.98))",
             color: "#0f172a",
-            fontFamily: "Inter, system-ui, sans-serif",
+            fontFamily: SCADA_FONT_FAMILY,
             boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
             "& .MuiSelect-select": {
               minWidth: 0,

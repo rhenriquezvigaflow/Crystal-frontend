@@ -6,6 +6,28 @@
   "map_name": "Map 1",
   "map_order": 1,
   "default_map": true,
+  "tags": [
+    {
+      "tag": "FIL_ST",
+      "name": "FILTRATION STATUS",
+      "unit": "-",
+      "type": "INT",
+      "description": "FILTER FILTRATION STATUS",
+      "states": {
+        "0": "DISABLED",
+        "1": "ENABLED",
+        "2": "STANDBY",
+        "3": "TO FILTER",
+        "4": "FILTERING",
+        "5": "BACKWASH",
+        "6": "BACKWASH",
+        "7": "TO RINSE",
+        "8": "RINSING",
+        "9": "FAULT",
+        "10": "STOPPED"
+      }
+    }
+  ],
   "kpis": [
     {
       "tag": "PT117_R",
@@ -268,12 +290,12 @@
       "source_element_type": "valve",
       "position": {
         "top": "40.9%",
-        "left": "69.5%"
+        "left": "75.4%"
       }
     },
     {
       "id": "valve-title-valve07",
-      "text": "VE-248",
+      "text": "VE-247",
       "source_svg_target": "VALVE007",
       "source_element_type": "valve",
       "position": {
@@ -306,7 +328,8 @@
     "position": {
       "top": "12%",
       "left": "14%"
-    }
+    },
+    "status_tag": "FIL_ST"
   },
   "tanks": [
     {

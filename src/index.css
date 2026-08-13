@@ -12,6 +12,7 @@
   --lagoon-sky: #3ea6ff;
   --lagoon-teal: #3fc7c2;
   --lagoon-ink: #0f2740;
+  --scada-font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 html,
@@ -21,8 +22,7 @@ body,
 }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--scada-font-family);
   color: var(--lagoon-ink);
   background:
     radial-gradient(circle at top left, rgba(120, 215, 255, 0.34), transparent 28%),
@@ -236,6 +236,15 @@ body {
   position: relative;
   width: 100%;
 }
+
+/* A single typography rule for all map content, including SVG artwork and overlays. */
+.lagoon-map-shell,
+.lagoon-map-shell *,
+.scada-stage,
+.scada-stage * {
+  font-family: var(--scada-font-family) !important;
+}
+
 
 .scada-stage svg.scada-svg {
   position: relative;

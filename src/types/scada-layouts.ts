@@ -118,6 +118,7 @@ export interface LagoonMetricDefinition {
 }
 
 export interface LagoonMetricsOverlayDefinition {
+  title?: string | null;
   position?: ScadaLayoutPosition | null;
   width?: string | number | null;
   z_index?: number | null;
@@ -214,6 +215,7 @@ export interface ResolvedLagoonMetric {
 }
 
 export interface ResolvedLagoonMetricsOverlay {
+  title: string | null;
   position: ScadaLayoutPosition | null;
   width: string | number | null;
   z_index: number | null;
@@ -348,9 +350,9 @@ export interface ScadaTextLabelDefinition {
   hidden?: boolean | null;
   max_width?: number | null;
   color?: string | null;
-  font_family?: string | null;
   font_size?: number | null;
   font_weight?: number | null;
+  background_color?: string | null;
   text_shadow?: string | null;
   source_svg_target?: string | null;
   source_element_type?: string | null;
@@ -366,9 +368,9 @@ export interface ResolvedScadaTextLabel {
   align: ScadaTextLabelAlign;
   max_width: number | null;
   color: string | null;
-  font_family: string | null;
   font_size: number | null;
   font_weight: number | null;
+  background_color: string | null;
   text_shadow: string | null;
   source_svg_target: string | null;
   source_element_type: string | null;
