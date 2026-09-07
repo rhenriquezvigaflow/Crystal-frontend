@@ -13,6 +13,7 @@ export type LoginUser = {
   role?: string | null;
   product_type?: string | null;
   product_types?: string[];
+  permissions?: string[];
   auth_level?: "password" | "2fa" | string;
 };
 

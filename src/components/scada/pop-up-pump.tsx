@@ -4,7 +4,7 @@ const SVGComponent = ({ pumpColor = "currentColor", style, ...props }) => (
     id="SVGRoot"
     x="0px"
     y="0px"
-    viewBox="0 0 74.0 52.0"
+    viewBox="14 3 46 43"
     style={{
       enableBackground: "new 0 0 1429.5 2137.7",
       color: pumpColor,

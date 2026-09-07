@@ -311,7 +311,7 @@ export type ScadaPumpControlHandler = (
 export type ScadaNumericControlHandler = (
   moduleId: string,
   commandId: string,
-  value: number,
+  value: number | boolean,
 ) => void | Promise<void>;
 
 export type ScadaTextLabelAlign = "left" | "center" | "right";

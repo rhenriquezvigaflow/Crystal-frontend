@@ -1,3 +1,18 @@
+import { useNavigate } from "react-router-dom";
+
+import {
+  hasReadPrivilegesForProduct,
+  hasSmallPermission,
+  resolveCurrentUserScope,
+  SMALL_PERMISSIONS,
+} from "../../api/productApi";
+import { fetchLagoons } from "../../api/lagoonsApi";
+import { useProduct } from "../../modules/shared/product/useProduct";
+import {
+  productDashboardPath,
+  productLagoonPath,
+} from "../../modules/shared/routing/paths";
+
 interface Props {
   canEdit?: boolean;
   compact?: boolean;
@@ -65,7 +80,32 @@ export default function HeaderActions({
   onOpenAlarms,
   onLogout,
 }: Props) {
+  const navigate = useNavigate();
+  const product = useProduct();
+  const scope = resolveCurrentUserScope();
+  const canOpenSmall = hasSmallPermission(scope, SMALL_PERMISSIONS.view);
+  const canOpenCrystal = hasReadPrivilegesForProduct(scope, "crystal");
+  const targetProduct = product.id === "crystal"
+    ? (canOpenSmall ? "small" : null)
+    : (canOpenCrystal ? "crystal" : null);
   const textButtonClass = compact ? "w-11" : "gap-2 px-3";
+
+  const openProduct = async () => {
+    if (!targetProduct) return;
+
+    try {
+      const lagoons = await fetchLagoons(targetProduct);
+      const firstLagoon = lagoons[0];
+      if (firstLagoon) {
+        navigate(productLagoonPath(targetProduct, firstLagoon.lagoon_id));
+        return;
+      }
+    } catch {
+      // The dashboard retains the existing loading/error handling.
+    }
+
+    navigate(productDashboardPath(targetProduct));
+  };
 
   return (
     <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -73,6 +113,24 @@ export default function HeaderActions({
         <span className="hidden text-xs font-medium text-sky-800/75 xl:inline">
           {canEdit ? "Edit mode" : "Read only"}
         </span>
+      ) : null}
+
+      {targetProduct ? (
+        <button
+          type="button"
+          onClick={() => void openProduct()}
+          aria-label={targetProduct === "small" ? "Open SMALL" : "Open CRYSTAL"}
+          title={targetProduct === "small" ? "Open SMALL" : "Open CRYSTAL"}
+          className={[
+            BUTTON_BASE,
+            compact ? "min-w-11 px-2" : "px-3",
+            "border-cyan-200 text-cyan-800 hover:border-cyan-300 hover:bg-cyan-50",
+          ].join(" ")}
+        >
+          <span className="text-[10px] font-extrabold tracking-wide sm:text-xs">
+            {targetProduct.toUpperCase()}
+          </span>
+        </button>
       ) : null}
 
       <button

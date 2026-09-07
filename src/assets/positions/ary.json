@@ -91,14 +91,14 @@
   ],
   "valves": [
     {
-      "tag": "VE402_ST",
-      "label": "VX-402",
+      "tag": "VE401_ST",
+      "label": "VX-401",
       "svg_target": "VALVE01",
       "type": "valve"
     },
     {
-      "tag": "VE401_ST",
-      "label": "VX-401",
+      "tag": "VE402_ST",
+      "label": "VX-402",
       "svg_target": "VALVE02",
       "type": "valve"
     },
@@ -229,22 +229,22 @@
     },
     {
       "id": "valve-title-valve01",
-      "text": "VX-402",
-      "source_svg_target": "VALVE01",
-      "source_element_type": "valve",
-      "position": {
-        "top": "86%",
-        "left": "16.5%"
-      }
-    },
-    {
-      "id": "valve-title-valve02",
       "text": "VX-401",
-      "source_svg_target": "VALVE02",
+      "source_svg_target": "VALVE01",
       "source_element_type": "valve",
       "position": {
         "top": "63%",
         "left": "16.9%"
+      }
+    },
+    {
+      "id": "valve-title-valve02",
+      "text": "VX-402",
+      "source_svg_target": "VALVE02",
+      "source_element_type": "valve",
+      "position": {
+        "top": "86%",
+        "left": "16.5%"
       }
     },
     {

@@ -77,7 +77,7 @@ Por defecto REST usa rutas browser-relative bajo `/api`. Vite o IIS deben reenvi
 - `src/lagoons/img/*`: assets de imagen usados por `images[]`.
 - `src/scada/lagoonSceneBundle.ts`: carga y normaliza escenas locales.
 - `src/scada/lagoonScadaMaps.ts`: resuelve mapas embebidos, manifest externos y legacy `/scada/maps`.
-- `src/hooks/useScadaLayoutScene.ts`: cache y refresh de escenas.
+- `src/hooks/useScadaMapBundle.ts`: carga el bundle de mapas de la laguna.
 - `src/hooks/useScadaRealtime.ts`: WebSocket, snapshot, reconexion y salud realtime.
 - `src/hooks/useHistory.ts`: historico.
 - `src/hooks/useAlarmThresholds.ts`: umbrales PT/FIT.
@@ -93,7 +93,7 @@ Browser
   -> ProductProvider + ProductGuard
   -> LagoonsProvider
        -> GET /api/{product}/lagoons
-  -> useScadaLayoutScene
+  -> useScadaMapBundle
        -> src/assets/positions/{lagoon_id}.json
   -> svgRegistry
        -> src/svg/*.tsx

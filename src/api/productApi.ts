@@ -7,6 +7,18 @@ const ROLE_ADMIN_SMALL = "AdminSmall";
 const ROLE_VISUAL_SMALL = "VisualSmall";
 const ROLE_SUPERADMIN = "SuperAdmin";
 
+export const SMALL_PERMISSIONS = {
+  view: "small_view",
+  operate: "small_operate",
+  scheduleView: "small_schedule_view",
+  scheduleCreate: "small_schedule_create",
+  scheduleUpdate: "small_schedule_update",
+  scheduleDelete: "small_schedule_delete",
+} as const;
+
+export type SmallPermission =
+  (typeof SMALL_PERMISSIONS)[keyof typeof SMALL_PERMISSIONS];
+
 function normalizeRole(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const cleaned = value.trim();
@@ -24,6 +36,7 @@ export interface UserScope {
   userId: string | null;
   email: string | null;
   roles: string[];
+  permissions: string[];
   accessTokenPresent: boolean;
   hasAdminCrystal: boolean;
   hasVisualCrystal: boolean;
@@ -62,6 +75,25 @@ export function resolveCurrentUserScope(): UserScope {
   const hasAdminSmall = lowerRoles.has(ROLE_ADMIN_SMALL.toLowerCase());
   const hasVisualSmall = lowerRoles.has(ROLE_VISUAL_SMALL.toLowerCase());
   const hasSuperAdmin = lowerRoles.has(ROLE_SUPERADMIN.toLowerCase());
+  const permissionSet = new Set<string>();
+  const rawPermissions = parsed?.permissions;
+  if (Array.isArray(rawPermissions)) {
+    rawPermissions.forEach((value) => {
+      if (typeof value === "string" && value.trim()) {
+        permissionSet.add(value.trim());
+      }
+    });
+  }
+
+  // Role fallback keeps existing sessions usable until the next login refresh.
+  if (hasAdminSmall || hasSuperAdmin) {
+    Object.values(SMALL_PERMISSIONS).forEach((permission) => {
+      permissionSet.add(permission);
+    });
+  } else if (hasVisualSmall) {
+    permissionSet.add(SMALL_PERMISSIONS.view);
+    permissionSet.add(SMALL_PERMISSIONS.scheduleView);
+  }
 
   return {
     userId:
@@ -73,6 +105,7 @@ export function resolveCurrentUserScope(): UserScope {
         ? parsed.email.trim()
         : null,
     roles,
+    permissions: Array.from(permissionSet).sort(),
     accessTokenPresent: Boolean(token),
     hasAdminCrystal,
     hasVisualCrystal,
@@ -80,6 +113,13 @@ export function resolveCurrentUserScope(): UserScope {
     hasVisualSmall,
     hasSuperAdmin,
   };
+}
+
+export function hasSmallPermission(
+  scope: UserScope,
+  permission: SmallPermission,
+): boolean {
+  return scope.permissions.includes(permission);
 }
 
 export function inferProductTypeFromValue(value: unknown): ProductType | null {

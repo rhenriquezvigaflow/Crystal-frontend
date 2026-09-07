@@ -37,7 +37,7 @@ export async function sendSmallNumericControl(
   lagoonId: string,
   moduleId: string,
   commandId: string,
-  value: number,
+  value: number | boolean,
 ): Promise<SmallValueControlResponse> {
   const { data } = await httpClient.put<SmallValueControlResponse>(
     "/small/control/value",

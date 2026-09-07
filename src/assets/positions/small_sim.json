@@ -13,7 +13,7 @@
       "src": "small_lagoons.webp",
       "alt": "Small Lagoons",
       "position": {
-        "top": "42%",
+        "top": "63%",
         "left": "16%"
       },
       "width": "48%",
@@ -23,78 +23,79 @@
   ],
   "kpis": [
     {
-      "tag": "PT-123",
-      "label": "PT-123",
+      "tag": "PT-431",
+      "label": "PT-431",
       "unit": "Bar",
       "position": {
-        "top": "34%",
-        "left": "35%"
+        "top": "38%",
+        "left": "36%"
       },
       "always_visible": true
     },
     {
-      "tag": "AE-100",
-      "label": "AE-100",
+      "tag": "PT-411",
+      "label": "PT-411",
       "unit": "mV",
       "position": {
-        "top": "34%",
-        "left": "54%"
+        "top": "38%",
+        "left": "58%"
       },
       "always_visible": true
     },
     {
-      "tag": "AE-022",
-      "label": "AE-022",
+      "tag": "PT-421",
+      "label": "PT-421",
       "unit": "pH",
       "position": {
-        "top": "34%",
-        "left": "70%"
+        "top": "38%",
+        "left": "81%"
       },
       "always_visible": true
     },
     {
-      "id": "pt-123-line",
-      "tag": "PT-01",
-      "label": "PT-01",
+      "tag": "PT-000",
+      "label": "PT-000",
       "unit": "Bar",
       "position": {
-        "top": "64.5%",
-        "left": "52%"
+        "top": "76%",
+        "left": "36%"
       },
       "always_visible": true
     },
     {
-      "id": "ae-100-line",
-      "tag": "PT-02",
-      "label": "PT-02",
+      "tag": "ORP-000",
+      "label": "ORP-000",
       "unit": "mV",
       "position": {
-        "top": "64.5%",
-        "left": "71%"
+        "top": "76%",
+        "left": "57%"
       },
       "always_visible": true
     },
     {
-      "id": "ae-022-line",
-      "tag": "AE-022",
-      "label": "AE-022",
+      "tag": "pH-000",
+      "label": "pH-000",
       "unit": "pH",
       "position": {
-        "top": "64.5%",
-        "left": "90%"
+        "top": "76%",
+        "left": "79%"
       },
       "always_visible": true
-    }
-  ],
-  "pumps": [
+    },
     {
-      "tag": "Motor",
-      "label": "Pump recirculation",
-      "svg_target": "circle280",
-      "control_id": "recirculation_pump",
-      "panel": "pump-status",
-      "type": "pump"
+      "tag": "WM-01",
+      "label": "WM-01",
+      "unit": "m3",
+      "position": {
+        "top": "96.5%",
+        "left": "59%"
+      },
+      "icon_type": "volume",
+      "always_visible": true
     }
+
+
+
   ],
   "numeric_controls": [
     {
@@ -128,9 +129,9 @@
     }
   },
   "lagoon_metrics_overlay": {
-    "title": "ORP Perimetro",
+    "title": "ORP Perimeter",
     "position": {
-      "top": "41.5%",
+      "top": "63%",
       "left": "16.5%"
     },
     "width": "18%",
@@ -160,74 +161,5 @@
       "left": "14%"
     }
   },
-  "labels": [
-    {
-      "id": "pump-recirculation-label",
-      "text": "RECIRCULATION \n PUMP",
-      "source_svg_target": "circle280",
-      "source_element_type": "pump",
-      "position": {
-        "top": "57%",
-        "left": "20.78%"
-      },
-      "align": "center",
-      "max_width": 220,
-      "color": "#2f3e35",
-      "font_size": 21,
-      "font_weight": 400,
-      "background_color": "#ffffff",
-      "text_shadow": "none"
-    },
-    {
-      "id": "area-a-c1lo-label",
-      "text": "A - C1LO",
-      "source_svg_target": "text9-8",
-      "source_element_type": "label",
-      "position": {
-        "top": "75.01%",
-        "left": "48.10%"
-      },
-      "align": "center",
-      "max_width": 180,
-      "color": "#2f3e35",
-      "font_size": 22,
-      "font_weight": 400,
-      "background_color": "#ffffff",
-      "text_shadow": "none"
-    },
-    {
-      "id": "area-f-h1lo-label",
-      "text": "F-H1LO",
-      "source_svg_target": "text9-8-8",
-      "source_element_type": "label",
-      "position": {
-        "top": "75.01%",
-        "left": "67.03%"
-      },
-      "align": "center",
-      "max_width": 180,
-      "color": "#2f3e35",
-      "font_size": 22,
-      "font_weight": 400,
-      "background_color": "#ffffff",
-      "text_shadow": "none"
-    },
-    {
-      "id": "area-a-p2hi-label",
-      "text": "A-P2HI",
-      "source_svg_target": "text9-8-8-5",
-      "source_element_type": "label",
-      "position": {
-        "top": "75.01%",
-        "left": "85.25%"
-      },
-      "align": "center",
-      "max_width": 180,
-      "color": "#2f3e35",
-      "font_size": 22,
-      "font_weight": 400,
-      "background_color": "#ffffff",
-      "text_shadow": "none"
-    }
-  ]
+  "labels": []
 }

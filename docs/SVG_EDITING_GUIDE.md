@@ -25,7 +25,6 @@ Resolucion:
 
 - `src/scada/layoutResolver.ts`
 - `src/scada/lagoonSceneBundle.ts`
-- `src/scada/localSceneRegistry.ts`
 - `src/scada/scadaLayoutPosition.ts`
 
 Render:

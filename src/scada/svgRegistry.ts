@@ -1,5 +1,7 @@
 ﻿import type { ComponentType, SVGProps } from "react";
 
+import type { SmallPumpSvgId } from "../modules/small/types/smallScada.types";
+
 import { normalizeScadaLayoutName, type ScadaLayoutId } from "./layoutResolver";
 import type {
   ScadaNumericControlHandler,
@@ -11,6 +13,8 @@ export interface ScadaSvgProps extends SVGProps<SVGSVGElement> {
   canControl?: boolean;
   pumpStateColor?: string;
   pumpStateLabel?: string;
+  smallPumpColors?: Partial<Record<SmallPumpSvgId, string>>;
+  onSmallPumpClick?: (svgId: SmallPumpSvgId, color: string) => void;
   numericControls?: ScadaNumericControlView[];
   onStartPump?: ScadaPumpControlHandler;
   onStopPump?: ScadaPumpControlHandler;

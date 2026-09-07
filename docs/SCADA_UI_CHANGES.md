@@ -23,7 +23,7 @@ Estado:
 Archivos:
 
 - `src/components/lagoon/ScadaMapPanel.tsx`
-- `src/hooks/useScadaLayoutScene.ts`
+- `src/hooks/useScadaMapBundle.ts`
 - `src/scada/lagoonSceneBundle.ts`
 - `src/assets/positions/*.json`
 

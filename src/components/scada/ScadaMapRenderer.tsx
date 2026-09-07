@@ -18,9 +18,17 @@ import {
   getScadaTankStateTagIds,
 } from "../../scada/layoutEquipmentState";
 import { getDiscreteStateLabel, getRealtimeValue } from "../../scada/layoutSceneResolver";
-import { getScadaEquipmentStateColor } from "../../scada/svgEquipmentState";
 import { resolveScadaSvgRegistryEntry } from "../../scada/svgRegistry";
 import { SCADA_FONT_FAMILY } from "../../scada/scadaTypography";
+import SmallScadaOverlay from "../../modules/small/SmallScadaOverlay";
+import {
+  hasSmallPermission,
+  resolveCurrentUserScope,
+  SMALL_PERMISSIONS,
+} from "../../api/productApi";
+import { getEquipmentStatusColor } from "../../modules/small/components/equipmentStatus";
+import { SMALL_PUMPS, smallScadaMock } from "../../modules/small/mocks/smallScada.mock";
+import type { PumpId, PumpMockState, SmallPumpSvgId } from "../../modules/small/types/smallScada.types";
 import type {
   RealtimeTagLookup,
   ResolvedLagoonMetricsOverlay,
@@ -28,7 +36,6 @@ import type {
   ResolvedScadaMap,
   ResolvedScadaTextLabel,
   ScadaNumericControlHandler,
-  ScadaNumericControlView,
   ScadaRenderRules,
   ScadaPumpControlHandler,
 } from "../../types/scada-layouts";
@@ -60,6 +67,12 @@ const SKELETON_PLACEHOLDERS = [
 
 const EMPTY_SCADA_ELEMENTS: ResolvedScadaElement[] = [];
 const EMPTY_SCADA_LABELS: ResolvedScadaTextLabel[] = [];
+
+function isActiveBooleanTag(value: unknown): boolean {
+  if (value === true || value === 1) return true;
+  if (typeof value !== "string") return false;
+  return ["1", "true", "on"].includes(value.trim().toLowerCase());
+}
 
 function ScadaMapSkeleton() {
   return (
@@ -237,6 +250,57 @@ export default function ScadaMapRenderer({
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
+  const [smallMobileHost, setSmallMobileHost] = useState<HTMLDivElement | null>(null);
+  const [smallPumps] = useState<Record<PumpId, PumpMockState>>(() => ({
+    ...smallScadaMock.pumps,
+  }));
+  const [selectedSmallPump, setSelectedSmallPump] = useState<{ id: PumpId; color: string } | null>(null);
+  const smallUserScope = useMemo(() => resolveCurrentUserScope(), []);
+  const canOperateSmall = canControl
+    && hasSmallPermission(smallUserScope, SMALL_PERMISSIONS.operate);
+  const canViewSmallSchedule = hasSmallPermission(
+    smallUserScope,
+    SMALL_PERMISSIONS.scheduleView,
+  );
+  const canUpdateSmallSchedule = hasSmallPermission(
+    smallUserScope,
+    SMALL_PERMISSIONS.scheduleUpdate,
+  );
+  const equipmentLookup = equipmentTagLookup ?? tagLookup;
+  const liveSmallPumps = useMemo(
+    () => Object.fromEntries(SMALL_PUMPS.map((pump) => {
+      const current = smallPumps[pump.id];
+      const manualEnabled = isActiveBooleanTag(
+        getRealtimeValue(equipmentLookup, pump.manualEnabledTag),
+      );
+      const automaticEnabled = isActiveBooleanTag(
+        getRealtimeValue(equipmentLookup, pump.automaticEnabledTag),
+      );
+      const mode = manualEnabled
+        ? "manual"
+        : automaticEnabled
+          ? "automatic"
+          : current.mode;
+      return [pump.id, { ...current, mode }];
+    })) as Record<PumpId, PumpMockState>,
+    [equipmentLookup, smallPumps],
+  );
+  const smallPumpColors = useMemo(
+    () => Object.fromEntries(
+      SMALL_PUMPS.map((pump) => [
+        pump.svgId,
+        getEquipmentStatusColor(liveSmallPumps[pump.id].status),
+      ]),
+    ) as Record<SmallPumpSvgId, string>,
+    [liveSmallPumps],
+  );
+  const handleSmallPumpClick = useCallback((svgId: SmallPumpSvgId, color: string) => {
+    if (!canOperateSmall) return;
+    const pump = SMALL_PUMPS.find((item) => item.svgId === svgId);
+    if (pump && liveSmallPumps[pump.id].mode === "manual") {
+      setSelectedSmallPump({ id: pump.id, color });
+    }
+  }, [canOperateSmall, liveSmallPumps]);
 
   const setContainerRef = useCallback((node: HTMLDivElement | null) => {
     containerRef.current = node;
@@ -265,45 +329,6 @@ export default function ScadaMapRenderer({
 
   const scadaLayout = useScadaLayout(layout, containerRef, { containerElement });
   const debugLayout = useMemo(() => isScadaDebugEnabled(), []);
-  const equipmentLookup = equipmentTagLookup ?? tagLookup;
-  const numericControls = useMemo<ScadaNumericControlView[]>(
-    () =>
-      (scene?.numeric_controls ?? []).map((control) => ({
-        ...control,
-        value: getRealtimeValue(equipmentLookup, control.tag, null),
-      })),
-    [equipmentLookup, scene?.numeric_controls],
-  );
-  const popupPump = useMemo(
-    () =>
-      elements.find(
-        (element) => element.type === "pump" && element.panel === "pump-status",
-      ) ?? elements.find((element) => element.type === "pump") ?? null,
-    [elements],
-  );
-  const popupPumpState = popupPump
-    ? getRealtimeValue(
-        equipmentLookup,
-        popupPump.tag,
-        popupPump.fallback_tag,
-      )
-    : undefined;
-  const popupPumpStateColor = getScadaEquipmentStateColor(
-    renderRules.pump,
-    popupPumpState,
-  );
-  const popupPumpStateLabel = getDiscreteStateLabel(popupPumpState, "en");
-  const popupPumpControlId = String(
-    popupPump?.control_id ?? popupPump?.id ?? "",
-  ).trim();
-  const handleSvgStartPump = useCallback(
-    () => onStartPump?.(popupPumpControlId),
-    [onStartPump, popupPumpControlId],
-  );
-  const handleSvgStopPump = useCallback(
-    () => onStopPump?.(popupPumpControlId),
-    [onStopPump, popupPumpControlId],
-  );
   const lagoonMetrics = useMemo(
     () => resolveLagoonMetrics(lagoonMetricsOverlay, tagLookup),
     [lagoonMetricsOverlay, tagLookup],
@@ -348,16 +373,18 @@ export default function ScadaMapRenderer({
   const frameStyle: CSSProperties = loading || (!SvgComponent && !svgMarkup)
     ? { aspectRatio, width: "100%" }
     : { width: "100%" };
+  const isSmallScada = layoutId === "small_layout_1";
 
   return (
     <div className="-mx-2 overflow-hidden px-2 sm:mx-0 sm:px-0">
       <div
-        className="lagoon-map-frame relative w-full min-w-0 rounded-[14px]"
+        className="lagoon-map-frame relative w-full min-w-0 overflow-hidden rounded-[14px]"
         style={frameStyle}
       >
         {loading ? (
           <ScadaMapSkeleton />
         ) : SvgComponent || svgMarkup ? (
+          <>
           <div
             key={activeMap?.id ?? "empty-map"}
             ref={setContainerRef}
@@ -376,15 +403,10 @@ export default function ScadaMapRenderer({
           >
             {SvgComponent ? (
               <SvgComponent
-                className="scada-svg"
+                className="scada-svg h-auto w-full"
                 preserveAspectRatio="xMidYMid meet"
-                canControl={canControl}
-                pumpStateColor={popupPumpStateColor}
-                pumpStateLabel={popupPumpStateLabel}
-                numericControls={numericControls}
-                onStartPump={handleSvgStartPump}
-                onStopPump={handleSvgStopPump}
-                onWriteNumericControl={onWriteNumericControl}
+                smallPumpColors={isSmallScada ? smallPumpColors : undefined}
+                onSmallPumpClick={isSmallScada ? handleSmallPumpClick : undefined}
               />
             ) : svgMarkup ? (
               <InlineScadaSvg markup={svgMarkup} />
@@ -402,6 +424,7 @@ export default function ScadaMapRenderer({
                 title={lagoonMetrics.title}
                 labels={lagoonMetrics.labels}
                 units={lagoonMetrics.units}
+                className={isSmallScada ? "hidden xl:block" : undefined}
                 style={lagoonMetricsStyle}
               />
             ) : null}
@@ -434,6 +457,32 @@ export default function ScadaMapRenderer({
               tagLookup={equipmentLookup}
               stageRef={containerRef}
             />
+            {isSmallScada ? (
+              <SmallScadaOverlay
+                pumps={liveSmallPumps}
+                canOperate={canOperateSmall}
+                canViewSchedule={canViewSmallSchedule}
+                canUpdateSchedule={canUpdateSmallSchedule}
+                selectedEquipmentPump={selectedSmallPump?.id ?? null}
+                selectedEquipmentColor={selectedSmallPump?.color ?? null}
+                onModeChange={async (moduleId, mode) => {
+                  if (!onWriteNumericControl) {
+                    throw new Error("PLC mode control is unavailable.");
+                  }
+                  await onWriteNumericControl(
+                    moduleId,
+                    "set_manual_mode",
+                    mode === "manual",
+                  );
+                }}
+                onStartPump={onStartPump}
+                onStopPump={onStopPump}
+                onCloseEquipmentPump={() => setSelectedSmallPump(null)}
+                onOpenEquipmentPump={handleSmallPumpClick}
+                mobileHost={smallMobileHost}
+                lagoonMetrics={lagoonMetrics}
+              />
+            ) : null}
             <ScadaDevtoolsStatus
               items={devtoolsStatusItems}
               layoutId={layoutId}
@@ -442,6 +491,13 @@ export default function ScadaMapRenderer({
               timezone={timezone}
             />
           </div>
+          {isSmallScada ? (
+            <div
+              ref={setSmallMobileHost}
+              className="border-t border-slate-200 bg-slate-50/70 xl:hidden"
+            />
+          ) : null}
+          </>
         ) : (
           <div className="flex h-full items-center justify-center rounded-[14px] text-sm font-medium text-slate-500">
             No SCADA layout is available for this lagoon.

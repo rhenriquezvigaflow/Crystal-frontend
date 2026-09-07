@@ -75,8 +75,7 @@ Flujo:
 
 Archivos:
 
-- `src/hooks/useScadaLayoutScene.ts`
-- `src/scada/localSceneRegistry.ts`
+- `src/hooks/useScadaMapBundle.ts`
 - `src/scada/lagoonSceneBundle.ts`
 - `src/scada/layoutResolver.ts`
 - `src/scada/scadaLayoutPosition.ts`
@@ -86,7 +85,7 @@ Flujo actual:
 
 1. `lagoonSceneBundle` descubre `src/assets/positions/*.json` con `import.meta.glob`.
 2. Registra cada escena por nombre de archivo y por `lagoon_id` embebido.
-3. `useScadaLayoutScene(lagoonId)` carga y cachea la escena.
+3. `useScadaMapBundle(lagoonId)` carga el bundle de mapas de la laguna.
 4. En dev, refresca el JSON local cada `DEV_SCENE_REFRESH_MS` si la pestana esta visible.
 5. La escena se normaliza a `ResolvedScadaScene`.
 

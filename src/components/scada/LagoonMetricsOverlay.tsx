@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { getLagoonMetricItems } from "./lagoonMetricItems";
+
 export type LagoonMetricKey = "temperature" | "orp" | "dosage";
 
 export interface LagoonMetricsProps {
@@ -14,23 +16,11 @@ export interface LagoonMetricsProps {
   units?: Partial<Record<LagoonMetricKey, string>>;
 }
 
-interface MetricItem {
+export interface LagoonMetricItem {
   key: LagoonMetricKey;
   label: string;
   value: string;
   unit: string;
-}
-
-function formatTemperature(value: number): string {
-  return Number.isFinite(value) ? value.toFixed(1) : "--";
-}
-
-function formatInteger(value: number): string {
-  return Number.isFinite(value) ? value.toFixed(0) : "--";
-}
-
-function formatDosage(value: number): string {
-  return Number.isFinite(value) ? value.toFixed(2) : "--";
 }
 
 export default function LagoonMetricsOverlay({
@@ -47,26 +37,14 @@ export default function LagoonMetricsOverlay({
   const placementClass = className?.trim() || (
     style ? "" : "left-1/2 top-1/2 z-[2] w-[clamp(12rem,32%,24rem)]"
   );
-  const metrics: MetricItem[] = [
-    {
-      key: "temperature",
-      label: labels?.temperature ?? "TEMP",
-      value: formatTemperature(temperature),
-      unit: units?.temperature ?? "C",
-    },
-    {
-      key: "orp",
-      label: labels?.orp ?? "ORP",
-      value: formatInteger(orp),
-      unit: units?.orp ?? "mV",
-    },
-    {
-      key: "dosage",
-      label: labels?.dosage ?? "Dosif",
-      value: formatDosage(dosage),
-      unit: units?.dosage ?? "ppm",
-    },
-  ].filter((metric) => !activeKeys || activeKeys.includes(metric.key));
+  const metrics = getLagoonMetricItems({
+    temperature,
+    orp,
+    dosage,
+    activeKeys,
+    labels,
+    units,
+  });
   const normalizedTitle = title?.trim();
 
   if (!metrics.length) return null;

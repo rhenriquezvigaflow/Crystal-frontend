@@ -70,7 +70,32 @@
       "type": "pump"
     }
   ],
-  "valves": [],
+  "valves": [
+    {
+      "tag": "VE288_STS_SCADA",
+      "label": "VE-288",
+      "svg_target": "VALVE01",
+      "type": "valve"
+    },
+    {
+      "tag": "VE322_STS_SCADA",
+      "label": "VE-322",
+      "svg_target": "VALVE02",
+      "type": "valve"
+    },
+    {
+      "tag": "VE320_STS_SCADA",
+      "label": "VE-320",
+      "svg_target": "VALVE03",
+      "type": "valve"
+    },
+    {
+      "tag": "VE318_STS_SCADA",
+      "label": "VE-318",
+      "svg_target": "VALVE05",
+      "type": "valve"
+    }
+  ],
   "labels": [
     { "id": "pump-title-p-017", "text": "PUMP \n CL-FLO12", "source_svg_target": "PUMP-01", "source_element_type": "pump", "position": { "top": "48%", "left": "9.8%" } },
     { "id": "area-cl-flo12-label", "text": "CL-FLO12", "source_svg_target": "PUMP-01", "source_element_type": "pump", "position": { "top": "38%", "left": "3%" } },
@@ -80,7 +105,7 @@
     { "id": "pump-title-p-016", "text": "P-016", "source_svg_target": "PUMP-06", "source_element_type": "pump", "position": { "top": "27%", "left": "94.5%" } },
     { "id": "area-a-c1lo-label", "text": "A-C1LO", "source_svg_target": "PUMP-05", "source_element_type": "pump", "position": { "top": "36.7%", "left": "89.5%" } },
     { "id": "area-f-h1lo-label", "text": "F-H1LO", "source_svg_target": "PUMP-06", "source_element_type": "pump", "position": { "top": "36.7%", "left": "96%" } },
-    { "id": "valve-title-ve-322", "text": "VE-322", "source_element_type": "valve", "position": { "top": "53%", "left": "26%" } },
+    { "id": "valve-title-ve-322", "text": "VE-322", "source_svg_target": "VALVE02", "source_element_type": "valve", "position": { "top": "53%", "left": "26%" } },
     { "id": "valve-title-ve-318", "text": "VE-318", "source_svg_target": "VALVE05", "source_element_type": "valve", "position": { "top": "60%", "left": "85.2%" } },
     { "id": "tank-title-cleaning-bottom", "text": "DEEP\nCLEANNING", "source_element_type": "tank", "position": { "top": "67%", "left": "7%" } },
     { "id": "lagoon-title", "text": "LAGOON", "source_element_type": "tank", "position": { "top": "88%", "left": "8%" } },

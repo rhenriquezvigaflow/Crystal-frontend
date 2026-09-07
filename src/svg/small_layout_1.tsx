@@ -1,972 +1,6 @@
 import * as React from "react";
-import { createPortal } from "react-dom";
-import PopUpPump from "../components/scada/pop-up-pump";
-
-const SMALL_PUMP_ID = "g24-6";
-const SMALL_PUMP_NAME = "Pump recirculation";
-const FALLBACK_PUMP_COLOR = "#0e76e7";
-
-const TANK_LEVEL_BOTTOM = 2300;
-const TANK_LEVEL_HEIGHT = 3620;
-const TANK_LEVEL_MARKS = [0, 25, 50, 75, 100];
-const TANK_LEVEL_SIMULATION = [0, 25, 50, 75, 100, 75, 50, 25];
-const TANK_WATER_LEFT = 2800;
-const TANK_WATER_RIGHT = 7425;
-const TANK_WATER_CORNER_X = 390;
-const TANK_WATER_CORNER_Y = 330;
-
-function clampTankLevel(value) {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return 0;
-  return Math.min(100, Math.max(0, numericValue));
-}
-
-function TankLevelVisual({ level }) {
-  const normalizedLevel = clampTankLevel(level);
-  const fillScale = normalizedLevel / 100;
-  const waterClipId = `tank-water-${React.useId().replace(/:/g, "")}`;
-  const tankLevelTop = TANK_LEVEL_BOTTOM + TANK_LEVEL_HEIGHT;
-  const animatedFillStyle = {
-    transform: `scaleY(${fillScale})`,
-    transformBox: "fill-box",
-    transformOrigin: "center top",
-    transition: "transform 450ms ease-in-out",
-  };
-
-  return (
-    <g
-      id="recirculation-tank-level"
-      data-level={normalizedLevel}
-      pointerEvents="none"
-      role="img"
-      aria-label={`Tank level ${Math.round(normalizedLevel)} percent`}
-    >
-      <title>{`Tank level: ${Math.round(normalizedLevel)}%`}</title>
-      <defs>
-        <clipPath id={waterClipId} clipPathUnits="userSpaceOnUse">
-          <path
-            d={`M ${TANK_WATER_LEFT},${tankLevelTop} H ${TANK_WATER_RIGHT} V ${
-              TANK_LEVEL_BOTTOM + TANK_WATER_CORNER_Y
-            } Q ${TANK_WATER_RIGHT},${TANK_LEVEL_BOTTOM} ${
-              TANK_WATER_RIGHT - TANK_WATER_CORNER_X
-            },${TANK_LEVEL_BOTTOM} H ${TANK_WATER_LEFT + TANK_WATER_CORNER_X} Q ${
-              TANK_WATER_LEFT
-            },${TANK_LEVEL_BOTTOM} ${TANK_WATER_LEFT},${
-              TANK_LEVEL_BOTTOM + TANK_WATER_CORNER_Y
-            } Z`}
-          />
-        </clipPath>
-      </defs>
-      <g clipPath={`url(#${waterClipId})`}>
-        <rect
-          id="recirculation-tank-water"
-          x={TANK_WATER_LEFT}
-          y={TANK_LEVEL_BOTTOM}
-          width={TANK_WATER_RIGHT - TANK_WATER_LEFT}
-          height={TANK_LEVEL_HEIGHT}
-          fill="#35ade9"
-          fillOpacity={0.82}
-          stroke="none"
-          style={animatedFillStyle}
-        />
-      </g>
-
-      <g id="recirculation-tank-level-bar">
-        <rect
-          x={7810}
-          y={TANK_LEVEL_BOTTOM - 60}
-          width={570}
-          height={TANK_LEVEL_HEIGHT + 120}
-          rx={70}
-          fill="#ffffff"
-          fillOpacity={0.94}
-        />
-        <rect
-          x={7900}
-          y={TANK_LEVEL_BOTTOM}
-          width={390}
-          height={TANK_LEVEL_HEIGHT}
-          fill="#f4f7f9"
-        />
-        <rect
-          id="recirculation-tank-level-fill"
-          x={7900}
-          y={TANK_LEVEL_BOTTOM}
-          width={390}
-          height={TANK_LEVEL_HEIGHT}
-          fill="#35ade9"
-          style={animatedFillStyle}
-        />
-        {TANK_LEVEL_MARKS.map((mark) => {
-          const markY = TANK_LEVEL_BOTTOM + (TANK_LEVEL_HEIGHT * mark) / 100;
-          return (
-            <line
-              key={mark}
-              x1={7900}
-              x2={8290}
-              y1={markY}
-              y2={markY}
-              stroke="#2f3e49"
-              strokeWidth={mark === 0 || mark === 100 ? 36 : 22}
-              strokeOpacity={mark === 0 || mark === 100 ? 1 : 0.55}
-            />
-          );
-        })}
-        <rect
-          x={7900}
-          y={TANK_LEVEL_BOTTOM}
-          width={390}
-          height={TANK_LEVEL_HEIGHT}
-          fill="none"
-          stroke="#2f3e49"
-          strokeWidth={42}
-        />
-      </g>
-    </g>
-  );
-}
-
-function normalizePaintColor(value) {
-  const color = String(value ?? "").trim();
-  if (!color || color === "none" || color === "transparent") return null;
-  if (/^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/i.test(color)) return null;
-  return color;
-}
-
-function readPumpCircleColor(target) {
-  if (!(target instanceof Element) || typeof window === "undefined") {
-    return FALLBACK_PUMP_COLOR;
-  }
-
-  const targetStateColor = normalizePaintColor(
-    window.getComputedStyle(target).getPropertyValue("--scada-state-color"),
-  );
-  if (targetStateColor) return targetStateColor;
-
-  const circle = target.matches("#circle280, circle, ellipse")
-    ? target
-    : target.querySelector("#circle280") ?? target.querySelector("circle, ellipse");
-  if (!(circle instanceof Element)) return FALLBACK_PUMP_COLOR;
-
-  return (
-    normalizePaintColor(window.getComputedStyle(circle).fill) ??
-    normalizePaintColor(circle.getAttribute("fill")) ??
-    FALLBACK_PUMP_COLOR
-  );
-}
-
-function defaultPumpControlHandler(pumpId) {
-  void pumpId;
-}
-
-function defaultNumericControlHandler(moduleId, commandId, value) {
-  void moduleId;
-  void commandId;
-  void value;
-}
-
-function SmallPumpPopup({
-  pumpPopup,
-  pumpColor,
-  pumpStateLabel,
-  canControl,
-  actionPending,
-  actionError,
-  pendingPumpAction,
-  closePumpPopup,
-  handlePopupClick,
-  handleStartPump,
-  handleStopPump,
-  confirmPumpAction,
-  cancelPumpAction,
-}) {
-  if (typeof document === "undefined") return null;
-
-  return createPortal(
-    <div
-      role="presentation"
-      onClick={closePumpPopup}
-      style={{
-        alignItems: "center",
-        backdropFilter: "blur(5px)",
-        background: "rgba(15, 23, 42, 0.34)",
-        display: "flex",
-        inset: 0,
-        justifyContent: "center",
-        padding: 20,
-        position: "fixed",
-        zIndex: 10001,
-      }}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Popup ${pumpPopup.name}`}
-        onClick={handlePopupClick}
-        style={{
-          background: "#ffffff",
-          border: "1px solid #cbd5e1",
-          borderRadius: 12,
-          boxShadow: "0 30px 70px rgba(15, 23, 42, 0.3)",
-          boxSizing: "border-box",
-          color: "#0f172a",
-          fontFamily: "Calibri, Arial, sans-serif",
-          maxWidth: "min(360px, calc(100vw - 32px))",
-          minHeight: 242,
-          padding: 18,
-          position: "relative",
-          textAlign: "center",
-          width: 340,
-        }}
-      >
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-            gap: 12,
-            justifyContent: "space-between",
-          }}
-        >
-          <strong
-            style={{
-              fontSize: 16,
-              lineHeight: 1.2,
-              overflow: "hidden",
-              textAlign: "left",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {pumpPopup.name}
-          </strong>
-          <button
-            type="button"
-            aria-label="Close popup"
-            onClick={(event) => {
-              event.stopPropagation();
-              closePumpPopup();
-            }}
-            style={{
-              alignItems: "center",
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
-              borderRadius: 8,
-              color: "#475569",
-              cursor: "pointer",
-              display: "inline-flex",
-              flex: "0 0 auto",
-              fontSize: 20,
-              height: 34,
-              justifyContent: "center",
-              lineHeight: 1,
-              padding: 0,
-              width: 34,
-            }}
-          >
-            x
-          </button>
-        </div>
-
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-            height: 118,
-            justifyContent: "center",
-            marginTop: 14,
-          }}
-        >
-          <PopUpPump
-            pumpColor={pumpColor}
-            style={{
-              display: "block",
-              height: 108,
-              maxWidth: "100%",
-              width: 152,
-            }}
-          />
-        </div>
-
-        <div
-          style={{
-            color: "#475569",
-            fontSize: 12,
-            fontWeight: 700,
-            marginTop: 4,
-          }}
-        >
-          {`Status: ${pumpStateLabel}`}
-        </div>
-
-        {canControl ? (
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              justifyContent: "center",
-              marginTop: 14,
-            }}
-          >
-            <button
-              type="button"
-              disabled={actionPending}
-              onClick={handleStartPump}
-              style={{
-                background: "#16a34a",
-                border: "1px solid #15803d",
-                borderRadius: 7,
-                color: "#ffffff",
-                cursor: actionPending ? "wait" : "pointer",
-                fontSize: 13,
-                fontWeight: 700,
-                height: 34,
-                minWidth: 94,
-                opacity: actionPending ? 0.65 : 1,
-              }}
-            >
-              Start
-            </button>
-            <button
-              type="button"
-              disabled={actionPending}
-              onClick={handleStopPump}
-              style={{
-                background: "#dc2626",
-                border: "1px solid #b91c1c",
-                borderRadius: 7,
-                color: "#ffffff",
-                cursor: actionPending ? "wait" : "pointer",
-                fontSize: 13,
-                fontWeight: 700,
-                height: 34,
-                minWidth: 94,
-                opacity: actionPending ? 0.65 : 1,
-              }}
-            >
-              Stop
-            </button>
-          </div>
-        ) : null}
-
-        {actionError ? (
-          <div
-            role="alert"
-            style={{
-              color: "#b91c1c",
-              fontSize: 12,
-              marginTop: 10,
-            }}
-          >
-            {actionError}
-          </div>
-        ) : null}
-
-        {pendingPumpAction ? (
-          <div
-            role="alertdialog"
-            aria-label="Confirm pump action"
-            style={{
-              alignItems: "center",
-              background: "rgba(15, 23, 42, 0.18)",
-              borderRadius: 12,
-              display: "flex",
-              inset: 0,
-              justifyContent: "center",
-              padding: 14,
-              position: "absolute",
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                background: "#ffffff",
-                border: "1px solid #cbd5e1",
-                borderRadius: 8,
-                boxShadow: "0 18px 34px rgba(15, 23, 42, 0.2)",
-                padding: "12px 14px",
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 12,
-                  lineHeight: 1.35,
-                  textAlign: "center",
-                }}
-              >
-                {`Do you want to ${
-                  pendingPumpAction === "partir" ? "start" : "stop"
-                } pump ${pumpPopup.name}?`}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  justifyContent: "center",
-                  marginTop: 10,
-                }}
-              >
-                <button
-                  type="button"
-                  disabled={actionPending}
-                  onClick={confirmPumpAction}
-                  style={{
-                    background: "#0f766e",
-                    border: "1px solid #0f766e",
-                    borderRadius: 6,
-                    color: "#ffffff",
-                    cursor: actionPending ? "wait" : "pointer",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    height: 28,
-                    minWidth: 64,
-                  }}
-                >
-                  {actionPending ? "Sending..." : "Yes"}
-                </button>
-                <button
-                  type="button"
-                  disabled={actionPending}
-                  onClick={cancelPumpAction}
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 6,
-                    color: "#334155",
-                    cursor: actionPending ? "wait" : "pointer",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    height: 28,
-                    minWidth: 64,
-                  }}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </section>
-    </div>,
-    document.body,
-  );
-}
-
-function DosifPopup({
-  dosifPopup,
-  canControl,
-  onClose,
-  onWriteNumericControl,
-}) {
-  const control = dosifPopup.control;
-  const currentValue =
-    control?.value === null || control?.value === undefined
-      ? Number.NaN
-      : Number(control.value);
-  const [draftValue, setDraftValue] = React.useState(
-    Number.isFinite(currentValue) ? String(currentValue) : "",
-  );
-  const [writePending, setWritePending] = React.useState(false);
-  const [writeError, setWriteError] = React.useState(null);
-  const [writeSuccess, setWriteSuccess] = React.useState(null);
-  const [pendingValue, setPendingValue] = React.useState(null);
-
-  if (typeof document === "undefined") return null;
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!control || writePending) return;
-
-    const numericValue = Number(draftValue);
-    if (!Number.isFinite(numericValue)) {
-      setWriteError("Enter a valid number.");
-      return;
-    }
-    if (control.min !== null && numericValue < control.min) {
-      setWriteError(`The minimum value is ${control.min}.`);
-      return;
-    }
-    if (control.max !== null && numericValue > control.max) {
-      setWriteError(`The maximum value is ${control.max}.`);
-      return;
-    }
-
-    setWriteError(null);
-    setWriteSuccess(null);
-    setPendingValue(numericValue);
-  };
-
-  const confirmValueChange = async (event) => {
-    event.stopPropagation();
-    if (!control || pendingValue === null || writePending) return;
-
-    setWritePending(true);
-    setWriteError(null);
-    setWriteSuccess(null);
-    try {
-      await onWriteNumericControl(
-        control.module_id,
-        control.command_id,
-        pendingValue,
-      );
-      setWriteSuccess(`Value ${pendingValue} was sent to the PLC.`);
-      setPendingValue(null);
-    } catch (error) {
-      setPendingValue(null);
-      setWriteError(
-        error instanceof Error
-          ? error.message
-          : "The value could not be written to the PLC.",
-      );
-    } finally {
-      setWritePending(false);
-    }
-  };
-
-  const cancelValueChange = (event) => {
-    event.stopPropagation();
-    if (writePending) return;
-    setPendingValue(null);
-  };
-
-  return createPortal(
-    <div
-      role="presentation"
-      onClick={onClose}
-      style={{
-        alignItems: "center",
-        backdropFilter: "blur(5px)",
-        background: "rgba(15, 23, 42, 0.34)",
-        display: "flex",
-        inset: 0,
-        justifyContent: "center",
-        padding: 20,
-        position: "fixed",
-        zIndex: 10001,
-      }}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Popup ${dosifPopup.name}`}
-        onClick={(event) => event.stopPropagation()}
-        style={{
-          background: "#ffffff",
-          border: "1px solid #cbd5e1",
-          borderRadius: 12,
-          boxShadow: "0 30px 70px rgba(15, 23, 42, 0.3)",
-          color: "#0f172a",
-          fontFamily: "Calibri, Arial, sans-serif",
-          maxWidth: "min(360px, calc(100vw - 32px))",
-          padding: 18,
-          position: "relative",
-          textAlign: "center",
-          width: 340,
-        }}
-      >
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <strong style={{ fontSize: 16 }}>{dosifPopup.name}</strong>
-          <button
-            type="button"
-            aria-label="Close popup"
-            onClick={onClose}
-            style={{
-              alignItems: "center",
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
-              borderRadius: 8,
-              color: "#475569",
-              cursor: "pointer",
-              display: "inline-flex",
-              flex: "0 0 auto",
-              fontSize: 20,
-              height: 34,
-              justifyContent: "center",
-              lineHeight: 1,
-              padding: 0,
-              width: 34,
-            }}
-          >
-            x
-          </button>
-        </div>
-        {control ? (
-          <form onSubmit={handleSubmit}>
-            <div
-              style={{
-                color: "#475569",
-                fontSize: 12,
-                marginTop: 18,
-                textAlign: "left",
-              }}
-            >
-              {control.label}
-              {control.unit ? ` (${control.unit})` : ""}
-            </div>
-            <input
-              type="number"
-              aria-label={`${control.label} value`}
-              value={draftValue}
-              min={control.min ?? undefined}
-              max={control.max ?? undefined}
-              step={control.step}
-              disabled={!canControl || writePending}
-              onChange={(event) => {
-                setDraftValue(event.target.value);
-                setWriteError(null);
-                setWriteSuccess(null);
-              }}
-              style={{
-                background: canControl ? "#ffffff" : "#f1f5f9",
-                border: "1px solid #94a3b8",
-                borderRadius: 8,
-                boxSizing: "border-box",
-                color: "#0f172a",
-                fontSize: 16,
-                height: 42,
-                marginTop: 7,
-                padding: "0 12px",
-                width: "100%",
-              }}
-            />
-            <div
-              style={{
-                color: "#64748b",
-                fontSize: 11,
-                marginTop: 6,
-                textAlign: "left",
-              }}
-            >
-              {`Range: ${control.min ?? "-"} to ${control.max ?? "-"}`}
-            </div>
-            {canControl ? (
-              <button
-                type="submit"
-                disabled={writePending || draftValue.trim() === ""}
-                style={{
-                  background: "#0f766e",
-                  border: "1px solid #0f766e",
-                  borderRadius: 7,
-                  color: "#ffffff",
-                  cursor: writePending ? "wait" : "pointer",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  height: 36,
-                  marginTop: 14,
-                  opacity: writePending ? 0.65 : 1,
-                  width: "100%",
-                }}
-              >
-                {writePending ? "Sending..." : "Save to PLC"}
-              </button>
-            ) : (
-              <div
-                style={{
-                  color: "#64748b",
-                  fontSize: 12,
-                  marginTop: 14,
-                }}
-              >
-                Your user has read-only access.
-              </div>
-            )}
-            {writeError ? (
-              <div
-                role="alert"
-                style={{ color: "#b91c1c", fontSize: 12, marginTop: 10 }}
-              >
-                {writeError}
-              </div>
-            ) : null}
-            {writeSuccess ? (
-              <div
-                role="status"
-                style={{ color: "#15803d", fontSize: 12, marginTop: 10 }}
-              >
-                {writeSuccess}
-              </div>
-            ) : null}
-            {pendingValue !== null ? (
-              <div
-                role="alertdialog"
-                aria-label="Confirm value change"
-                style={{
-                  alignItems: "center",
-                  background: "rgba(15, 23, 42, 0.18)",
-                  borderRadius: 12,
-                  display: "flex",
-                  inset: 0,
-                  justifyContent: "center",
-                  padding: 14,
-                  position: "absolute",
-                  zIndex: 2,
-                }}
-              >
-                <div
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.2)",
-                    padding: "12px 14px",
-                    width: "100%",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 12,
-                      lineHeight: 1.35,
-                      textAlign: "center",
-                    }}
-                  >
-                    {`Do you want to change ${dosifPopup.name} from ${
-                      Number.isFinite(currentValue) ? currentValue : "--"
-                    } to ${pendingValue}?`}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 8,
-                      justifyContent: "center",
-                      marginTop: 10,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      disabled={writePending}
-                      onClick={confirmValueChange}
-                      style={{
-                        background: "#0f766e",
-                        border: "1px solid #0f766e",
-                        borderRadius: 6,
-                        color: "#ffffff",
-                        cursor: writePending ? "wait" : "pointer",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        height: 28,
-                        minWidth: 64,
-                      }}
-                    >
-                      {writePending ? "Sending..." : "Yes"}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={writePending}
-                      onClick={cancelValueChange}
-                      style={{
-                        background: "#ffffff",
-                        border: "1px solid #cbd5e1",
-                        borderRadius: 6,
-                        color: "#334155",
-                        cursor: writePending ? "wait" : "pointer",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        height: 28,
-                        minWidth: 64,
-                      }}
-                    >
-                      No
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </form>
-        ) : (
-          <p
-            style={{
-              color: "#475569",
-              fontSize: 13,
-              lineHeight: 1.45,
-              margin: "18px 0 0",
-            }}
-          >
-            This equipment does not have a configured numeric control.
-          </p>
-        )}
-      </section>
-    </div>,
-    document.body,
-  );
-}
-
-const SVGComponent = ({
-  onClick,
-  level = null,
-  simulateLevel = true,
-  simulationInterval = 1200,
-  canControl = true,
-  pumpStateColor = FALLBACK_PUMP_COLOR,
-  pumpStateLabel = "No data",
-  numericControls = [],
-  onStartPump = defaultPumpControlHandler,
-  onStopPump = defaultPumpControlHandler,
-  onWriteNumericControl = defaultNumericControlHandler,
-  ...props
-}) => {
-  const hasExternalLevel = level !== null && level !== undefined && level !== "";
-  const externalLevel = hasExternalLevel ? clampTankLevel(level) : null;
-  const [simulatedLevel, setSimulatedLevel] = React.useState(0);
-  const tankLevel = externalLevel ?? (simulateLevel ? simulatedLevel : 0);
-  const [pumpPopup, setPumpPopup] = React.useState(null);
-  const [pendingPumpAction, setPendingPumpAction] = React.useState(null);
-  const [pumpActionPending, setPumpActionPending] = React.useState(false);
-  const [pumpActionError, setPumpActionError] = React.useState(null);
-  const [dosifPopup, setDosifPopup] = React.useState(null);
-
-  React.useEffect(() => {
-    if (!simulateLevel || externalLevel !== null) return undefined;
-
-    let simulationIndex = 0;
-    const interval = Math.max(500, Number(simulationInterval) || 1200);
-    const timer = window.setInterval(() => {
-      simulationIndex = (simulationIndex + 1) % TANK_LEVEL_SIMULATION.length;
-      setSimulatedLevel(TANK_LEVEL_SIMULATION[simulationIndex]);
-    }, interval);
-
-    return () => window.clearInterval(timer);
-  }, [externalLevel, simulateLevel, simulationInterval]);
-
-  const closePumpPopup = React.useCallback(() => {
-    setPumpPopup(null);
-    setPendingPumpAction(null);
-    setPumpActionPending(false);
-    setPumpActionError(null);
-  }, []);
-
-  const closeDosifPopup = React.useCallback(() => {
-    setDosifPopup(null);
-  }, []);
-
-  const handleSvgClick = React.useCallback(
-    (event) => {
-      onClick?.(event);
-      closePumpPopup();
-    },
-    [closePumpPopup, onClick],
-  );
-
-  const openPumpPopup = React.useCallback((event) => {
-    event.stopPropagation();
-    const pumpRoot = event.currentTarget.closest(`#${SMALL_PUMP_ID}`) ?? event.currentTarget;
-    setDosifPopup(null);
-    setPumpPopup({
-      id: SMALL_PUMP_ID,
-      name: SMALL_PUMP_NAME,
-      color: pumpStateColor || readPumpCircleColor(pumpRoot),
-    });
-    setPendingPumpAction(null);
-    setPumpActionError(null);
-  }, [pumpStateColor]);
-
-  const handlePumpKeyDown = React.useCallback(
-    (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-
-      event.preventDefault();
-      openPumpPopup(event);
-    },
-    [openPumpPopup],
-  );
-
-  const openDosifPopup = React.useCallback(
-    (id, name) => (event) => {
-      event.stopPropagation();
-      closePumpPopup();
-      setDosifPopup({
-        id,
-        name,
-        control: numericControls.find((control) => control.id === id) ?? null,
-      });
-    },
-    [closePumpPopup, numericControls],
-  );
-
-  const handleDosifKeyDown = React.useCallback(
-    (id, name) => (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-
-      event.preventDefault();
-      openDosifPopup(id, name)(event);
-    },
-    [openDosifPopup],
-  );
-
-  const handlePopupClick = React.useCallback((event) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleStartPump = React.useCallback(
-    (event) => {
-      event.stopPropagation();
-      if (!pumpPopup) return;
-      setPumpActionError(null);
-      setPendingPumpAction("partir");
-    },
-    [pumpPopup],
-  );
-
-  const handleStopPump = React.useCallback(
-    (event) => {
-      event.stopPropagation();
-      if (!pumpPopup) return;
-      setPumpActionError(null);
-      setPendingPumpAction("parar");
-    },
-    [pumpPopup],
-  );
-
-  const confirmPumpAction = React.useCallback(
-    async (event) => {
-      event.stopPropagation();
-      if (!pumpPopup || !pendingPumpAction || pumpActionPending) return;
-
-      setPumpActionPending(true);
-      setPumpActionError(null);
-      try {
-        if (pendingPumpAction === "partir") {
-          await onStartPump(pumpPopup.id);
-        } else {
-          await onStopPump(pumpPopup.id);
-        }
-        setPendingPumpAction(null);
-      } catch (error) {
-        setPendingPumpAction(null);
-        setPumpActionError(
-          error instanceof Error ? error.message : "The command could not be sent.",
-        );
-      } finally {
-        setPumpActionPending(false);
-      }
-    },
-    [
-      onStartPump,
-      onStopPump,
-      pendingPumpAction,
-      pumpActionPending,
-      pumpPopup,
-    ],
-  );
-
-  const cancelPumpAction = React.useCallback(
-    (event) => {
-      event.stopPropagation();
-      setPendingPumpAction(null);
-    },
-    [],
-  );
-
-  return (
-    <>
-      <svg
+const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
+  <svg
     id="Capa_1"
     x="0px"
     y="0px"
@@ -982,7 +16,6 @@ const SVGComponent = ({
     xmlns="http://www.w3.org/2000/svg"
     xmlns:svg="http://www.w3.org/2000/svg"
     {...props}
-    onClick={handleSvgClick}
   >
     <sodipodi:namedview
       id="namedview1"
@@ -993,15 +26,15 @@ const SVGComponent = ({
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={0.5}
-      inkscape:cx={654}
-      inkscape:cy={587}
+      inkscape:zoom={2.0000001}
+      inkscape:cx={645.49998}
+      inkscape:cy={787.24998}
       inkscape:window-width={1920}
-      inkscape:window-height={1009}
+      inkscape:window-height={1129}
       inkscape:window-x={-8}
       inkscape:window-y={-8}
       inkscape:window-maximized={1}
-      inkscape:current-layer="g21"
+      inkscape:current-layer="Capa_1"
       showgrid="true"
       showguides="false"
       inkscape:antialias-rendering="true"
@@ -3025,7 +2058,7 @@ const SVGComponent = ({
     </style>
     <g
       id="g3"
-      transform="matrix(0.18751318,0,0,0.12594391,279.80541,339.2788)"
+      transform="matrix(0.18751318,0,0,0.12594391,289.95376,561.82509)"
       style={{
         strokeWidth: 6.50722,
       }}
@@ -3077,25 +2110,63 @@ const SVGComponent = ({
         />
       </g>
     </g>
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-4"
+      d="m 143.10893,814.05322 c 0.0272,-1.26112 0.97351,-2.3887 2.20694,-2.36375 l 10.17677,0.20793 c 1.13086,0.0206 2.13804,1.07596 2.11032,2.45162 -0.0144,0.63064 -0.23088,1.257 -0.59877,1.65098 l -5.20227,5.57153 c -0.78821,0.84413 -2.07315,0.8178 -2.93198,0.0555 l -0.10056,-0.11689 -4.97424,-5.77905 c -0.60645,-0.52855 -0.69892,-1.04674 -0.68627,-1.67733 z"
+      fill="#00aeed"
+      stroke="#ffffff"
+      strokeWidth={2.1717}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#ffffff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      inkscape:transform-center-x={0.11822995}
+      inkscape:transform-center-y={0.66291044}
+      inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
+    />
     <g
-      id="g24-6"
+      id="PUMP004"
       role="button"
       tabIndex={0}
-      aria-label={`Open popup ${SMALL_PUMP_NAME}`}
-      onMouseDown={(event) => event.preventDefault()}
-      onClick={openPumpPopup}
-      onKeyDown={handlePumpKeyDown}
-      transform="matrix(1.3372687,0,0,1.1041878,-147.07268,9.8892832)"
+      aria-label="Open CIRCULATION pump"
+      onClick={(event) => {
+        const indicator = event.currentTarget.querySelector("#circle282");
+        const color = indicator
+          ? window.getComputedStyle(indicator).fill
+          : (smallPumpColors.PUMP004 ?? "#0e76e7");
+        onSmallPumpClick?.("PUMP004", color);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          const indicator = event.currentTarget.querySelector("#circle282");
+          const color = indicator
+            ? window.getComputedStyle(indicator).fill
+            : (smallPumpColors.PUMP004 ?? "#0e76e7");
+          onSmallPumpClick?.("PUMP004", color);
+        }
+      }}
+      transform="matrix(2.9455845,0,0,2.6050368,-640.53167,-572.31589)"
       style={{
         stroke: "#000000",
         strokeWidth: 0,
         strokeDasharray: "none",
         strokeOpacity: 1,
+        cursor: onSmallPumpClick ? "pointer" : "default",
       }}
     >
       <g
         id="g278"
         transform="matrix(0.74779287,0,0,0.90564304,-396.72455,-450.5477)"
+        style={{
+          strokeWidth: 0,
+        }}
       >
         <path
           className="st17"
@@ -3103,17 +2174,22 @@ const SVGComponent = ({
           id="path278"
           style={{
             fill: "#2f3e49",
+            strokeWidth: 0,
           }}
         />
       </g>
       <g
         id="g282"
         transform="matrix(0.74779287,0,0,0.90564304,-397.09844,-451.27227)"
+        style={{
+          strokeWidth: 0,
+        }}
       >
         <image
           style={{
             overflow: "visible",
             opacity: 0.15,
+            strokeWidth: 0,
             enableBackground: "new",
           }}
           width={40}
@@ -3122,7 +2198,12 @@ const SVGComponent = ({
           transform="matrix(0.875,0,0,0.875,949.1988,1079.8372)"
           id="image280"
         />
-        <g id="g281">
+        <g
+          id="g281"
+          style={{
+            strokeWidth: 0,
+          }}
+        >
           <circle
             className="st2"
             cx={967.09998}
@@ -3131,6 +2212,7 @@ const SVGComponent = ({
             id="circle280"
             style={{
               fill: "#ffffff",
+              strokeWidth: 0,
             }}
           />
         </g>
@@ -3140,12 +2222,12 @@ const SVGComponent = ({
           cy={542.58044}
           id="circle282"
           style={{
+            opacity: 1,
+            fill: smallPumpColors.PUMP004 ?? "#0e76e7",
             stroke: "#000000",
             strokeWidth: 0,
             strokeDasharray: "none",
             strokeOpacity: 1,
-            opacity: 0.15,
-            fill: "#0e76e7",
             enableBackground: "new",
           }}
           rx={5.9823432}
@@ -3160,20 +2242,79 @@ const SVGComponent = ({
         fill: "#000000",
         fillOpacity: 0,
         stroke: "#35ade9",
-        strokeWidth: 3.29176,
+        strokeWidth: 3.99999,
         strokeLinejoin: "round",
         strokeMiterlimit: 10.7,
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 344.03907,534.88249 709.54443,-0.6232 -1.6529,-322.55708 -837.96182,-0.0523 -0.0839,85.85522"
+      d="m 372.64572,821.07268 903.24298,0.21822 -0.3924,-393.39015 -1122.13338,-0.0638 -0.11235,104.6451"
       id="path5"
       sodipodi:nodetypes="ccccc"
-      transform="matrix(1.3372687,0,0,1.1041878,-147.07268,9.8892832)"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-89-4-5"
+      d="m 274.64158,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
+      fill="#00aeed"
+      stroke="#ffffff"
+      strokeWidth={2.1717}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#ffffff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      inkscape:transform-center-x={0.69886196}
+      inkscape:transform-center-y={-0.14617663}
+      inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-89-4-2"
+      d="m 145.76592,483.47584 c 0.0104,-1.2614 0.94151,-2.40144 2.17518,-2.39304 l 10.17864,0.0717 c 1.13105,1.9e-4 2.15222,1.04736 2.1429,2.42326 -0.006,0.63079 -0.214,1.25998 -0.57664,1.6588 l -5.12738,5.64057 c -0.77686,0.85457 -2.06205,0.84545 -2.93095,0.0945 l -0.10214,-0.11557 -5.05105,-5.71212 c -0.61346,-0.5203 -0.71285,-1.03722 -0.70863,-1.66791 z"
+      fill="#00aeed"
+      stroke="#ffffff"
+      strokeWidth={2.1717}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#ffffff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      inkscape:transform-center-x={0.14583227}
+      inkscape:transform-center-y={0.69844775}
+      inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-89-4"
+      d="m 524.64158,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
+      fill="#00aeed"
+      stroke="#ffffff"
+      strokeWidth={2.1717}
+      strokeMiterlimit={10}
+      style={{
+        fill: "#007eea",
+        fillOpacity: 1,
+        stroke: "#ffffff",
+        strokeWidth: 2,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      inkscape:transform-center-x={0.69886196}
+      inkscape:transform-center-y={-0.14617663}
+      inkscape:highlight-color="#aa6a31"
+      onclick="12&#10;"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-06"
-      d="m 1267.0274,318.09194 c 0.025,1.26109 -0.8731,2.42718 -2.1065,2.45366 l -10.1766,0.21662 c -1.1308,0.0226 -2.181,-0.98591 -2.2107,-2.36152 -0.012,-0.63071 0.1783,-1.26557 0.5294,-1.67447 l 4.9655,-5.78363 c 0.7524,-0.87626 2.0373,-0.90343 2.9271,-0.17748 l 0.1054,0.11259 5.2108,5.56662 c 0.628,0.5028 0.742,1.01673 0.7557,1.64729 z"
+      d="m 1283.1948,504.43803 c 0.025,1.26109 -0.8731,2.42718 -2.1065,2.45366 l -10.1766,0.21662 c -1.1308,0.0226 -2.181,-0.98591 -2.2107,-2.36152 -0.012,-0.63071 0.1783,-1.26557 0.5294,-1.67447 l 4.9655,-5.78363 c 0.7524,-0.87626 2.0373,-0.90343 2.9271,-0.17748 l 0.1054,0.11259 5.2108,5.56662 c 0.628,0.5028 0.742,1.01673 0.7557,1.64729 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -3193,7 +2334,7 @@ const SVGComponent = ({
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89"
-      d="m 901.43609,235.97281 c 1.26137,0.0102 2.40163,0.9411 2.39337,2.17478 l -0.0703,10.17865 c -0.005,1.13105 -1.04694,2.1524 -2.42284,2.1433 -0.63078,-0.006 -1.26002,-0.21384 -1.65893,-0.57637 l -5.64138,-5.12646 c -0.85472,-0.77672 -0.84577,-2.0619 -0.0951,-2.93093 l 0.11549,-0.10218 5.71126,-5.05198 c 0.52029,-0.61354 1.03718,-0.71302 1.66789,-0.7089 z"
+      d="m 1084.6416,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -3213,7 +2354,7 @@ const SVGComponent = ({
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-0"
-      d="m 1267.238,552.56274 c 0,1.26134 -0.9149,2.41174 -2.1486,2.41691 l -10.1788,0.0407 c -1.131,0.003 -2.1637,-1.02346 -2.1696,-2.39938 0,-0.63082 0.2002,-1.2623 0.5583,-1.66507 l 5.0647,-5.69694 c 0.7674,-0.86313 2.0526,-0.8681 2.9297,-0.12689 l 0.1035,0.11442 5.1138,5.65585 c 0.6192,0.51358 0.7243,1.0294 0.7271,1.66009 z"
+      d="m 1283.2839,738.48832 c 0,1.26134 -0.9149,2.41174 -2.1486,2.41691 l -10.1788,0.0407 c -1.131,0.003 -2.1637,-1.02346 -2.1696,-2.39938 0,-0.63081 0.2002,-1.26229 0.5583,-1.66507 l 5.0647,-5.69694 c 0.7674,-0.86313 2.0526,-0.8681 2.9297,-0.12689 l 0.1035,0.11442 5.1138,5.65585 c 0.6192,0.51358 0.7243,1.0294 0.7271,1.66009 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -3233,7 +2374,7 @@ const SVGComponent = ({
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-8"
-      d="m 1042.474,607.23176 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17858 c 0.01,-1.13104 1.0484,-2.15171 2.4243,-2.14167 0.6308,0.006 1.2599,0.21469 1.6585,0.57748 l 5.638,5.13024 c 0.8542,0.77729 0.8443,2.06246 0.093,2.931 l -0.1156,0.10208 -5.7146,5.04815 c -0.5207,0.61319 -1.0377,0.71232 -1.6684,0.70777 z"
+      d="m 972.00175,828.30496 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17858 c 0.01,-1.13104 1.0484,-2.15171 2.4243,-2.14167 0.6308,0.006 1.2599,0.21469 1.6585,0.57748 l 5.638,5.13024 c 0.8542,0.77729 0.8443,2.06246 0.093,2.931 l -0.1156,0.10208 -5.7146,5.04815 c -0.5207,0.61319 -1.0377,0.71232 -1.6684,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -3253,7 +2394,7 @@ const SVGComponent = ({
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7"
-      d="m 538.35337,607.26567 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.21469 1.65854,0.57748 l 5.63794,5.13024 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.931 l -0.11557,0.10208 -5.71464,5.04815 c -0.5207,0.61319 -1.03766,0.71231 -1.66836,0.70777 z"
+      d="m 632.59406,828.78891 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 L 640,820 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -3369,15 +2510,15 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1149.9917}
-      y={97.87925}
+      x={1169.038}
+      y={100.51508}
       id="text12-1"
     >
       <tspan
         sodipodi:role="line"
         id="tspan12-5"
-        x={1149.9917}
-        y={97.87925}
+        x={1169.038}
+        y={100.51508}
         style={{
           fontSize: 16,
         }}
@@ -3398,14 +2539,14 @@ const SVGComponent = ({
       }}
       id="path3-2"
       sodipodi:type="arc"
-      sodipodi:cx={1109.976}
-      sodipodi:cy={119.89948}
+      sodipodi:cx={1120.3604}
+      sodipodi:cy={122.97097}
       sodipodi:rx={9.7608471}
       sodipodi:ry={9.5390091}
       sodipodi:start={3.1248947}
       sodipodi:end={3.1200791}
       sodipodi:arc-type="slice"
-      d="m 1100.2165,120.05876 a 9.7608471,9.5390091 0 0 1 9.5847,-9.69676 9.7608471,9.5390091 0 0 1 9.9338,9.35524 9.7608471,9.5390091 0 0 1 -9.5608,9.71928 9.7608471,9.5390091 0 0 1 -9.9568,-9.33184 l 9.7586,-0.2052 z"
+      d="m 1110.6009,123.13024 a 9.7608471,9.5390091 0 0 1 9.5847,-9.69675 9.7608471,9.5390091 0 0 1 9.9338,9.35524 9.7608471,9.5390091 0 0 1 -9.5608,9.71928 9.7608471,9.5390091 0 0 1 -9.9568,-9.33184 l 9.7586,-0.2052 z"
     />
     <path
       style={{
@@ -3420,14 +2561,14 @@ const SVGComponent = ({
       }}
       id="path3-1"
       sodipodi:type="arc"
-      sodipodi:cx={1110.2047}
-      sodipodi:cy={146.79721}
+      sodipodi:cx={1120.5891}
+      sodipodi:cy={149.86871}
       sodipodi:rx={9.7608471}
       sodipodi:ry={9.5390091}
       sodipodi:start={3.1248947}
       sodipodi:end={3.1200791}
       sodipodi:arc-type="slice"
-      d="m 1100.4452,146.95649 a 9.7608471,9.5390091 0 0 1 9.5848,-9.69676 9.7608471,9.5390091 0 0 1 9.9338,9.35524 9.7608471,9.5390091 0 0 1 -9.5609,9.71928 9.7608471,9.5390091 0 0 1 -9.9568,-9.33184 l 9.7586,-0.2052 z"
+      d="m 1110.8296,150.02799 a 9.7608471,9.5390091 0 0 1 9.5848,-9.69676 9.7608471,9.5390091 0 0 1 9.9338,9.35524 9.7608471,9.5390091 0 0 1 -9.5609,9.71929 9.7608471,9.5390091 0 0 1 -9.9568,-9.33184 l 9.7586,-0.20521 z"
     />
     <path
       style={{
@@ -3442,14 +2583,14 @@ const SVGComponent = ({
       }}
       id="path3-4"
       sodipodi:type="arc"
-      sodipodi:cx={1109.976}
-      sodipodi:cy={92.909882}
+      sodipodi:cx={1120.3604}
+      sodipodi:cy={95.981377}
       sodipodi:rx={9.7608471}
       sodipodi:ry={9.5390091}
       sodipodi:start={3.1248947}
       sodipodi:end={3.1200791}
       sodipodi:arc-type="slice"
-      d="m 1100.2165,93.069156 a 9.7608471,9.5390091 0 0 1 9.5847,-9.696755 9.7608471,9.5390091 0 0 1 9.9338,9.355242 9.7608471,9.5390091 0 0 1 -9.5608,9.719277 9.7608471,9.5390091 0 0 1 -9.9568,-9.331836 l 9.7586,-0.205202 z"
+      d="m 1110.6009,96.140651 a 9.7608471,9.5390091 0 0 1 9.5847,-9.696755 9.7608471,9.5390091 0 0 1 9.9338,9.355242 9.7608471,9.5390091 0 0 1 -9.5608,9.719282 9.7608471,9.5390091 0 0 1 -9.9568,-9.331841 l 9.7586,-0.205202 z"
     />
     <text
       xmlSpace="preserve"
@@ -3473,63 +2614,455 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      transform="translate(-38.656589,-11.635832)"
+      transform="translate(-19.610351,-9)"
     >
-      <tspan x={1158.2432} y={49} id="tspan4">
+      <tspan x={1158.2432} y={49} id="tspan6">
         <tspan
           style={{
             fill: "#2c2c2c",
           }}
-          id="tspan2"
+          id="tspan5"
         >
           {"Equipment Operations"}
         </tspan>
       </tspan>
     </text>
-    <g id="g9" transform="translate(-98.981123,-19.025712)">
+    <g id="g9" transform="translate(-89.85204,81.696512)">
       <g
-        id="Group_12-6-4-7-8-9"
-        transform="matrix(1.4643977,0,0,1.1659134,146.19322,77.83278)"
+        id="g1-2"
+        transform="matrix(-0.01572811,0,0,0.01875805,986.32599,713.12925)"
         style={{
-          strokeWidth: 1.54833,
+          strokeWidth: 7.35888,
+          strokeDasharray: "none",
         }}
+      />
+      <rect
+        style={{
+          fill: "#612632",
+          fillOpacity: 1,
+          stroke: "#603e49",
+          strokeWidth: 2.3,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeOpacity: 1,
+        }}
+        id="rect3"
+        width={0}
+        height={1.3992147}
+        x={-1227.9103}
+        y={695.0257}
+        transform="scale(-1,1)"
+      />
+      <g
+        id="g1-2-1-8-4"
+        transform="matrix(-0.02130385,0,0,0.02835945,503.49468,279.90891)"
+        style={{
+          strokeWidth: 5.1424,
+          strokeDasharray: "none",
+        }}
+        inkscape:label="dosif001"
       >
         <g
-          id="Group_15-0-9-6-6-5"
+          fill="none"
+          stroke="#050505"
+          strokeWidth={53.0248}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          id="g23-4-8-5-2"
           style={{
-            strokeWidth: 1.54833,
+            stroke: "#2f3e49",
+            strokeWidth: 12.9751,
+            strokeDasharray: "none",
+            strokeOpacity: 1,
           }}
+          transform="matrix(2.3913386,0,0,1.7854765,166.59629,-1578.7439)"
         >
-          <g
-            id="Group_16-6-6-1-0-4"
+          <rect
             style={{
-              strokeWidth: 1.54833,
+              fill: "#a02632",
+              fillOpacity: 1,
+              stroke: "#283e49",
+              strokeWidth: 0,
+              strokeLinecap: "square",
+              strokeLinejoin: "round",
+              strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
             }}
-          >
-            <path
-              id="Vector_29-6-3-4-2-3"
-              d="m 395.19691,549.87048 v 52.09053 c 0,0.80671 -0.39799,1.49818 -0.79598,1.49818 h -36.91362 c -0.49749,0 -0.78948,-0.6915 -0.79598,-1.49818 l -0.4188,-52.01199"
-              stroke="#2f3e49"
-              strokeWidth={4.34715}
-              strokeMiterlimit={10}
-              style={{
-                fill: "#00a39b",
-                fillOpacity: 1,
-              }}
-            />
-            <g
-              id="Group_17-1-7-2-4-1"
-              transform="translate(-7.5025782,-12.630209)"
-              style={{
-                strokeWidth: 1.54833,
-              }}
-            />
-          </g>
+            id="rect10-3-7"
+            width={83.744766}
+            height={273.33612}
+            x={-442.46094}
+            y={451.83197}
+            transform="matrix(-1.0000001,0,0,1.0000001,5.9165515e-5,-2.9457879e-5)"
+            rx={11.446682}
+            ry={9.4847488}
+          />
+          <rect
+            style={{
+              opacity: 1,
+              fill: smallPumpColors.PUMP001 ?? "#868588",
+              cursor: onSmallPumpClick ? "pointer" : "default",
+              fillOpacity: 0.913725,
+              stroke: "#283e49",
+              strokeWidth: 0,
+              strokeLinecap: "square",
+              strokeLinejoin: "round",
+              strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            id="PUMP001"
+            role="button"
+            tabIndex={0}
+            aria-label="Open PUMP001 pump"
+            onClick={(event) => onSmallPumpClick?.(
+              "PUMP001",
+              window.getComputedStyle(event.currentTarget).fill,
+            )}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onSmallPumpClick?.(
+                  "PUMP001",
+                  window.getComputedStyle(event.currentTarget).fill,
+                );
+              }
+            }}
+            inkscape:label="PUMP001"
+            width={664.69495}
+            height={734.99994}
+            x={-1118.3475}
+            y={315}
+            transform="matrix(-1.0000001,0,0,1.0000001,8.5679948e-4,-2.9457882e-5)"
+            rx={11.446682}
+            ry={9.484746}
+          />
+          <rect
+            style={{
+              opacity: 1,
+              fill: "#a02632",
+              fillOpacity: 1,
+              stroke: "#283e49",
+              strokeWidth: 0,
+              strokeLinecap: "square",
+              strokeLinejoin: "round",
+              strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            id="rect11-6-9"
+            width={4.2013426}
+            height={8.4075842}
+            x={1220.1401}
+            y={709.67017}
+            rx={0.43052384}
+            ry={0.31766367}
+            transform="matrix(-26.587799,0,0,29.857825,32888.843,-20386.524)"
+          />
+          <rect
+            style={{
+              opacity: 1,
+              fill: "#a02632",
+              fillOpacity: 1,
+              stroke: "#283e49",
+              strokeWidth: 0,
+              strokeLinecap: "square",
+              strokeLinejoin: "round",
+              strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            id="rect8-1-3"
+            width={176.88971}
+            height={131.00005}
+            x={-447.16104}
+            y={332.71619}
+            transform="scale(-1,1)"
+            ry={10.255361}
+            rx={11.446681}
+          />
+          <path
+            d="m 456,315 h 660 q 10,0 10,10 v 725 H 448 V 325 q 0,-10 8,-10 z"
+            id="path1-5-9-8-1"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="m 402,1063 h 724"
+            strokeWidth={106.05}
+            id="path2-5-2-9-9"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="M 264,328 448,328.69979 357,474 v 0 229 c -15,21 -22,45 -22,71 v 242 c 0,28 19.33333,43.3333 58,46 h 55 V 325"
+            id="path3-9-1-7-2-8"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            sodipodi:nodetypes="cccccssccc"
+          />
+          <path
+            d="M 354,473 V 704"
+            id="path4-4-7-9-7-6"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="m 264,328 v 92 c 0,34.66667 20.81126,52.33333 62.43379,53 h 31.21689"
+            id="path5-8-1-5-9-5"
+            style={{
+              opacity: 1,
+              fill: "#a02632",
+              fillOpacity: 1,
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            sodipodi:nodetypes="cscc"
+          />
+          <path
+            d="m 226,341.13979 v 101.8605"
+            id="path10-1-4-5-0"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="m 244.34768,353.21004 c 0.61225,28.67077 1.2756,57.67769 0.88692,79.76376"
+            id="path10-1-4-4-4-2"
+            style={{
+              stroke: "#a02632",
+              strokeWidth: 14.944,
+              strokeLinecap: "square",
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            inkscape:transform-center-x={-0.009543673}
+            inkscape:transform-center-y={0.11693223}
+            sodipodi:nodetypes="cc"
+          />
+          <path
+            d="m 226,342 h 38"
+            id="path12-5-3-3-8"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="m 226,445 h 38"
+            id="path13-2-1-1-6"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <path
+            d="M 428,411 V 553"
+            strokeWidth={59.6528}
+            id="path22-7-2-2-0"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <rect
+            x={368}
+            y={358}
+            width={21}
+            height={22}
+            fill="#050505"
+            stroke="none"
+            id="rect22-6-3-3-2"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <rect
+            x={383}
+            y={656}
+            width={25}
+            height={25}
+            fill="#050505"
+            stroke="none"
+            id="rect23-1-3-3-4"
+            style={{
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+          />
+          <ellipse
+            cx={393.85883}
+            cy={764.29706}
+            fill="#ffffff"
+            id="circle23-4-4-4-8"
+            style={{
+              fill: "#a02632",
+              fillOpacity: 1,
+              stroke: "#2f3e49",
+              strokeWidth: 12.9751,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
+            }}
+            rx={54.358845}
+            ry={54.428833}
+          />
         </g>
       </g>
+      <path
+        style={{
+          fill: "#000000",
+          fillOpacity: 0,
+          stroke: "#35ade9",
+          strokeWidth: 0,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        d="m 523.09206,328.17243 7e-5,-85.74107"
+        id="path6"
+      />
+      <path
+        style={{
+          fill: "#35ade9",
+          fillOpacity: 0,
+          stroke: "#2a8b8b",
+          strokeWidth: 2.29999,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 0.992157,
+        }}
+        d="m 488.85204,255.30349 18.90384,-0.0268 -0.31415,82.14097"
+        id="path7"
+        sodipodi:nodetypes="ccc"
+      />
+      <path
+        style={{
+          fill: "#35ade9",
+          fillOpacity: 0,
+          stroke: "#2a8b8b",
+          strokeWidth: 2.29999,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 0.992157,
+        }}
+        d="m 791.41597,252.926 16.30861,-0.0633 0.14668,88.53497"
+        id="path7-7"
+        sodipodi:nodetypes="ccc"
+      />
+      <path
+        style={{
+          fill: "#35ade9",
+          fillOpacity: 0,
+          stroke: "#2a8b8b",
+          strokeWidth: 2.29999,
+          strokeLinejoin: "round",
+          strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 0.992157,
+        }}
+        d="m 1116.4969,252.82515 16.3086,-0.0552 -0.01,82.70789"
+        id="path7-7-6"
+        sodipodi:nodetypes="ccc"
+      />
+      <path
+        id="Vector_324-1-6-4-5-2"
+        d="m 1127.6877,336.98489 c 0.011,-0.86063 0.7395,-1.63669 1.6994,-1.62835 l 7.9199,0.07 c 0.8799,0.007 1.6716,0.71901 1.6605,1.65778 -0.01,0.43033 -0.1701,0.85928 -0.4533,1.13068 l -4.0056,3.83816 c -0.6069,0.58158 -1.6069,0.57271 -2.2809,0.0583 l -0.079,-0.079 -3.9142,-3.90779 c -0.4759,-0.35628 -0.5517,-0.70916 -0.5467,-1.13949 z"
+        fill="#00aeed"
+        stroke="#ffffff"
+        strokeWidth={2.1717}
+        strokeMiterlimit={10}
+        style={{
+          fill: "#2a8b8b",
+          fillOpacity: 1,
+          stroke: "#2a8b8b",
+          strokeWidth: 0,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        inkscape:transform-center-x={0.10775658}
+        inkscape:transform-center-y={0.47128886}
+        inkscape:highlight-color="#aa6a31"
+        onclick="12&#10;"
+      />
+      <path
+        id="Vector_324-1-6-4-5"
+        d="m 801.99678,338.07866 c 0.0108,-0.86063 0.73949,-1.63672 1.69941,-1.62837 l 7.91989,0.07 c 0.87993,0.007 1.67158,0.719 1.66048,1.6578 -0.009,0.43034 -0.17009,0.85928 -0.45332,1.13068 l -4.00558,3.83816 c -0.60688,0.58157 -1.6069,0.5727 -2.28087,0.0583 l -0.0793,-0.079 -3.91421,-3.90779 c -0.47587,-0.3563 -0.55174,-0.70916 -0.5467,-1.13949 z"
+        fill="#00aeed"
+        stroke="#ffffff"
+        strokeWidth={2.1717}
+        strokeMiterlimit={10}
+        style={{
+          fill: "#2a8b8b",
+          fillOpacity: 1,
+          stroke: "#2a8b8b",
+          strokeWidth: 0,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        inkscape:transform-center-x={0.10775658}
+        inkscape:transform-center-y={0.47128886}
+        inkscape:highlight-color="#aa6a31"
+        onclick="12&#10;"
+      />
+      <path
+        id="Vector_324-1-6-4"
+        d="m 501.78238,339.01096 c 0.0108,-0.86063 0.73949,-1.63672 1.69941,-1.62837 l 7.91989,0.07 c 0.87993,0.007 1.67158,0.719 1.66048,1.6578 -0.009,0.43033 -0.17009,0.85928 -0.45332,1.13068 l -4.00558,3.83816 c -0.60688,0.58157 -1.6069,0.5727 -2.28087,0.0583 l -0.0793,-0.079 -3.91421,-3.90779 c -0.47587,-0.3563 -0.55174,-0.70916 -0.5467,-1.13949 z"
+        fill="#00aeed"
+        stroke="#ffffff"
+        strokeWidth={2.1717}
+        strokeMiterlimit={10}
+        style={{
+          fill: "#2a8b8b",
+          fillOpacity: 1,
+          stroke: "#2a8b8b",
+          strokeWidth: 0,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
+        }}
+        inkscape:transform-center-x={0.10775658}
+        inkscape:transform-center-y={0.47128886}
+        inkscape:highlight-color="#aa6a31"
+        onclick="12&#10;"
+      />
       <g
         id="Group_12-6-4-7-8-9-3"
-        transform="matrix(1.4643977,0,0,1.1659134,417.25645,77.83278)"
+        transform="matrix(1.4643977,0,0,1.1659134,205.77494,-365.29555)"
         style={{
           strokeWidth: 1.54833,
         }}
@@ -3569,7 +3102,7 @@ const SVGComponent = ({
       </g>
       <g
         id="Group_12-6-4-7-8-9-3-3"
-        transform="matrix(1.4643977,0,0,1.1659134,670.84076,77.83278)"
+        transform="matrix(1.4643977,0,0,1.1659134,530.77494,-365.29555)"
         style={{
           strokeWidth: 1.54833,
         }}
@@ -3607,132 +3140,29 @@ const SVGComponent = ({
           </g>
         </g>
       </g>
-      <path
-        style={{
-          opacity: 1,
-          fill: "#000000",
-          fillOpacity: 0,
-          stroke: "#35ade9",
-          strokeWidth: 0,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="m 696.41826,704.72145 7e-5,-85.74107"
-        id="path6"
-      />
-      <path
-        style={{
-          opacity: 1,
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="M 589.02017,338.98486 V 264.58329"
-        id="path9"
-      />
-      <path
-        style={{
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="M 849.28535,339.02571 V 264.62414"
-        id="path9-6"
-      />
-      <path
-        style={{
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="M 1080.7854,338.99923 V 264.59766"
-        id="path9-6-8"
-      />
-      <path
-        style={{
-          fill: "#35ade9",
-          fillOpacity: 0,
-          stroke: "#2a8b8b",
-          strokeWidth: 2.3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 0.99215686,
-        }}
-        d="m 703.19578,696.27203 16.30861,0.0469 -0.008,-70.29319"
-        id="path7"
-        sodipodi:nodetypes="ccc"
-      />
-      <g
-        id="g1-2"
-        transform="matrix(-0.01572811,0,0,0.01875805,986.32599,713.12925)"
-        style={{
-          strokeWidth: 7.35888,
-          strokeDasharray: "none",
-        }}
-      />
-      <path
-        style={{
-          fill: "#35ade9",
-          fillOpacity: 0,
-          stroke: "#2a8b8b",
-          strokeWidth: 2.3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 0.992157,
-        }}
-        d="m 975.57015,696.64633 16.30861,0.0469 -0.008,-70.29319"
-        id="path7-3"
-        sodipodi:nodetypes="ccc"
-      />
       <rect
         style={{
-          strokeWidth: 0,
-          strokeDasharray: "none",
-          stroke: "#283e49",
-          strokeOpacity: 1,
-          opacity: 1,
           fill: "#a02632",
           fillOpacity: 1,
+          stroke: "#283e49",
+          strokeWidth: 0,
           strokeLinecap: "square",
           strokeLinejoin: "round",
           strokeMiterlimit: 10.7,
+          strokeDasharray: "none",
+          strokeOpacity: 1,
         }}
         id="rect10"
-        width={98.230049}
-        height={272.45264}
-        x={-452.23032}
-        y={455.00616}
-        transform="matrix(0.03761124,0,0,0.03349206,1236.99,682.78662)"
-        rx={15.504617}
-        ry={14.339559}
+        width={3.6945539}
+        height={9.125}
+        x={1107.8058}
+        y={254.60985}
+        rx={0.58314788}
+        ry={0.48026136}
       />
       <g
         id="g1-2-1"
-        role="button"
-        tabIndex={0}
-        aria-label="Open popup DOSIF003"
-        onClick={openDosifPopup("dosif003", "DOSIF003")}
-        onKeyDown={handleDosifKeyDown("dosif003", "DOSIF003")}
-        transform="matrix(-0.01572811,0,0,0.01875805,1239.6103,712.40078)"
+        transform="matrix(-0.01572811,0,0,0.01875805,1127.6173,269.37688)"
         style={{
           strokeWidth: 7.35888,
           strokeDasharray: "none",
@@ -3748,7 +3178,7 @@ const SVGComponent = ({
           id="g23-4-8"
           style={{
             stroke: "#2f3e49",
-            strokeWidth: 18.56759672,
+            strokeWidth: 18.5676,
             strokeDasharray: "none",
             strokeOpacity: 1,
           }}
@@ -3756,18 +3186,35 @@ const SVGComponent = ({
         >
           <rect
             style={{
-              strokeWidth: 0,
-              strokeDasharray: "none",
-              stroke: "#283e49",
-              strokeOpacity: 1,
               opacity: 1,
-              fill: "#868588",
-              fillOpacity: 0.9137255,
+              fill: smallPumpColors.PUMP003 ?? "#868588",
+              cursor: onSmallPumpClick ? "pointer" : "default",
+              fillOpacity: 0.913725,
+              stroke: "#283e49",
+              strokeWidth: 0,
               strokeLinecap: "square",
               strokeLinejoin: "round",
               strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
             }}
-            id="rect12"
+            id="PUMP003"
+            role="button"
+            tabIndex={0}
+            aria-label="Open PUMP003 pump"
+            onClick={(event) => onSmallPumpClick?.(
+              "PUMP003",
+              window.getComputedStyle(event.currentTarget).fill,
+            )}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onSmallPumpClick?.(
+                  "PUMP003",
+                  window.getComputedStyle(event.currentTarget).fill,
+                );
+              }
+            }}
             width={664.69495}
             height={734.99994}
             x={-1118.3475}
@@ -3775,6 +3222,7 @@ const SVGComponent = ({
             transform="matrix(-1.0000001,0,0,1.0000001,8.5679948e-4,-2.9457882e-5)"
             rx={15.504619}
             ry={14.33956}
+            inkscape:label="PUMP003"
           />
           <rect
             style={{
@@ -3825,7 +3273,7 @@ const SVGComponent = ({
             id="path1-5-9"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3836,7 +3284,7 @@ const SVGComponent = ({
             id="path2-5-2"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3857,7 +3305,7 @@ const SVGComponent = ({
             id="path4-4-7-9"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3881,7 +3329,7 @@ const SVGComponent = ({
             id="path10-1-4"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3891,7 +3339,7 @@ const SVGComponent = ({
             id="path10-1-4-4"
             style={{
               stroke: "#a02632",
-              strokeWidth: 21.38513795,
+              strokeWidth: 21.3851,
               strokeLinecap: "square",
               strokeDasharray: "none",
               strokeOpacity: 1,
@@ -3905,7 +3353,7 @@ const SVGComponent = ({
             id="path12-5-3"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3915,7 +3363,7 @@ const SVGComponent = ({
             id="path13-2-1"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3926,7 +3374,7 @@ const SVGComponent = ({
             id="path22-7-2"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3941,7 +3389,7 @@ const SVGComponent = ({
             id="rect22-6-3"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3956,7 +3404,7 @@ const SVGComponent = ({
             id="rect23-1-3"
             style={{
               stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
+              strokeWidth: 18.5676,
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
@@ -3967,96 +3415,21 @@ const SVGComponent = ({
             fill="#ffffff"
             id="circle23-4-4"
             style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.56759672,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
               fill: "#a02632",
               fillOpacity: 1,
+              stroke: "#2f3e49",
+              strokeWidth: 18.5676,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
             }}
             rx={54.358845}
             ry={54.428833}
           />
         </g>
       </g>
-      <path
-        style={{
-          fill: "#35ade9",
-          fillOpacity: 0,
-          stroke: "#2a8b8b",
-          strokeWidth: 2.3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 0.992157,
-        }}
-        d="m 1228.8578,695.93996 16.3086,0.0469 -0.01,-70.29319"
-        id="path7-3-1"
-        sodipodi:nodetypes="ccc"
-      />
-      <rect
-        style={{
-          fill: "#7e808b",
-          fillOpacity: 1,
-          stroke: "#2f3e49",
-          strokeWidth: 0,
-          strokeLinecap: "square",
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        id="rect4"
-        width={20.447123}
-        height={4.7973928}
-        x={368.53403}
-        y={694.58844}
-      />
-      <path
-        id="Vector_324-1-6-4-1-8"
-        d="m 1250.5449,627.25168 c -0.014,0.86059 -0.7458,1.63383 -1.7057,1.62172 l -7.9196,-0.10096 c -0.8799,-0.0103 -1.6687,-0.7255 -1.654,-1.66426 0.011,-0.4303 0.1735,-0.85861 0.4578,-1.12889 l 4.0205,-3.8225 c 0.6091,-0.5792 1.6091,-0.56643 2.2811,-0.0494 l 0.079,0.0793 3.8989,3.92304 c 0.4745,0.35816 0.549,0.7113 0.5422,1.1416 z"
-        fill="#00aeed"
-        stroke="#ffffff"
-        strokeWidth={2.1717}
-        strokeMiterlimit={10}
-        style={{
-          fill: "#2a8b8b",
-          fillOpacity: 1,
-          stroke: "#2a8b8b",
-          strokeWidth: 0,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        inkscape:transform-center-x={-0.10221554}
-        inkscape:transform-center-y={-0.46324031}
-        inkscape:highlight-color="#aa6a31"
-        onclick="12&#10;"
-      />
-      <rect
-        style={{
-          fill: "#612632",
-          fillOpacity: 1,
-          stroke: "#603e49",
-          strokeWidth: 2.3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeOpacity: 1,
-        }}
-        id="rect3"
-        width={0}
-        height={1.3992147}
-        x={-1227.9103}
-        y={695.0257}
-        transform="scale(-1,1)"
-      />
       <g
         id="g1-2-1-8"
-        role="button"
-        tabIndex={0}
-        aria-label="Open popup DOSIF002"
-        onClick={openDosifPopup("dosif002", "DOSIF002")}
-        onKeyDown={handleDosifKeyDown("dosif002", "DOSIF002")}
-        transform="matrix(-0.01572811,0,0,0.01875805,986.466,712.79813)"
+        transform="matrix(-0.01572811,0,0,0.01875805,802.1831,269.56164)"
         style={{
           strokeWidth: 7.35888,
           strokeDasharray: "none",
@@ -4080,15 +3453,15 @@ const SVGComponent = ({
         >
           <rect
             style={{
-              strokeWidth: 0,
-              strokeDasharray: "none",
-              stroke: "#283e49",
-              strokeOpacity: 1,
               fill: "#a02632",
               fillOpacity: 1,
+              stroke: "#283e49",
+              strokeWidth: 0,
               strokeLinecap: "square",
               strokeLinejoin: "round",
               strokeMiterlimit: 10.7,
+              strokeDasharray: "none",
+              strokeOpacity: 1,
             }}
             id="rect10-3"
             width={83.744766}
@@ -4102,7 +3475,8 @@ const SVGComponent = ({
           <rect
             style={{
               opacity: 1,
-              fill: "#868588",
+              fill: smallPumpColors.PUMP002 ?? "#868588",
+              cursor: onSmallPumpClick ? "pointer" : "default",
               fillOpacity: 0.913725,
               stroke: "#283e49",
               strokeWidth: 0,
@@ -4112,7 +3486,23 @@ const SVGComponent = ({
               strokeDasharray: "none",
               strokeOpacity: 1,
             }}
-            id="rect12-7"
+            id="PUMP002"
+            role="button"
+            tabIndex={0}
+            aria-label="Open PUMP002 pump"
+            onClick={(event) => onSmallPumpClick?.(
+              "PUMP002",
+              window.getComputedStyle(event.currentTarget).fill,
+            )}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onSmallPumpClick?.(
+                  "PUMP002",
+                  window.getComputedStyle(event.currentTarget).fill,
+                );
+              }
+            }}
             width={664.69495}
             height={734.99994}
             x={-1118.3475}
@@ -4120,6 +3510,7 @@ const SVGComponent = ({
             transform="matrix(-1.0000001,0,0,1.0000001,8.5679948e-4,-2.9457882e-5)"
             rx={15.504619}
             ry={14.33956}
+            inkscape:label="PUMP002"
           />
           <rect
             style={{
@@ -4324,500 +3715,37 @@ const SVGComponent = ({
           />
         </g>
       </g>
-      <g
-        id="g1-2-1-8-4"
-        role="button"
-        tabIndex={0}
-        aria-label="Open popup DOSIF001"
-        onClick={openDosifPopup("dosif001", "DOSIF001")}
-        onKeyDown={handleDosifKeyDown("dosif001", "DOSIF001")}
-        transform="matrix(-0.01572811,0,0,0.01875805,714.24288,712.92979)"
-        style={{
-          strokeWidth: 7.35888,
-          strokeDasharray: "none",
-        }}
-        inkscape:label="dosif001"
-      >
-        <g
-          fill="none"
-          stroke="#050505"
-          strokeWidth={53.0248}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          id="g23-4-8-5-2"
-          style={{
-            stroke: "#2f3e49",
-            strokeWidth: 18.5676,
-            strokeDasharray: "none",
-            strokeOpacity: 1,
-          }}
-          transform="matrix(2.3913386,0,0,1.7854765,166.59629,-1578.7439)"
-        >
-          <rect
-            style={{
-              fill: "#a02632",
-              fillOpacity: 1,
-              stroke: "#283e49",
-              strokeWidth: 0,
-              strokeLinecap: "square",
-              strokeLinejoin: "round",
-              strokeMiterlimit: 10.7,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            id="rect10-3-7"
-            width={83.744766}
-            height={273.33612}
-            x={-442.46094}
-            y={451.83197}
-            transform="matrix(-1.0000001,0,0,1.0000001,5.9165515e-5,-2.9457879e-5)"
-            rx={15.504619}
-            ry={14.339563}
-          />
-          <rect
-            style={{
-              opacity: 1,
-              fill: "#868588",
-              fillOpacity: 0.913725,
-              stroke: "#283e49",
-              strokeWidth: 0,
-              strokeLinecap: "square",
-              strokeLinejoin: "round",
-              strokeMiterlimit: 10.7,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            id="rect12-7-7"
-            width={664.69495}
-            height={734.99994}
-            x={-1118.3475}
-            y={315}
-            transform="matrix(-1.0000001,0,0,1.0000001,8.5679948e-4,-2.9457882e-5)"
-            rx={15.504619}
-            ry={14.33956}
-          />
-          <rect
-            style={{
-              opacity: 1,
-              fill: "#a02632",
-              fillOpacity: 1,
-              stroke: "#283e49",
-              strokeWidth: 0,
-              strokeLinecap: "square",
-              strokeLinejoin: "round",
-              strokeMiterlimit: 10.7,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            id="rect11-6-9"
-            width={4.2013426}
-            height={8.4075842}
-            x={1220.1401}
-            y={709.67017}
-            rx={0.58314788}
-            ry={0.48026136}
-            transform="matrix(-26.587799,0,0,29.857825,32888.843,-20386.524)"
-          />
-          <rect
-            style={{
-              opacity: 1,
-              fill: "#a02632",
-              fillOpacity: 1,
-              stroke: "#283e49",
-              strokeWidth: 0,
-              strokeLinecap: "square",
-              strokeLinejoin: "round",
-              strokeMiterlimit: 10.7,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            id="rect8-1-3"
-            width={176.88971}
-            height={131.00005}
-            x={-447.16104}
-            y={332.71619}
-            transform="scale(-1,1)"
-            ry={15.504617}
-            rx={15.504618}
-          />
-          <path
-            d="m 456,315 h 660 q 10,0 10,10 v 725 H 448 V 325 q 0,-10 8,-10 z"
-            id="path1-5-9-8-1"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="m 402,1063 h 724"
-            strokeWidth={106.05}
-            id="path2-5-2-9-9"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="M 264,328 448,328.69979 357,474 v 0 229 c -15,21 -22,45 -22,71 v 242 c 0,28 19.33333,43.3333 58,46 h 55 V 325"
-            id="path3-9-1-7-2-8"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            sodipodi:nodetypes="cccccssccc"
-          />
-          <path
-            d="M 354,473 V 704"
-            id="path4-4-7-9-7-6"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="m 264,328 v 92 c 0,34.66667 20.81126,52.33333 62.43379,53 h 31.21689"
-            id="path5-8-1-5-9-5"
-            style={{
-              opacity: 1,
-              fill: "#a02632",
-              fillOpacity: 1,
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            sodipodi:nodetypes="cscc"
-          />
-          <path
-            d="m 226,341.13979 v 101.8605"
-            id="path10-1-4-5-0"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="m 244.34768,353.21004 c 0.61225,28.67077 1.2756,57.67769 0.88692,79.76376"
-            id="path10-1-4-4-4-2"
-            style={{
-              stroke: "#a02632",
-              strokeWidth: 21.3851,
-              strokeLinecap: "square",
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            inkscape:transform-center-x={-0.009543673}
-            inkscape:transform-center-y={0.11693223}
-            sodipodi:nodetypes="cc"
-          />
-          <path
-            d="m 226,342 h 38"
-            id="path12-5-3-3-8"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="m 226,445 h 38"
-            id="path13-2-1-1-6"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <path
-            d="M 428,411 V 553"
-            strokeWidth={59.6528}
-            id="path22-7-2-2-0"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <rect
-            x={368}
-            y={358}
-            width={21}
-            height={22}
-            fill="#050505"
-            stroke="none"
-            id="rect22-6-3-3-2"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <rect
-            x={383}
-            y={656}
-            width={25}
-            height={25}
-            fill="#050505"
-            stroke="none"
-            id="rect23-1-3-3-4"
-            style={{
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-          />
-          <ellipse
-            cx={393.85883}
-            cy={764.29706}
-            fill="#ffffff"
-            id="circle23-4-4-4-8"
-            style={{
-              fill: "#a02632",
-              fillOpacity: 1,
-              stroke: "#2f3e49",
-              strokeWidth: 18.5676,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            rx={54.358845}
-            ry={54.428833}
-          />
-        </g>
-      </g>
       <path
         style={{
-          opacity: 1,
           fill: "#35ade9",
           fillOpacity: 0,
-          stroke: "#35ade9",
-          strokeWidth: 4,
-          strokeLinecap: "square",
+          stroke: "#2a8b8b",
+          strokeWidth: 2.29999,
           strokeLinejoin: "round",
           strokeMiterlimit: 10.7,
           strokeDasharray: "none",
-          strokeOpacity: 1,
+          strokeOpacity: 0.992157,
         }}
-        d="m 443.92232,815.77571 165.0588,-0.125 0.125,-64.45313 51.875,-0.17187"
-        id="path12"
-        sodipodi:nodetypes="cccc"
-      />
-      <path
-        style={{
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="m 720.60098,667.52271 53.38006,0.003"
-        id="path9-7"
-        sodipodi:nodetypes="cc"
-      />
-      <g
-        transform="matrix(0.0256218,0,0,-0.03112019,247.78744,940.53131)"
-        fill="#000000"
-        stroke="none"
-        id="g21"
-        style={{
-          strokeWidth: 7.08278497,
-          strokeDasharray: "none",
-          stroke: "#2f3e49",
-          strokeOpacity: 1,
-        }}
-      >
-        <rect
-          style={{
-            fill: "#a2a4af",
-            fillOpacity: 1,
-            stroke: "#2f3e49",
-            strokeWidth: 7.08278497,
-            strokeLinecap: "square",
-            strokeLinejoin: "round",
-            strokeMiterlimit: 10.7,
-            strokeDasharray: "none",
-            strokeOpacity: 1,
-          }}
-          id="rect5"
-          width={740}
-          height={179.7919}
-          x={4750.0005}
-          y={-8090.7925}
-          transform="matrix(1,0,0,-1,1.3442029e-4,-7.2100709e-5)"
-        />
-        <path
-          d="m 4736,8220 c -57,-29 -85,-58 -112,-115 -22,-46 -24,-63 -24,-212 v -162 l -47,-6 c -163,-21 -428,-70 -546,-100 -826,-210 -1331,-599 -1406,-1085 -9,-56 -11,-575 -9,-2030 3,-1862 4,-1958 21,-2010 30,-88 91,-182 165,-252 75,-71 145,-109 232,-127 41,-9 581,-11 2140,-9 2002,3 2087,4 2134,22 163,60 284,188 348,366 l 23,65 v 1990 1990 l -28,90 c -36,117 -66,180 -122,264 -117,175 -292,322 -552,465 -330,182 -715,292 -1260,361 l -53,7 v 159 c 0,171 -6,201 -56,266 -14,18 -47,44 -74,58 l -49,25 h -343 c -321,-1 -346,-2 -382,-20 z m 730,-163 c 19,-23 24,-39 24,-87 v -59 l -72,2 -73,1 -6,85 -5,86 -2,-87 -2,-88 -287,-2 -291.2178,0.2871 -1.7822,-5.71 287,0.4229 457.7295,-2.2034 v -64.6102 -93.3559 L 5038,7750 H 4750 V 7902.5771 8032 l 30,29 29,30 317,-3 316,-3 z m -16,-477 c 527,-37 1006,-155 1361,-336 362,-185 586,-413 655,-669 17,-64 19,-110 19,-575 0,-398 35.0338,-3.3816 26.0338,-2.3816 -7,1 -1081.7584,-1 -2374.7584,0 H 2761.517 v 0 c 0,0 1.483,560.3816 62.483,689.3816 52,108 104,179 202,273 181,174 406,300 734,412 323,110 678,178 1115,212 98,7 443,5 575,-4 z M 7480,3988 c 5.6725,-797.9869 -4,-1356 -10,-1391 -21,-132 -98,-233 -218,-290 l -67,-32 H 5115 3045 l -66,32 c -81,40 -140,102 -182,191 l -32,67 -3,1378 -0.483,1982.5177 H 5091.4687 7466.227 Z"
-          id="path1"
-          style={{
-            fill: "#2f3e49",
-            fillOpacity: 1,
-            stroke: "#2f3e49",
-            strokeWidth: 7.08278497,
-            strokeOpacity: 1,
-            strokeDasharray: "none",
-            opacity: 1,
-          }}
-          sodipodi:nodetypes="ccsccsccccccccccccccccsccccccsccccccccccccccccccccccccccscccscccccsccccccccccccs"
-        />
-        <TankLevelVisual level={tankLevel} />
-        <path
-          d="m 6804.9662,5548.0142 c -14,-27 -13,-124 3,-144 11,-16 36,-17 257,-15 l 245,3 v 85 85 l -247,3 c -236,2 -248,1 -258,-17 z"
-          id="path7-5"
-          style={{
-            fill: "#2f3e49",
-            fillOpacity: 1,
-            stroke: "#2f3e49",
-            strokeWidth: 7.08278497,
-            strokeOpacity: 1,
-            strokeDasharray: "none",
-          }}
-        />
-        <path
-          d="m 6802.9705,4691.2493 c -5,-11 -10,-46 -10,-79 0,-93 -3,-92 253,-92 118,0 227,4 242,10 25,10 26,11 23,92 l -3,83 -247,3 c -236,2 -248,1 -258,-17 z"
-          id="path13"
-          style={{
-            fill: "#2f3e49",
-            fillOpacity: 1,
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 6804.9662,3825.9229 c -5,-11 -10,-46 -10,-79 0,-93 -3,-92 253,-92 118,0 227,4 242,10 25,10 26,11 23,92 l -3,83 -247,3 c -236,2 -248,1 -258,-17 z"
-          id="path13-3"
-          style={{
-            fill: "#2f3e49",
-            fillOpacity: 1,
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 2881,2650 c 0,-8 4,-22 9,-30 12,-18 12,-2 0,25 -6,13 -9,15 -9,5 z"
-          id="path15"
-          style={{
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 7265,2629 c -4,-6 -5,-12 -2,-15 2,-3 7,2 10,11 7,17 1,20 -8,4 z"
-          id="path16"
-          style={{
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 2911,2578 c 25,-47 62,-88 107,-118 25,-16 50,-30 56,-30 6,0 2,6 -9,11 -59,32 -99,67 -127,111 -33,50 -47,64 -27,26 z"
-          id="path17"
-          style={{
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 7190,2515 c -24,-25 -42,-45 -39,-45 3,0 25,20 49,45 24,25 42,45 39,45 -3,0 -25,-20 -49,-45 z"
-          id="path18"
-          style={{
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-        <path
-          d="m 7114,2454 c -18,-14 -18,-15 4,-4 12,6 22,13 22,15 0,8 -5,6 -26,-11 z"
-          id="path19"
-          style={{
-            strokeWidth: 7.08278497,
-            strokeDasharray: "none",
-            stroke: "#2f3e49",
-            strokeOpacity: 1,
-          }}
-        />
-      </g>
-      <g id="recirculation-tank-level-readout" pointerEvents="none" aria-hidden="true">
-        <rect
-          x={443.4}
-          y={739.5}
-          width={24}
-          height={13}
-          rx={3}
-          fill="#ffffff"
-          fillOpacity={0.94}
-        />
-        <text
-          x={455.4}
-          y={749}
-          fill="#2f3e49"
-          fontFamily="Calibri, Arial, sans-serif"
-          fontSize={8.5}
-          fontWeight={700}
-          textAnchor="middle"
-        >
-          {`${Math.round(tankLevel)}%`}
-        </text>
-      </g>
-
-      <path
-        style={{
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="m 992.98113,667.52271 52.49987,0.003"
-        id="path9-7-8"
-        sodipodi:nodetypes="cc"
-      />
-      <path
-        style={{
-          fill: "#2f3e49",
-          fillOpacity: 0,
-          stroke: "#2f3e49",
-          strokeWidth: 3,
-          strokeLinejoin: "round",
-          strokeMiterlimit: 10.7,
-          strokeDasharray: "none",
-          strokeOpacity: 1,
-        }}
-        d="m 1246.3165,667.78898 53.38,0.003"
-        id="path9-7-2"
-        sodipodi:nodetypes="cc"
+        d="m 361.74356,278.31938 15.69003,-0.0578 68.45567,0.22621"
+        id="path7-8"
+        sodipodi:nodetypes="ccc"
       />
     </g>
+    <path
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 2,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 420.35824,377.97824 38.58022,-0.21879"
+      id="path4-8-6"
+    />
     <path
       style={{
         opacity: 1,
@@ -4832,14 +3760,14 @@ const SVGComponent = ({
       }}
       id="path3"
       sodipodi:type="arc"
-      sodipodi:cx={1109.9691}
-      sodipodi:cy={65.175385}
+      sodipodi:cx={1120.3535}
+      sodipodi:cy={68.24688}
       sodipodi:rx={9.7764721}
       sodipodi:ry={9.5390091}
       sodipodi:start={3.1248947}
       sodipodi:end={3.1233266}
       sodipodi:arc-type="slice"
-      d="m 1100.194,65.334659 a 9.7764721,9.5390091 0 0 1 9.608,-9.696891 9.7764721,9.5390091 0 0 1 9.9421,9.370864 9.7764721,9.5390091 0 0 1 -9.6002,9.704238 9.7764721,9.5390091 0 0 1 -9.9496,-9.363255 l 9.7748,-0.17423 z"
+      d="m 1110.5784,68.406154 a 9.7764721,9.5390091 0 0 1 9.608,-9.696891 9.7764721,9.5390091 0 0 1 9.9421,9.370864 9.7764721,9.5390091 0 0 1 -9.6002,9.704238 9.7764721,9.5390091 0 0 1 -9.9496,-9.363255 l 9.7748,-0.17423 z"
     />
     <text
       xmlSpace="preserve"
@@ -4861,15 +3789,15 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1153.6479}
-      y={70.901566}
+      x={1172.6942}
+      y={73.537399}
       id="text12"
     >
       <tspan
         sodipodi:role="line"
         id="tspan12"
-        x={1153.6479}
-        y={70.901566}
+        x={1172.6942}
+        y={73.537399}
         style={{
           fontSize: 16,
         }}
@@ -4897,11 +3825,11 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1147.3823}
-      y={125.70233}
+      x={1166.4286}
+      y={128.33817}
       id="text13"
     >
-      <tspan sodipodi:role="line" id="tspan13" x={1147.3823} y={125.70233}>
+      <tspan sodipodi:role="line" id="tspan13" x={1166.4286} y={128.33817}>
         {"Failure"}
       </tspan>
     </text>
@@ -4924,18 +3852,533 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1153.4255}
-      y={151.26404}
+      x={1172.4718}
+      y={153.89987}
       id="text13-6"
     >
-      <tspan sodipodi:role="line" id="tspan13-1" x={1153.4255} y={151.26404}>
+      <tspan sodipodi:role="line" id="tspan13-1" x={1172.4718} y={153.89987}>
         {"Stopped"}
       </tspan>
     </text>
     <g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" />
+    <g
+      id="g1"
+      transform="matrix(0.89535458,0,0,0.84027654,-185.158,-453.62099)"
+      style={{
+        strokeWidth: 1.1529,
+      }}
+    >
+      <path
+        d="M 351.52185,842.29308 H 510.00002"
+        stroke="#000000"
+        strokeWidth={6}
+        fill="none"
+        id="path1"
+        style={{
+          strokeWidth: 2.3058,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        d="M 351.52185,842.29308 V 975 H 510.00002 V 842.29308"
+        stroke="#000000"
+        strokeWidth={6}
+        fill="none"
+        id="path2"
+        style={{
+          strokeWidth: 2.3058,
+          strokeDasharray: "none",
+        }}
+      />
+      <path
+        d="m 351.52185,842.29308 a 79.239086,46.293114 0 0 1 158.47817,0"
+        stroke="#000000"
+        strokeWidth={6}
+        fill="none"
+        id="path3-22"
+        style={{
+          strokeWidth: 2.3058,
+          strokeDasharray: "none",
+        }}
+      />
+    </g>
     <path
-      id="Vector_324-6-6-5-1-7-7-7-4"
-      d="m 377.06107,235.87771 c 1.26138,0.0102 2.40165,0.9411 2.39338,2.17478 l -0.0703,10.17864 c -0.005,1.13105 -1.04694,2.1524 -2.42284,2.1433 -0.63079,-0.006 -1.26002,-0.21384 -1.65893,-0.57636 l -5.64138,-5.12646 c -0.85472,-0.77674 -0.84576,-2.0619 -0.0952,-2.93094 l 0.1155,-0.10216 5.71125,-5.05198 c 0.52029,-0.61354 1.03718,-0.71301 1.66788,-0.7089 z"
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 2,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M 499,818 V 779.41915"
+      id="path4-8"
+    />
+    <path
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 1.9,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M 802,818.29687 V 779.71602"
+      id="path4-6"
+    />
+    <path
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 1.9,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="M 1099.2969,818.35937 V 779.77852"
+      id="path4-9"
+    />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={374.95633}
+      y={301.85355}
+      id="text13-6-9"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5"
+        x={374.95633}
+        y={301.85355}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"A - C1LO"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={666.69501}
+      y={303.76001}
+      id="text13-6-9-1"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-2"
+        x={666.69501}
+        y={303.76001}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"F - H1LO"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={992.7796}
+      y={304.2496}
+      id="text13-6-9-1-4"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-2-1"
+        x={992.7796}
+        y={304.2496}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"A - P2H1"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={164.64835}
+      y={272.86884}
+      id="text13-6-9-6"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-02"
+        x={164.64835}
+        y={272.86884}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"A - C1LO"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={374.95633}
+      y={321.85355}
+      id="text13-6-9-65"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-09"
+        x={374.95633}
+        y={321.85355}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"PUMP"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={666.65546}
+      y={321.56659}
+      id="text13-6-9-65-6"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-09-1"
+        x={666.65546}
+        y={321.56659}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"PUMP"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={992.08966}
+      y={322.49094}
+      id="text13-6-9-65-9"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-09-3"
+        x={992.08966}
+        y={322.49094}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"PUMP"}
+      </tspan>
+    </text>
+    <path
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 2,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 719.65402,377.09329 38.58022,-0.21879"
+      id="path4-8-6-8"
+    />
+    <path
+      style={{
+        fill: "#323e48",
+        fillOpacity: 1,
+        stroke: "#323e48",
+        strokeWidth: 2,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 1044.654,377.0933 38.5802,-0.21879"
+      id="path4-8-6-8-3"
+    />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={327.55472}
+      y={777.86884}
+      id="text13-6-9-0"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-7"
+        x={329.58939}
+        y={777.86884}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"CIRCULATION "}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 18,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={327.55472}
+      y={794.57507}
+      id="text13-6-9-0-6"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-7-1"
+        x={329.58939}
+        y={794.57507}
+        style={{
+          fontSize: 18,
+        }}
+      >
+        {"PUMP "}
+      </tspan>
+    </text>
+    <g
+      id="g34"
+      transform="matrix(0.39487317,0,0,0.37602389,794.58959,890.44674)"
+      style={{
+        strokeWidth: 2.59516,
+      }}
+    >
+      <rect
+        x={30}
+        y={45}
+        width={100}
+        height={50}
+        rx={6}
+        fill="#1e40af"
+        id="rect1-73"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={6}
+      />
+      <rect
+        x={20}
+        y={90}
+        width={120}
+        height={16}
+        rx={4}
+        fill="#1e3a8a"
+        id="rect2-0"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={4}
+      />
+      <rect
+        x={45}
+        y={30}
+        width={70}
+        height={22}
+        rx={5}
+        fill="#2563eb"
+        id="rect3-38"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={5}
+      />
+      <rect
+        x={55}
+        y={22}
+        width={50}
+        height={10}
+        rx={4}
+        fill="#60a5fa"
+        id="rect4-25"
+        style={{
+          strokeWidth: 2.59516,
+        }}
+        ry={4}
+      />
+      <path
+        d="m 60,22 c 0,-12 40,-12 40,0"
+        fill="none"
+        stroke="#6b7280"
+        strokeWidth={10.3806}
+        strokeLinecap="round"
+        id="path4-2"
+      />
+    </g>
+    <path
+      style={{
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 5.10109,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 801.17944,927.16901 -46.9673,0.44454 -111.51635,-0.22227"
+      id="path53"
+      sodipodi:nodetypes="ccc"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-2"
+      d="m 670.62984,934.62754 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 l 5.63794,5.13023 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -4948,98 +4391,209 @@ const SVGComponent = ({
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      inkscape:transform-center-x={1.6988668}
-      inkscape:transform-center-y={-3.3961664}
+      inkscape:transform-center-x={-0.69708309}
+      inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
       onclick="12&#10;"
     />
     <path
-      id="Vector_324-1-6-4"
-      d="m 626.1294,608.95444 c -0.0142,0.86059 -0.74586,1.63383 -1.70575,1.62172 l -7.91956,-0.10096 c -0.87989,-0.0103 -1.66875,-0.7255 -1.65399,-1.66426 0.0106,-0.4303 0.17344,-0.85861 0.45773,-1.12889 l 4.02053,-3.8225 c 0.60914,-0.5792 1.60912,-0.56643 2.28108,-0.0494 l 0.0789,0.0793 3.89893,3.92304 c 0.47448,0.35816 0.54897,0.7113 0.54225,1.1416 z"
+      style={{
+        fill: "#efefef",
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        stroke: "#34ade9",
+        strokeWidth: 5.10109,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 1010.3191,927.08682 -46.96735,0.44454 -111.51635,-0.22227"
+      id="path53-3"
+      sodipodi:nodetypes="ccc"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-2-5"
+      d="m 1009.2459,934.54535 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17859 c 0.01,-1.13103 1.0484,-2.1517 2.4243,-2.14166 0.6308,0.006 1.2599,0.2147 1.6585,0.57749 l 5.638,5.13023 c 0.8542,0.77729 0.8443,2.06246 0.093,2.93101 l -0.1156,0.10208 -5.7146,5.04814 c -0.5207,0.6132 -1.0377,0.71231 -1.6684,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
       strokeMiterlimit={10}
       style={{
-        fill: "#2a8b8b",
+        fill: "#007eea",
         fillOpacity: 1,
-        stroke: "#2a8b8b",
-        strokeWidth: 0,
+        stroke: "#ffffff",
+        strokeWidth: 2,
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      inkscape:transform-center-x={-0.10221554}
-      inkscape:transform-center-y={-0.46324031}
+      inkscape:transform-center-x={-0.69708309}
+      inkscape:transform-center-y={0.14477399}
       inkscape:highlight-color="#aa6a31"
       onclick="12&#10;"
     />
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 13,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={635}
+      y={900}
+      id="text13-6-9-1-1"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-2-15"
+        x={635}
+        y={900}
+        style={{
+          fontSize: 13,
+        }}
+      >
+        {"FROM REPLENISHMENT"}
+      </tspan>
+      <tspan
+        sodipodi:role="line"
+        x={635}
+        y={916.25}
+        style={{
+          fontSize: 13,
+        }}
+        id="tspan3"
+      >
+        {" CLIENT"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 13,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={480.07172}
+      y={957.7478}
+      id="text13-6-9-1-1-2"
+    >
+      <tspan
+        sodipodi:role="line"
+        x={480.07172}
+        y={957.7478}
+        style={{
+          fontSize: 13,
+        }}
+        id="tspan3-5"
+      >
+        {"WATER DISCHARGE"}
+      </tspan>
+    </text>
+    <text
+      xmlSpace="preserve"
+      style={{
+        fontSize: 13,
+        fontFamily: "Calibri",
+        InkscapeFontSpecification: "Calibri",
+        textAlign: "center",
+        writingMode: "lr-tb",
+        direction: "ltr",
+        textAnchor: "middle",
+        fill: "#000303",
+        fillOpacity: 1,
+        stroke: "#000303",
+        strokeWidth: 0.1,
+        strokeLinecap: "square",
+        strokeLinejoin: "round",
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      x={1020}
+      y={900}
+      id="text13-6-9-1-1-3"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan13-1-5-2-15-2"
+        x={1020}
+        y={900}
+        style={{
+          fontSize: 13,
+        }}
+      >
+        {"FROM REPLENISHMENT"}
+      </tspan>
+      <tspan
+        sodipodi:role="line"
+        x={1020}
+        y={916.25}
+        style={{
+          fontSize: 13,
+        }}
+        id="tspan4"
+      >
+        {" WATER LINE"}
+      </tspan>
+    </text>
     <path
-      id="Vector_324-1-6-4-1"
-      d="m 898.2795,608.95444 c -0.0142,0.86059 -0.74586,1.63383 -1.70575,1.62172 l -7.91956,-0.10096 c -0.87989,-0.0103 -1.66875,-0.7255 -1.65399,-1.66426 0.0106,-0.4303 0.17344,-0.85861 0.45773,-1.12889 l 4.02053,-3.8225 c 0.60914,-0.5792 1.60912,-0.56643 2.28108,-0.0494 l 0.0789,0.0793 3.89893,3.92304 c 0.47448,0.35816 0.54897,0.7113 0.54225,1.1416 z"
+      style={{
+        fill: "#36ade9",
+        fillOpacity: 1,
+        stroke: "#36ade9",
+        strokeWidth: 6.1,
+        strokeLinecap: "round",
+        strokeMiterlimit: 10.7,
+        strokeDasharray: "none",
+        strokeOpacity: 1,
+      }}
+      d="m 480.27875,823 0.0717,112.74776"
+      id="path8"
+      sodipodi:nodetypes="cc"
+    />
+    <path
+      id="Vector_324-6-6-5-1-7-7-7-4-4"
+      d="m 470.55894,936.24129 c 0.0366,-1.33013 1.31055,-2.51942 2.971,-2.4931 L 487.23,933.9675 c 1.52237,0.0217 2.87825,1.13484 2.84093,2.58577 -0.0194,0.66515 -0.31081,1.32579 -0.80607,1.74133 l -7.00334,5.87642 c -1.06109,0.89033 -2.79089,0.86255 -3.94706,0.0585 l -0.13537,-0.12328 -6.69636,-6.0953 c -0.81641,-0.55747 -0.9409,-1.10402 -0.92386,-1.76912 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
       strokeMiterlimit={10}
       style={{
-        fill: "#2a8b8b",
+        fill: "#007eea",
         fillOpacity: 1,
-        stroke: "#2a8b8b",
-        strokeWidth: 0,
+        stroke: "#ffffff",
+        strokeWidth: 2.00001,
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      inkscape:transform-center-x={-0.10221554}
-      inkscape:transform-center-y={-0.46324031}
-      inkscape:highlight-color="#aa6a31"
-      onclick="12&#10;"
-    />
-    <path
-      id="Vector_324-1-6-4-4"
-      d="m 559.81654,737.81136 c -0.86059,-0.0142 -1.63384,-0.74582 -1.62175,-1.70571 l 0.1008,-7.91957 c 0.0103,-0.87989 0.72547,-1.66876 1.66423,-1.65402 0.4303,0.0106 0.85861,0.17342 1.1289,0.45771 l 3.82257,4.02045 c 0.57922,0.60914 0.56647,1.60911 0.0495,2.28108 l -0.0793,0.0789 -3.92296,3.89901 c -0.35815,0.47449 -0.71129,0.54899 -1.14159,0.54227 z"
-      fill="#00aeed"
-      stroke="#ffffff"
-      strokeWidth={2.1717}
-      strokeMiterlimit={10}
-      style={{
-        fill: "#35ade9",
-        fillOpacity: 1,
-        stroke: "#35ade9",
-        strokeWidth: 0,
-        strokeDasharray: "none",
-        strokeOpacity: 1,
-      }}
-      inkscape:transform-center-x={-0.4632875}
-      inkscape:transform-center-y={0.10224177}
+      inkscape:transform-center-x={0.15914353}
+      inkscape:transform-center-y={0.69920101}
       inkscape:highlight-color="#aa6a31"
       onclick="12&#10;"
     />
   </svg>
-      {pumpPopup ? (
-        <SmallPumpPopup
-          pumpPopup={pumpPopup}
-          pumpColor={pumpStateColor || pumpPopup.color}
-          pumpStateLabel={pumpStateLabel}
-          canControl={canControl}
-          actionPending={pumpActionPending}
-          actionError={pumpActionError}
-          pendingPumpAction={pendingPumpAction}
-          closePumpPopup={closePumpPopup}
-          handlePopupClick={handlePopupClick}
-          handleStartPump={handleStartPump}
-          handleStopPump={handleStopPump}
-          confirmPumpAction={confirmPumpAction}
-          cancelPumpAction={cancelPumpAction}
-        />
-      ) : null}
-      {dosifPopup ? (
-        <DosifPopup
-          dosifPopup={dosifPopup}
-          canControl={canControl}
-          onClose={closeDosifPopup}
-          onWriteNumericControl={onWriteNumericControl}
-        />
-      ) : null}
-    </>
-  );
-};
+);
 export default SVGComponent;

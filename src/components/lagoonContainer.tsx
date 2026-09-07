@@ -33,6 +33,7 @@ import {
 import { DAY_MS, SCADA_REALTIME_GRACE_MS } from "../config/timing";
 import { useProduct } from "../modules/shared/product/useProduct";
 import type { ProductType } from "../modules/shared/product/types";
+import { SMALL_PUMPS } from "../modules/small/mocks/smallScada.mock";
 import {
   buildRealtimeTagLookup,
   getRealtimeValue,
@@ -836,8 +837,14 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
       Array.from(new Set([
         ...collectSceneTagIds(equipmentElements, { includeTankStateTags: true }),
         ...(scene?.numeric_controls ?? []).map((control) => control.tag),
+        ...(productType === "small"
+          ? SMALL_PUMPS.flatMap((pump) => [
+              pump.manualEnabledTag,
+              pump.automaticEnabledTag,
+            ])
+          : []),
       ])),
-    [equipmentElements, scene?.numeric_controls],
+    [equipmentElements, productType, scene?.numeric_controls],
   );
   const overlayTags = useMemo(
     () => filterTagsForScene(tags, overlayTagIds),
@@ -933,7 +940,7 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
     [sendPumpAction],
   );
   const handleWriteNumericControl = useCallback(
-    async (moduleId: string, commandId: string, value: number) => {
+    async (moduleId: string, commandId: string, value: number | boolean) => {
       if (productType !== "small") {
         throw new Error("Numeric control is only available for Small Lagoons.");
       }
@@ -999,12 +1006,6 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           onStopPump={handleStopPump}
           onWriteNumericControl={handleWriteNumericControl}
         />
-
-        {!lagoon.can_control ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Pump controls hidden by RBAC permissions.
-          </div>
-        ) : null}
 
         <div className="mt-6 space-y-6">
           {pumpElements.length ? (
