@@ -17,6 +17,7 @@ interface Props {
   errors: ScheduleValidationError[];
   readOnly?: boolean;
   onChange: (cycle: PumpScheduleCycle) => void;
+  onSave: (cycle: PumpScheduleCycle) => void;
 }
 
 export default function ScheduleCycleCard({
@@ -24,6 +25,7 @@ export default function ScheduleCycleCard({
   errors,
   readOnly = false,
   onChange,
+  onSave,
 }: Props) {
   const errorId = `cycle-${cycle.cycle}-mobile-errors`;
   const hasError = (...fields: ScheduleValidationError["field"][]) => (

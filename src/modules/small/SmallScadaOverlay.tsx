@@ -5,6 +5,7 @@ import type { LagoonMetricsProps } from "../../components/scada/LagoonMetricsOve
 import "./smallScada.css";
 import PumpEquipmentModal from "./components/PumpEquipmentModal";
 import PumpProgrammingModal from "./components/PumpProgrammingModal";
+import PumpVolumeOverlay from "./components/PumpVolumeOverlay";
 import PumpControls from "./components/PumpControls";
 import SmallMobilePanel from "./components/SmallMobilePanel";
 import TankLevelIndicator from "./components/TankLevelIndicator";
@@ -61,7 +62,16 @@ export default function SmallScadaOverlay({
       smallScadaMock.cycles.map((cycle) => ({ ...cycle })),
     ])) as Record<PumpId, PumpScheduleCycle[]>
   ));
+  const [pumpFlowLphByPump, setPumpFlowLphByPump] = useState<Record<PumpId, number>>(() => (
+    Object.fromEntries(SMALL_PUMPS.map((pump) => [
+      pump.id,
+      smallScadaMock.pumpFlowLph[pump.id] ?? 0,
+    ])) as Record<PumpId, number>
+  ));
   const closeProgramming = useCallback(() => setSelectedPump(null), []);
+  const savePumpFlow = useCallback((pumpId: PumpId, flowLph: number) => {
+    setPumpFlowLphByPump((current) => ({ ...current, [pumpId]: flowLph }));
+  }, []);
 
   useEffect(() => {
     if (!modeNotice) return undefined;
@@ -86,6 +96,12 @@ export default function SmallScadaOverlay({
     <>
       <div className="small-scada-overlay hidden xl:block" data-testid="small-scada-overlay">
         <TankLevelIndicator level={smallScadaMock.tankLevel} />
+        <div
+          className="small-circulation-label"
+          style={toSmallScadaPositionStyle(SMALL_SCADA_LAYOUT.circulation.label)}
+        >
+          CIRCULATION<br />PUMP
+        </div>
         {canOperate ? SMALL_PUMPS.map((pump) => {
           const state = pumps[pump.id];
           const position = SMALL_SCADA_LAYOUT.pumps[pump.svgId].controls;
@@ -108,11 +124,25 @@ export default function SmallScadaOverlay({
             </div>
           );
         }) : null}
+        {SMALL_PUMPS.filter((pump) => smallScadaMock.pumpVolumesM3[pump.id] !== undefined).map((pump) => (
+          <div
+            key={`${pump.id}-volume`}
+            className="small-pump-volume pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+            style={toSmallScadaPositionStyle(SMALL_SCADA_LAYOUT.pumps[pump.svgId].volume)}
+          >
+            <PumpVolumeOverlay
+              pumpLabel={pump.label}
+              volumeM3={smallScadaMock.pumpVolumesM3[pump.id] ?? 0}
+            />
+          </div>
+        ))}
       </div>
       {selectedPump ? (
         <PumpProgrammingModal
           pumpId={selectedPump}
           cycles={cyclesByPump[selectedPump]}
+          pumpFlowLph={pumpFlowLphByPump[selectedPump]}
+          onPumpFlowSave={(flowLph) => savePumpFlow(selectedPump, flowLph)}
           onCyclesChange={(cycles) => setCyclesByPump((current) => ({
             ...current,
             [selectedPump]: cycles,

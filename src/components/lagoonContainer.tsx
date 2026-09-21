@@ -762,6 +762,125 @@ function HistorySection({ lagoonId, timezone, productType }: HistorySectionProps
   );
 }
 
+interface Wm001HistorySectionProps {
+  lagoonId: string;
+  tag: string;
+  timezone?: string | null;
+  productType: ProductType;
+  onClose: () => void;
+}
+
+function Wm001HistorySection({
+  lagoonId,
+  tag,
+  timezone,
+  productType,
+  onClose,
+}: Wm001HistorySectionProps) {
+  const now = new Date();
+  const oneDayAgo = new Date(now.getTime() - DAY_MS);
+  const [visibleStart, setVisibleStart] = useState<Date>(oneDayAgo);
+  const [visibleEnd, setVisibleEnd] = useState<Date>(now);
+  const requestedTags = useMemo(() => [tag], [tag]);
+
+  const commitVisibleRange = useCallback((start: Date, end: Date) => {
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return;
+
+    if (start <= end) {
+      setVisibleStart(new Date(start));
+      setVisibleEnd(new Date(end));
+      return;
+    }
+
+    setVisibleStart(new Date(end));
+    setVisibleEnd(new Date(start));
+  }, []);
+
+  const daysVisible = useMemo(
+    () => daysBetween(visibleStart, visibleEnd),
+    [visibleStart, visibleEnd],
+  );
+  const view = getViewByDays(daysVisible);
+  const { data, loading } = useHistory({
+    lagoonId,
+    startDate: visibleStart.toISOString(),
+    endDate: visibleEnd.toISOString(),
+    view,
+    productType,
+    tags: requestedTags,
+  });
+
+  const wm001Data = useMemo(
+    () => data
+      ? {
+          ...data,
+          series: data.series.filter(
+            (series) => getHistorySeriesTagKey(series).trim().toUpperCase() === tag.trim().toUpperCase(),
+          ),
+        }
+      : null,
+    [data, tag],
+  );
+  return (
+    <section className="lagoon-panel rounded-[16px] p-4 sm:p-5">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: 1, color: "#4f7fa2", display: "block" }}>
+            WM-001 HISTORICAL - VIEW {view.toUpperCase()}
+          </Typography>
+          <div className="mt-1 text-sm font-medium text-slate-600">TAG: {tag}</div>
+        </div>
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-xl leading-none text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          aria-label="Close WM-001 historical chart"
+          title="Close"
+          onClick={onClose}
+        >
+          ×
+        </button>
+      </div>
+
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, mb: 3, flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {quickRanges.map((range) => (
+            <button
+              key={range.label}
+              className="rounded-md border border-sky-100 bg-white/88 px-3 py-1.5 text-xs font-medium text-sky-900 shadow-[0_12px_24px_-20px_rgba(29,92,128,0.45)] transition hover:border-sky-200 hover:bg-sky-50"
+              onClick={() => {
+                const end = new Date();
+                commitVisibleRange(new Date(end.getTime() - range.days * DAY_MS), end);
+              }}
+            >
+              {range.label}
+            </button>
+          ))}
+        </Box>
+
+        <DateRangePicker
+          start={visibleStart}
+          end={visibleEnd}
+          timezone={timezone}
+          onChange={commitVisibleRange}
+        />
+      </Box>
+
+      <div className="relative w-full overflow-hidden rounded-xl border border-sky-100 bg-white/92 shadow-[0_18px_34px_-24px_rgba(29,92,128,0.28)]">
+        <div className="h-[19rem] sm:h-[22rem] lg:h-[24rem]">
+          <LagoonLineChart
+            data={wm001Data}
+            loading={loading}
+            selectedTags={requestedTags}
+            visibleStart={visibleStart}
+            visibleEnd={visibleEnd}
+            timezone={timezone}
+            onRangeChange={commitVisibleRange}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
 export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: Props) {
   const { accessToken } = useAuth();
   const product = useProduct();
@@ -774,6 +893,7 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
   const lagoonName = lagoon.lagoon_name;
   const maps = useMemo(() => bundle?.maps ?? [], [bundle]);
   const [activeMapIndex, setActiveMapIndex] = useState(0);
+  const [wm001HistoryTag, setWm001HistoryTag] = useState<string | null>(null);
   const resolvedActiveMapIndex = useMemo(() => {
     if (!maps.length) return 0;
     if (maps[activeMapIndex]) return activeMapIndex;
@@ -1005,9 +1125,20 @@ export default function LagoonContainer({ lagoon, onRealtimePtFitTagsChange }: P
           onStartPump={handleStartPump}
           onStopPump={handleStopPump}
           onWriteNumericControl={handleWriteNumericControl}
+          onWm001Click={(tag) => setWm001HistoryTag((currentTag) => currentTag === tag ? null : tag)}
         />
 
         <div className="mt-6 space-y-6">
+          {wm001HistoryTag ? (
+            <Wm001HistorySection
+              lagoonId={lagoonId}
+              tag={wm001HistoryTag}
+              timezone={historyTimezone}
+              productType={productType}
+              onClose={() => setWm001HistoryTag(null)}
+            />
+          ) : null}
+
           {pumpElements.length ? (
             <PumpStatusSection
               lagoonId={lagoonId}

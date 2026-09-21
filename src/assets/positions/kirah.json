@@ -155,8 +155,8 @@
   ],
   "valves": [
     {
-      "tag": "VE288_ST",
-      "label": "VE-288",
+      "tag": "VE320_ST",
+      "label": "VX-248",
       "position": {
         "top": "30.1%",
         "left": "31.4%"
@@ -165,8 +165,8 @@
       "type": "valve"
     },
     {
-      "tag": "VE318_ST",
-      "label": "VE-318",
+      "tag": "VE288_ST",
+      "label": "VX-251",
       "position": {
         "top": "54.7%",
         "left": "32.6%"
@@ -176,7 +176,7 @@
     },
     {
       "tag": "VE322_ST",
-      "label": "VE-322",
+      "label": "VX-275",
       "position": {
         "top": "26.4%",
         "left": "76.7%"
@@ -185,8 +185,8 @@
       "type": "valve"
     },
     {
-      "tag": "VE320_ST",
-      "label": "VE-320",
+      "tag": "VE318_ST",
+      "label": "VX-271",
       "position": {
         "top": "64.0%",
         "left": "80.8%"

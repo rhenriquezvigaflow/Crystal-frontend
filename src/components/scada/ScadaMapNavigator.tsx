@@ -25,6 +25,7 @@ interface Props {
   onStartPump?: ScadaPumpControlHandler;
   onStopPump?: ScadaPumpControlHandler;
   onWriteNumericControl?: ScadaNumericControlHandler;
+  onWm001Click?: (tag: string) => void;
 }
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -56,6 +57,7 @@ export default function ScadaMapNavigator({
   onStartPump,
   onStopPump,
   onWriteNumericControl,
+  onWm001Click,
 }: Props) {
   const activeMap = maps[activeMapIndex] ?? maps[0] ?? null;
 
@@ -107,6 +109,7 @@ export default function ScadaMapNavigator({
         onStartPump={onStartPump}
         onStopPump={onStopPump}
         onWriteNumericControl={onWriteNumericControl}
+        onWm001Click={onWm001Click}
       />
     </>
   );

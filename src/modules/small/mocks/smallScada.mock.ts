@@ -45,6 +45,16 @@ export const smallScadaMock: SmallScadaMock = {
     "A-P2H1": { status: "failure", mode: "manual" },
     CIRCULATION: { status: "working", mode: "automatic" },
   },
+  pumpVolumesM3: {
+    "A-C1LO": 1.25,
+    "F-H1LO": 0.85,
+    "A-P2H1": 1.1,
+  },
+  pumpFlowLph: {
+    "A-C1LO": 75,
+    "F-H1LO": 60,
+    "A-P2H1": 55,
+  },
   scheduleRange: {
     startDate: "2026-08-19",
     startTime: "08:00",

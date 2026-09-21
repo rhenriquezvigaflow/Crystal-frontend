@@ -55,6 +55,7 @@ interface Props {
   onStartPump?: ScadaPumpControlHandler;
   onStopPump?: ScadaPumpControlHandler;
   onWriteNumericControl?: ScadaNumericControlHandler;
+  onWm001Click?: (tag: string) => void;
 }
 
 const SKELETON_PLACEHOLDERS = [
@@ -247,6 +248,7 @@ export default function ScadaMapRenderer({
   onStartPump,
   onStopPump,
   onWriteNumericControl,
+  onWm001Click,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
@@ -449,6 +451,7 @@ export default function ScadaMapRenderer({
               timezone={timezone}
               filter_status={filterStatus}
               placements={scadaLayout.elements}
+              onWm001Click={onWm001Click}
             />
             <ScadaEquipmentStateOverlay
               layoutId={layoutId}

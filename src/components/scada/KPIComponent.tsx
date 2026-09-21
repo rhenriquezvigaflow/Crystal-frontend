@@ -15,6 +15,7 @@ interface Props {
   position?: ScadaLayoutPosition | null;
   scale?: number;
   placement?: ScadaOverlayPlacement | null;
+  onClick?: () => void;
 }
 
 const KPI_BACKGROUND = "#f4f6f8";
@@ -50,7 +51,7 @@ function formatTagTitle(tag?: string | null, label?: string | null): string {
   return cleaned;
 }
 
-function KPIComponent({ tag, label, value, unit, position, scale = 1, placement }: Props) {
+function KPIComponent({ tag, label, value, unit, position, scale = 1, placement, onClick }: Props) {
   const effectiveScale = placement?.scale ?? scale;
   const overlayStyle = placement?.style ?? (
     position?.left && position.top
@@ -70,13 +71,24 @@ function KPIComponent({ tag, label, value, unit, position, scale = 1, placement 
     <div
       className={[
         "absolute rounded-[6px] border text-center shadow-sm",
+        onClick ? "pointer-events-auto cursor-pointer transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1" : "",
         isCompact
           ? showLabel
             ? "w-[76px] px-[5px] py-[3px]"
             : "w-[54px] px-[4px] py-[3px]"
           : "w-fit min-w-[122px] px-[12px] py-[6px]",
       ].join(" ")}
-      title={overlayTitle}
+      title={onClick ? `${overlayTitle}. Show historical chart` : overlayTitle}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? `Show historical chart for ${displayLabel}` : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      } : undefined}
       style={{
         ...overlayStyle,
         backgroundColor: KPI_BACKGROUND,

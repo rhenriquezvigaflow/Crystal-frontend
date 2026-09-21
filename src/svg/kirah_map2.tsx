@@ -641,7 +641,7 @@ const SVGComponent = (props) => (
           fillOpacity: 0.612205,
         }}
       >
-        {"SKID CLEANING FUND:"}
+        {"     SKID CLEANING FUND:"}
       </tspan>
     </text>
     <path

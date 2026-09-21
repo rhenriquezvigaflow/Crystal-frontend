@@ -9,20 +9,25 @@ export interface SmallScadaCoordinates {
 
 interface SmallPumpLayout {
   controls: SmallScadaCoordinates;
+  volume: SmallScadaCoordinates;
 }
 
 export const SMALL_SCADA_LAYOUT: {
   tank: { levelIndicator: SmallScadaCoordinates };
+  circulation: { label: SmallScadaCoordinates };
   pumps: Record<SmallPumpSvgId, SmallPumpLayout>;
 } = {
   tank: {
-    levelIndicator: { x: "17.7%", y: "27.4%" },
+    levelIndicator: { x: "18.8%", y: "21.5%" },
+  },
+  circulation: {
+    label: { x: "25%", y: "72%" },
   },
   pumps: {
-    PUMP001: { controls: { x: "26.8%", y: "22.8%" } },
-    PUMP002: { controls: { x: "47.4%", y: "22.8%" } },
-    PUMP003: { controls: { x: "70.5%", y: "22.8%" } },
-    PUMP004: { controls: { x: "23%", y: "90.5%" } },
+    PUMP001: { controls: { x: "27.8%", y: "18.5%" }, volume: { x: "27.8%", y: "25.5%" } },
+    PUMP002: { controls: { x: "48.8%", y: "18.5%" }, volume: { x: "48.8%", y: "25.5%" } },
+    PUMP003: { controls: { x: "71.8%", y: "18.5%" }, volume: { x: "71.8%", y: "25.5%" } },
+    PUMP004: { controls: { x: "24%", y: "85%" }, volume: { x: "24.1%", y: "88%" } },
   },
 };
 

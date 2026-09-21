@@ -12,9 +12,11 @@ interface Props {
   endDate: string;
   view: "hourly" | "daily" | "weekly";
   productType: ProductType;
+  tags?: string[];
 }
 
-export function useHistory({ lagoonId, startDate, endDate, view, productType }: Props) {
+export function useHistory({ lagoonId, startDate, endDate, view, productType, tags }: Props) {
+  const requestedTagsKey = (tags ?? []).join("|");
   const [data, setData] = useState<HistoryResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function useHistory({ lagoonId, startDate, endDate, view, productType }: 
         start_date: startDate,
         end_date: endDate,
         view,
-        tags: [],
+        tags: requestedTagsKey ? requestedTagsKey.split("|") : [],
       },
       productType,
     )
@@ -61,7 +63,7 @@ export function useHistory({ lagoonId, startDate, endDate, view, productType }: 
     return () => {
       isCurrentRequest = false;
     };
-  }, [lagoonId, startDate, endDate, view, productType]);
+  }, [lagoonId, startDate, endDate, view, productType, requestedTagsKey]);
 
   return { data, loading, error };
 }

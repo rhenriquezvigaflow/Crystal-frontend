@@ -193,8 +193,8 @@ export default function LagoonsView({ legacyRoute = false }: { legacyRoute?: boo
 
   return (
     <div className="min-h-screen">
-      <div className="lg:grid lg:min-h-screen lg:grid-cols-[260px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
-        <div className="hidden lg:row-span-2 lg:block">
+      <div className="xl:grid xl:min-h-screen xl:grid-cols-[260px_minmax(0,1fr)] xl:grid-rows-[auto_minmax(0,1fr)]">
+        <div className="hidden xl:row-span-2 xl:block">
           <Sidebar
             lagoons={lagoons}
             selectedLagoonId={selectedLagoon.lagoon_id}
@@ -222,7 +222,7 @@ export default function LagoonsView({ legacyRoute = false }: { legacyRoute?: boo
       </div>
 
       {isMobileNavOpen && (
-        <div className="fixed inset-0 z-[120] lg:hidden">
+        <div className="fixed inset-0 z-[120] xl:hidden">
           <button
             type="button"
             aria-label="Close side menu"

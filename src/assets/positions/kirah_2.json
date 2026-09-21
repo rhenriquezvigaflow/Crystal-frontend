@@ -39,7 +39,7 @@
     {
       "tag": "TE110_R",
       "label": "TEMP",
-      "unit": "Â°C",
+      "unit": "°C",
       "position": {
         "top": "69%",
         "left": "73.5%"
@@ -97,9 +97,9 @@
       },
       "position": {
         "top": "46%",
-        "left": "50%"
+        "left": "49%"
       },
-      "align": "center",
+      "align": "left",
       "color": "#616264",
       "font_size": 22,
       "font_weight": 700,

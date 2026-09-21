@@ -55,6 +55,8 @@ export type ScheduleDayKey =
 export interface SmallScadaMock {
   tankLevel: TankLevel;
   pumps: Record<PumpId, PumpMockState>;
+  pumpVolumesM3: Partial<Record<PumpId, number>>;
+  pumpFlowLph: Partial<Record<PumpId, number>>;
   scheduleRange: ScheduleRange;
   cycles: PumpScheduleCycle[];
 }

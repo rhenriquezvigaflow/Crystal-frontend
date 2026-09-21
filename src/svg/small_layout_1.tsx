@@ -26,12 +26,12 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
       inkscape:pageopacity={0}
       inkscape:pagecheckerboard={0}
       inkscape:deskcolor="#d1d1d1"
-      inkscape:zoom={2.0000001}
-      inkscape:cx={645.49998}
-      inkscape:cy={787.24998}
+      inkscape:zoom={0.70710682}
+      inkscape:cx={677.40826}
+      inkscape:cy={379.71632}
       inkscape:window-width={1920}
-      inkscape:window-height={1129}
-      inkscape:window-x={-8}
+      inkscape:window-height={1009}
+      inkscape:window-x={1912}
       inkscape:window-y={-8}
       inkscape:window-maximized={1}
       inkscape:current-layer="Capa_1"
@@ -2058,7 +2058,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     </style>
     <g
       id="g3"
-      transform="matrix(0.18751318,0,0,0.12594391,289.95376,561.82509)"
+      transform="matrix(0.18751318,0,0,0.12594391,304.95376,501.8251)"
       style={{
         strokeWidth: 6.50722,
       }}
@@ -2112,7 +2112,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     </g>
     <path
       id="Vector_324-6-6-5-1-7-7-7-4"
-      d="m 143.10893,814.05322 c 0.0272,-1.26112 0.97351,-2.3887 2.20694,-2.36375 l 10.17677,0.20793 c 1.13086,0.0206 2.13804,1.07596 2.11032,2.45162 -0.0144,0.63064 -0.23088,1.257 -0.59877,1.65098 l -5.20227,5.57153 c -0.78821,0.84413 -2.07315,0.8178 -2.93198,0.0555 l -0.10056,-0.11689 -4.97424,-5.77905 c -0.60645,-0.52855 -0.69892,-1.04674 -0.68627,-1.67733 z"
+      d="m 158.10893,754.05323 c 0.0272,-1.26112 0.97351,-2.3887 2.20694,-2.36375 l 10.17677,0.20793 c 1.13086,0.0206 2.13804,1.07596 2.11032,2.45162 -0.0144,0.63064 -0.23088,1.257 -0.59877,1.65098 l -5.20227,5.57153 c -0.78821,0.84413 -2.07315,0.8178 -2.93198,0.0555 l -0.10056,-0.11689 -4.97424,-5.77905 c -0.60645,-0.52855 -0.69892,-1.04674 -0.68627,-1.67733 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2137,28 +2137,23 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
       aria-label="Open CIRCULATION pump"
       onClick={(event) => {
         const indicator = event.currentTarget.querySelector("#circle282");
-        const color = indicator
-          ? window.getComputedStyle(indicator).fill
-          : (smallPumpColors.PUMP004 ?? "#0e76e7");
+        const color = indicator ? window.getComputedStyle(indicator).fill : (smallPumpColors.PUMP004 ?? "#0e76e7");
         onSmallPumpClick?.("PUMP004", color);
       }}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           const indicator = event.currentTarget.querySelector("#circle282");
-          const color = indicator
-            ? window.getComputedStyle(indicator).fill
-            : (smallPumpColors.PUMP004 ?? "#0e76e7");
+          const color = indicator ? window.getComputedStyle(indicator).fill : (smallPumpColors.PUMP004 ?? "#0e76e7");
           onSmallPumpClick?.("PUMP004", color);
         }
       }}
-      transform="matrix(2.9455845,0,0,2.6050368,-640.53167,-572.31589)"
+      transform="matrix(2.9455845,0,0,2.6050368,-625.53167,-632.31588)"
       style={{
         stroke: "#000000",
         strokeWidth: 0,
         strokeDasharray: "none",
         strokeOpacity: 1,
-        cursor: onSmallPumpClick ? "pointer" : "default",
       }}
     >
       <g
@@ -2248,13 +2243,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 372.64572,821.07268 903.24298,0.21822 -0.3924,-393.39015 -1122.13338,-0.0638 -0.11235,104.6451"
+      d="m 387.64572,761.07269 903.24298,0.21822 -0.3924,-393.39015 -1122.13338,-0.0638 -0.11235,104.6451"
       id="path5"
       sodipodi:nodetypes="ccccc"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89-4-5"
-      d="m 274.64158,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
+      d="m 289.64158,360.73591 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2274,7 +2269,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89-4-2"
-      d="m 145.76592,483.47584 c 0.0104,-1.2614 0.94151,-2.40144 2.17518,-2.39304 l 10.17864,0.0717 c 1.13105,1.9e-4 2.15222,1.04736 2.1429,2.42326 -0.006,0.63079 -0.214,1.25998 -0.57664,1.6588 l -5.12738,5.64057 c -0.77686,0.85457 -2.06205,0.84545 -2.93095,0.0945 l -0.10214,-0.11557 -5.05105,-5.71212 c -0.61346,-0.5203 -0.71285,-1.03722 -0.70863,-1.66791 z"
+      d="m 160.76592,423.47585 c 0.0104,-1.2614 0.94151,-2.40144 2.17518,-2.39304 l 10.17864,0.0717 c 1.13105,1.9e-4 2.15222,1.04736 2.1429,2.42326 -0.006,0.63079 -0.214,1.25998 -0.57664,1.6588 l -5.12738,5.64057 c -0.77686,0.85457 -2.06205,0.84545 -2.93095,0.0945 l -0.10214,-0.11557 -5.05105,-5.71212 c -0.61346,-0.5203 -0.71285,-1.03722 -0.70863,-1.66791 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2294,7 +2289,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89-4"
-      d="m 524.64158,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
+      d="m 539.64158,360.73591 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2314,7 +2309,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-06"
-      d="m 1283.1948,504.43803 c 0.025,1.26109 -0.8731,2.42718 -2.1065,2.45366 l -10.1766,0.21662 c -1.1308,0.0226 -2.181,-0.98591 -2.2107,-2.36152 -0.012,-0.63071 0.1783,-1.26557 0.5294,-1.67447 l 4.9655,-5.78363 c 0.7524,-0.87626 2.0373,-0.90343 2.9271,-0.17748 l 0.1054,0.11259 5.2108,5.56662 c 0.628,0.5028 0.742,1.01673 0.7557,1.64729 z"
+      d="m 1298.1948,444.43804 c 0.025,1.26109 -0.8731,2.42718 -2.1065,2.45366 l -10.1766,0.21662 c -1.1308,0.0226 -2.181,-0.98591 -2.2107,-2.36152 -0.012,-0.63071 0.1783,-1.26557 0.5294,-1.67447 l 4.9655,-5.78363 c 0.7524,-0.87626 2.0373,-0.90343 2.9271,-0.17748 l 0.1054,0.11259 5.2108,5.56662 c 0.628,0.5028 0.742,1.01673 0.7557,1.64729 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2334,7 +2329,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-89"
-      d="m 1084.6416,420.7359 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
+      d="m 1099.6416,360.73591 c 1.2614,0.0102 2.4016,0.9411 2.3934,2.17478 l -0.07,10.17865 c 0,1.13105 -1.047,2.1524 -2.4229,2.1433 -0.6308,-0.006 -1.26,-0.21384 -1.6589,-0.57637 l -5.6414,-5.12646 c -0.8547,-0.77672 -0.8458,-2.0619 -0.095,-2.93093 l 0.1155,-0.10217 5.7113,-5.05199 c 0.5202,-0.61354 1.0371,-0.71301 1.6678,-0.7089 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2354,7 +2349,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-0"
-      d="m 1283.2839,738.48832 c 0,1.26134 -0.9149,2.41174 -2.1486,2.41691 l -10.1788,0.0407 c -1.131,0.003 -2.1637,-1.02346 -2.1696,-2.39938 0,-0.63081 0.2002,-1.26229 0.5583,-1.66507 l 5.0647,-5.69694 c 0.7674,-0.86313 2.0526,-0.8681 2.9297,-0.12689 l 0.1035,0.11442 5.1138,5.65585 c 0.6192,0.51358 0.7243,1.0294 0.7271,1.66009 z"
+      d="m 1298.2839,678.48833 c 0,1.26134 -0.9149,2.41174 -2.1486,2.41691 l -10.1788,0.0407 c -1.131,0.003 -2.1637,-1.02346 -2.1696,-2.39938 0,-0.63081 0.2002,-1.26229 0.5583,-1.66507 l 5.0647,-5.69694 c 0.7674,-0.86313 2.0526,-0.8681 2.9297,-0.12689 l 0.1035,0.11442 5.1138,5.65585 c 0.6192,0.51358 0.7243,1.0294 0.7271,1.66009 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2374,7 +2369,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-8"
-      d="m 972.00175,828.30496 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17858 c 0.01,-1.13104 1.0484,-2.15171 2.4243,-2.14167 0.6308,0.006 1.2599,0.21469 1.6585,0.57748 l 5.638,5.13024 c 0.8542,0.77729 0.8443,2.06246 0.093,2.931 l -0.1156,0.10208 -5.7146,5.04815 c -0.5207,0.61319 -1.0377,0.71232 -1.6684,0.70777 z"
+      d="m 987.00175,768.30497 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17858 c 0.01,-1.13104 1.0484,-2.15171 2.4243,-2.14167 0.6308,0.006 1.2599,0.21469 1.6585,0.57748 l 5.638,5.13024 c 0.8542,0.77729 0.8443,2.06246 0.093,2.931 l -0.1156,0.10208 -5.7146,5.04815 c -0.5207,0.61319 -1.0377,0.71232 -1.6684,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2394,7 +2389,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7"
-      d="m 632.59406,828.78891 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 L 640,820 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
+      d="m 647.59406,768.78892 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 L 655,760.00001 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -2627,7 +2622,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         </tspan>
       </tspan>
     </text>
-    <g id="g9" transform="translate(-89.85204,81.696512)">
+    <g id="g9" transform="translate(-74.852037,21.696524)">
       <g
         id="g1-2"
         transform="matrix(-0.01572811,0,0,0.01875805,986.32599,713.12925)"
@@ -2702,7 +2697,6 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             style={{
               opacity: 1,
               fill: smallPumpColors.PUMP001 ?? "#868588",
-              cursor: onSmallPumpClick ? "pointer" : "default",
               fillOpacity: 0.913725,
               stroke: "#283e49",
               strokeWidth: 0,
@@ -2716,20 +2710,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             role="button"
             tabIndex={0}
             aria-label="Open PUMP001 pump"
-            onClick={(event) => onSmallPumpClick?.(
-              "PUMP001",
-              window.getComputedStyle(event.currentTarget).fill,
-            )}
+            onClick={(event) => onSmallPumpClick?.("PUMP001", window.getComputedStyle(event.currentTarget).fill)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSmallPumpClick?.(
-                  "PUMP001",
-                  window.getComputedStyle(event.currentTarget).fill,
-                );
+                onSmallPumpClick?.("PUMP001", window.getComputedStyle(event.currentTarget).fill);
               }
             }}
-            inkscape:label="PUMP001"
             width={664.69495}
             height={734.99994}
             x={-1118.3475}
@@ -3188,7 +3175,6 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             style={{
               opacity: 1,
               fill: smallPumpColors.PUMP003 ?? "#868588",
-              cursor: onSmallPumpClick ? "pointer" : "default",
               fillOpacity: 0.913725,
               stroke: "#283e49",
               strokeWidth: 0,
@@ -3202,17 +3188,11 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             role="button"
             tabIndex={0}
             aria-label="Open PUMP003 pump"
-            onClick={(event) => onSmallPumpClick?.(
-              "PUMP003",
-              window.getComputedStyle(event.currentTarget).fill,
-            )}
+            onClick={(event) => onSmallPumpClick?.("PUMP003", window.getComputedStyle(event.currentTarget).fill)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSmallPumpClick?.(
-                  "PUMP003",
-                  window.getComputedStyle(event.currentTarget).fill,
-                );
+                onSmallPumpClick?.("PUMP003", window.getComputedStyle(event.currentTarget).fill);
               }
             }}
             width={664.69495}
@@ -3476,7 +3456,6 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             style={{
               opacity: 1,
               fill: smallPumpColors.PUMP002 ?? "#868588",
-              cursor: onSmallPumpClick ? "pointer" : "default",
               fillOpacity: 0.913725,
               stroke: "#283e49",
               strokeWidth: 0,
@@ -3490,17 +3469,11 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
             role="button"
             tabIndex={0}
             aria-label="Open PUMP002 pump"
-            onClick={(event) => onSmallPumpClick?.(
-              "PUMP002",
-              window.getComputedStyle(event.currentTarget).fill,
-            )}
+            onClick={(event) => onSmallPumpClick?.("PUMP002", window.getComputedStyle(event.currentTarget).fill)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSmallPumpClick?.(
-                  "PUMP002",
-                  window.getComputedStyle(event.currentTarget).fill,
-                );
+                onSmallPumpClick?.("PUMP002", window.getComputedStyle(event.currentTarget).fill);
               }
             }}
             width={664.69495}
@@ -3743,7 +3716,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 420.35824,377.97824 38.58022,-0.21879"
+      d="m 435.35824,317.97825 38.58022,-0.21879"
       id="path4-8-6"
     />
     <path
@@ -3863,7 +3836,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" />
     <g
       id="g1"
-      transform="matrix(0.89535458,0,0,0.84027654,-185.158,-453.62099)"
+      transform="matrix(0.89535458,0,0,0.84027654,-170.158,-513.62098)"
       style={{
         strokeWidth: 1.1529,
       }}
@@ -3914,7 +3887,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="M 499,818 V 779.41915"
+      d="M 514,758.00001 V 719.41916"
       id="path4-8"
     />
     <path
@@ -3929,7 +3902,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="M 802,818.29687 V 779.71602"
+      d="M 817,758.29688 V 719.71603"
       id="path4-6"
     />
     <path
@@ -3944,13 +3917,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="M 1099.2969,818.35937 V 779.77852"
+      d="M 1114.2969,758.35938 V 719.77853"
       id="path4-9"
     />
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -3966,17 +3939,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={374.95633}
-      y={301.85355}
+      x={335}
+      y={280}
       id="text13-6-9"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5"
-        x={374.95633}
-        y={301.85355}
+        x={335}
+        y={280}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"A - C1LO"}
@@ -3985,7 +3958,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -4001,17 +3974,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={666.69501}
-      y={303.76001}
+      x={620}
+      y={320}
       id="text13-6-9-1"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-2"
-        x={666.69501}
-        y={303.76001}
+        x={620}
+        y={320}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"F - H1LO"}
@@ -4020,7 +3993,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -4036,17 +4009,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={992.7796}
-      y={304.2496}
+      x={942}
+      y={321}
       id="text13-6-9-1-4"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-2-1"
-        x={992.7796}
-        y={304.2496}
+        x={942}
+        y={321}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"A - P2H1"}
@@ -4071,15 +4044,15 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={164.64835}
-      y={272.86884}
+      x={189.8914}
+      y={211.59004}
       id="text13-6-9-6"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-02"
-        x={164.64835}
-        y={272.86884}
+        x={189.8914}
+        y={211.59004}
         style={{
           fontSize: 18,
         }}
@@ -4090,7 +4063,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -4106,17 +4079,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={374.95633}
-      y={321.85355}
+      x={334.50098}
+      y={294.83398}
       id="text13-6-9-65"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-09"
-        x={374.95633}
-        y={321.85355}
+        x={334.50098}
+        y={294.83398}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"PUMP"}
@@ -4125,7 +4098,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -4141,17 +4114,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={666.65546}
-      y={321.56659}
+      x={619.96924}
+      y={335.3317}
       id="text13-6-9-65-6"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-09-1"
-        x={666.65546}
-        y={321.56659}
+        x={619.96924}
+        y={335.3317}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"PUMP"}
@@ -4160,7 +4133,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
     <text
       xmlSpace="preserve"
       style={{
-        fontSize: 18,
+        fontSize: 14,
         fontFamily: "Calibri",
         InkscapeFontSpecification: "Calibri",
         textAlign: "center",
@@ -4176,17 +4149,17 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={992.08966}
-      y={322.49094}
+      x={941.46338}
+      y={335.5817}
       id="text13-6-9-65-9"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-09-3"
-        x={992.08966}
-        y={322.49094}
+        x={941.46338}
+        y={335.5817}
         style={{
-          fontSize: 18,
+          fontSize: 14,
         }}
       >
         {"PUMP"}
@@ -4204,7 +4177,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 719.65402,377.09329 38.58022,-0.21879"
+      d="m 734.65402,317.0933 38.58022,-0.21879"
       id="path4-8-6-8"
     />
     <path
@@ -4219,7 +4192,7 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 1044.654,377.0933 38.5802,-0.21879"
+      d="m 1059.654,317.09331 38.5802,-0.21879"
       id="path4-8-6-8-3"
     />
     <text
@@ -4241,20 +4214,20 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={327.55472}
-      y={777.86884}
+      x={342.55472}
+      y={625}
       id="text13-6-9-0"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-7"
-        x={329.58939}
-        y={777.86884}
+        x={344.58939}
+        y={625}
         style={{
           fontSize: 18,
         }}
       >
-        {"CIRCULATION "}
+        {"CIRCULATION"}
       </tspan>
     </text>
     <text
@@ -4276,25 +4249,25 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={327.55472}
-      y={794.57507}
+      x={342.55472}
+      y={642}
       id="text13-6-9-0-6"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-7-1"
-        x={329.58939}
-        y={794.57507}
+        x={344.58939}
+        y={642}
         style={{
           fontSize: 18,
         }}
       >
-        {"PUMP "}
+        {"PUMP"}
       </tspan>
     </text>
     <g
       id="g34"
-      transform="matrix(0.39487317,0,0,0.37602389,794.58959,890.44674)"
+      transform="matrix(0.39487317,0,0,0.37602389,913.03545,824.30092)"
       style={{
         strokeWidth: 2.59516,
       }}
@@ -4372,13 +4345,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 801.17944,927.16901 -46.9673,0.44454 -111.51635,-0.22227"
+      d="m 919.6253,861.02319 -46.9673,0.44454 -111.51635,-0.22227"
       id="path53"
       sodipodi:nodetypes="ccc"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-2"
-      d="m 670.62984,934.62754 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 l 5.63794,5.13023 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
+      d="m 789.0757,868.48172 c -1.26137,-0.011 -2.40101,-0.94272 -2.39192,-2.17638 l 0.0771,-10.17859 c 0.006,-1.13103 1.04838,-2.1517 2.42428,-2.14166 0.63078,0.006 1.25987,0.2147 1.65854,0.57749 l 5.63794,5.13023 c 0.8542,0.77729 0.84438,2.06246 0.0932,2.93101 l -0.11557,0.10208 -5.71464,5.04814 c -0.5207,0.6132 -1.03766,0.71231 -1.66836,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -4408,13 +4381,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 1010.3191,927.08682 -46.96735,0.44454 -111.51635,-0.22227"
+      d="m 1128.7649,860.941 -46.9673,0.44454 -111.51636,-0.22227"
       id="path53-3"
       sodipodi:nodetypes="ccc"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-2-5"
-      d="m 1009.2459,934.54535 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17859 c 0.01,-1.13103 1.0484,-2.1517 2.4243,-2.14166 0.6308,0.006 1.2599,0.2147 1.6585,0.57749 l 5.638,5.13023 c 0.8542,0.77729 0.8443,2.06246 0.093,2.93101 l -0.1156,0.10208 -5.7146,5.04814 c -0.5207,0.6132 -1.0377,0.71231 -1.6684,0.70777 z"
+      d="m 1127.6917,868.39953 c -1.2613,-0.011 -2.401,-0.94272 -2.3919,-2.17638 l 0.077,-10.17859 c 0.01,-1.13103 1.0484,-2.1517 2.4243,-2.14166 0.6308,0.006 1.2599,0.2147 1.6585,0.57749 l 5.638,5.13023 c 0.8542,0.77729 0.8443,2.06246 0.093,2.93101 l -0.1156,0.10208 -5.7146,5.04814 c -0.5207,0.6132 -1.0377,0.71231 -1.6684,0.70777 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}
@@ -4451,15 +4424,15 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={635}
-      y={900}
+      x={753.44586}
+      y={833.85413}
       id="text13-6-9-1-1"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-2-15"
-        x={635}
-        y={900}
+        x={753.44586}
+        y={833.85413}
         style={{
           fontSize: 13,
         }}
@@ -4468,8 +4441,8 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
       </tspan>
       <tspan
         sodipodi:role="line"
-        x={635}
-        y={916.25}
+        x={753.44586}
+        y={850.10413}
         style={{
           fontSize: 13,
         }}
@@ -4497,14 +4470,14 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={480.07172}
-      y={957.7478}
+      x={495.07172}
+      y={897.7478}
       id="text13-6-9-1-1-2"
     >
       <tspan
         sodipodi:role="line"
-        x={480.07172}
-        y={957.7478}
+        x={495.07172}
+        y={897.7478}
         style={{
           fontSize: 13,
         }}
@@ -4532,15 +4505,15 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      x={1020}
-      y={900}
+      x={1138.4458}
+      y={833.85413}
       id="text13-6-9-1-1-3"
     >
       <tspan
         sodipodi:role="line"
         id="tspan13-1-5-2-15-2"
-        x={1020}
-        y={900}
+        x={1138.4458}
+        y={833.85413}
         style={{
           fontSize: 13,
         }}
@@ -4549,8 +4522,8 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
       </tspan>
       <tspan
         sodipodi:role="line"
-        x={1020}
-        y={916.25}
+        x={1138.4458}
+        y={850.10413}
         style={{
           fontSize: 13,
         }}
@@ -4570,13 +4543,13 @@ const SVGComponent = ({ smallPumpColors = {}, onSmallPumpClick, ...props }) => (
         strokeDasharray: "none",
         strokeOpacity: 1,
       }}
-      d="m 480.27875,823 0.0717,112.74776"
+      d="m 495.27875,763.00001 0.0717,112.74776"
       id="path8"
       sodipodi:nodetypes="cc"
     />
     <path
       id="Vector_324-6-6-5-1-7-7-7-4-4"
-      d="m 470.55894,936.24129 c 0.0366,-1.33013 1.31055,-2.51942 2.971,-2.4931 L 487.23,933.9675 c 1.52237,0.0217 2.87825,1.13484 2.84093,2.58577 -0.0194,0.66515 -0.31081,1.32579 -0.80607,1.74133 l -7.00334,5.87642 c -1.06109,0.89033 -2.79089,0.86255 -3.94706,0.0585 l -0.13537,-0.12328 -6.69636,-6.0953 c -0.81641,-0.55747 -0.9409,-1.10402 -0.92386,-1.76912 z"
+      d="m 485.55894,876.2413 c 0.0366,-1.33013 1.31055,-2.51942 2.971,-2.4931 l 13.70006,0.21931 c 1.52237,0.0217 2.87825,1.13484 2.84093,2.58577 -0.0194,0.66515 -0.31081,1.32579 -0.80607,1.74133 l -7.00334,5.87642 c -1.06109,0.89033 -2.79089,0.86255 -3.94706,0.0585 l -0.13537,-0.12328 -6.69636,-6.0953 c -0.81641,-0.55747 -0.9409,-1.10402 -0.92386,-1.76912 z"
       fill="#00aeed"
       stroke="#ffffff"
       strokeWidth={2.1717}

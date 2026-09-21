@@ -13,7 +13,7 @@
       "src": "small_lagoons.webp",
       "alt": "Small Lagoons",
       "position": {
-        "top": "63%",
+        "top": "57%",
         "left": "16%"
       },
       "width": "48%",
@@ -27,7 +27,7 @@
       "label": "PT-431",
       "unit": "Bar",
       "position": {
-        "top": "38%",
+        "top": "32%",
         "left": "36%"
       },
       "always_visible": true
@@ -35,19 +35,19 @@
     {
       "tag": "PT-411",
       "label": "PT-411",
-      "unit": "mV",
+      "unit": "Bar",
       "position": {
-        "top": "38%",
-        "left": "58%"
+        "top": "32%",
+        "left": "57.8%"
       },
       "always_visible": true
     },
     {
       "tag": "PT-421",
       "label": "PT-421",
-      "unit": "pH",
+      "unit": "Bar",
       "position": {
-        "top": "38%",
+        "top": "32%",
         "left": "81%"
       },
       "always_visible": true
@@ -57,8 +57,8 @@
       "label": "PT-000",
       "unit": "Bar",
       "position": {
-        "top": "76%",
-        "left": "36%"
+        "top": "72%",
+        "left": "37%"
       },
       "always_visible": true
     },
@@ -67,8 +67,8 @@
       "label": "ORP-000",
       "unit": "mV",
       "position": {
-        "top": "76%",
-        "left": "57%"
+        "top": "72%",
+        "left": "58.5%"
       },
       "always_visible": true
     },
@@ -77,8 +77,8 @@
       "label": "pH-000",
       "unit": "pH",
       "position": {
-        "top": "76%",
-        "left": "79%"
+        "top": "72%",
+        "left": "80%"
       },
       "always_visible": true
     },
@@ -87,8 +87,8 @@
       "label": "WM-01",
       "unit": "m3",
       "position": {
-        "top": "96.5%",
-        "left": "59%"
+        "top": "92%",
+        "left": "68%"
       },
       "icon_type": "volume",
       "always_visible": true
@@ -131,7 +131,7 @@
   "lagoon_metrics_overlay": {
     "title": "ORP Perimeter",
     "position": {
-      "top": "63%",
+      "top": "57%",
       "left": "16.5%"
     },
     "width": "18%",
@@ -157,7 +157,7 @@
     "label": "Santiago local time",
     "clock_offset_seconds": -60,
     "position": {
-      "top": "12%",
+      "top": "8.5%",
       "left": "14%"
     }
   },

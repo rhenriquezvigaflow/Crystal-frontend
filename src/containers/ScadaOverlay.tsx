@@ -17,6 +17,15 @@ interface Props {
   timezone?: string | null;
   filter_status?: string | null;
   placements?: ScadaPlacementLookup;
+  onWm001Click?: (tag: string) => void;
+}
+
+function isWm001Kpi(element: ResolvedScadaElement): boolean {
+  const label = String(element.label ?? "").replace(/[^a-z0-9]/gi, "").toUpperCase();
+  if (label === "WM001") return true;
+
+  const tag = String(element.tag ?? element.fallback_tag ?? "").toUpperCase();
+  return /(?:^|_)WM0*1(?:_|$)/.test(tag) || /(?:^|_)WM001(?:_|$)/.test(tag);
 }
 
 function ScadaOverlay({
@@ -27,6 +36,7 @@ function ScadaOverlay({
   timezone,
   filter_status,
   placements = {},
+  onWm001Click,
 }: Props) {
   if (!elements.length) return null;
 
@@ -35,6 +45,10 @@ function ScadaOverlay({
       {elements.map((element) => {
         if (element.type === "kpi") {
           const value = getRealtimeValue(tagLookup, element.tag, element.fallback_tag);
+          const wm001Tag = String(element.tag ?? element.fallback_tag ?? "").trim();
+          const onClick = isWm001Kpi(element) && wm001Tag
+            ? () => onWm001Click?.(wm001Tag)
+            : undefined;
 
           return (
             <KPIComponent
@@ -45,6 +59,7 @@ function ScadaOverlay({
               unit={element.unit}
               position={element.position}
               placement={placements[element.id]}
+              onClick={onClick}
             />
           );
         }

@@ -27,8 +27,6 @@ const isPlottableTag = (tagKey?: string) => {
 
   const k = String(tagKey).toUpperCase();
 
-  if (k === "WM001_TOT_SCADA") return false;
-
   if (
     k.includes("_ST_") ||
     k.includes("_STATUS") ||

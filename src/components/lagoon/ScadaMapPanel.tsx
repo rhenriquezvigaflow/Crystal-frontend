@@ -24,6 +24,7 @@ interface Props {
   onStartPump?: ScadaPumpControlHandler;
   onStopPump?: ScadaPumpControlHandler;
   onWriteNumericControl?: ScadaNumericControlHandler;
+  onWm001Click?: (tag: string) => void;
 }
 
 export default function ScadaMapPanel({
@@ -43,6 +44,7 @@ export default function ScadaMapPanel({
   onStartPump,
   onStopPump,
   onWriteNumericControl,
+  onWm001Click,
 }: Props) {
   return (
     <section className="lagoon-map-shell rounded-[18px] p-2 sm:p-3">
@@ -88,6 +90,7 @@ export default function ScadaMapPanel({
         onStartPump={onStartPump}
         onStopPump={onStopPump}
         onWriteNumericControl={onWriteNumericControl}
+        onWm001Click={onWm001Click}
       />
     </section>
   );

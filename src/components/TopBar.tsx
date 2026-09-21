@@ -45,7 +45,7 @@ export default function TopBar({
             type="button"
             onClick={onMenuToggle}
             aria-label={isMenuOpen ? "Close side menu" : "Open side menu"}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 xl:hidden"
           >
             <HamburgerIcon />
           </button>
@@ -65,7 +65,7 @@ export default function TopBar({
               type="button"
               onClick={onMenuToggle}
               aria-label={isMenuOpen ? "Close side menu" : "Open side menu"}
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 lg:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white/85 text-sky-800 shadow-[0_12px_24px_-18px_rgba(29,92,128,0.55)] transition hover:border-sky-200 hover:bg-sky-50 xl:hidden"
             >
               <HamburgerIcon />
             </button>
