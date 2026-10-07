@@ -406,6 +406,7 @@ export default function ScadaMapRenderer({
             {SvgComponent ? (
               <SvgComponent
                 className="scada-svg h-auto w-full"
+                data-scada-lagoon-id={scene?.lagoon_id}
                 preserveAspectRatio="xMidYMid meet"
                 smallPumpColors={isSmallScada ? smallPumpColors : undefined}
                 onSmallPumpClick={isSmallScada ? handleSmallPumpClick : undefined}

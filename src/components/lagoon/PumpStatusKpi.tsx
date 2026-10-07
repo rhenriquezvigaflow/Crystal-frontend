@@ -198,7 +198,7 @@ export default function PumpStatusKpi({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-slate-800 truncate">{pump.label}</div>
+                  <div className={`text-sm font-semibold text-slate-800 ${lagoonId === "d11_pacerla_j" ? "whitespace-normal break-words" : "truncate"}`}>{pump.label}</div>
                   <div className={`mt-1 inline-flex items-center gap-2 text-[11px] font-semibold tracking-wide ${config.text}`}>
                     <span className={`w-2.5 h-2.5 rounded-full ${config.dot}`} />
                     {config.label}

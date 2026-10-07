@@ -1,0 +1,258 @@
+{
+    "lagoon_id":  "d11_pacerla_j",
+    "layout_id":  "nyah_map2",
+    "svg_component":  "nyah_map2",
+    "aspect_ratio":  "1400 / 1150",
+    "map_name":  "Bottom Cleaning",
+    "map_order":  2,
+    "kpis":  [
+                 {
+                     "tag":  "TE100_R",
+                     "label":  "TEMP",
+                     "unit":  "°C",
+                     "position":  {
+                                      "top":  "36.5%",
+                                      "left":  "33.2%"
+                                  }
+                 },
+                 {
+                     "tag":  "TH101_R",
+                     "label":  "HUMID",
+                     "unit":  "%",
+                     "position":  {
+                                      "top":  "36.5%",
+                                      "left":  "42.1%"
+                                  }
+                 },
+                 {
+                     "tag":  "PT101_R",
+                     "label":  "PT-101",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "47%",
+                                      "left":  "34%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "PT102_R",
+                     "label":  "PT-102",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "42%",
+                                      "left":  "44%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "FIT100_R",
+                     "label":  "FIT-100",
+                     "unit":  "L/s",
+                     "position":  {
+                                      "top":  "34%",
+                                      "left":  "57%"
+                                  },
+                     "icon_type":  "flow"
+                 },
+                 {
+                     "tag":  "P100_FREQ",
+                     "label":  "FREQ P-100",
+                     "unit":  "Hz",
+                     "position":  {
+                                      "top":  "52.2%",
+                                      "left":  "46.2%"
+                                  }
+                 },
+                 {
+                     "tag":  "TE110_R",
+                     "label":  "TEMP",
+                     "unit":  "°C",
+                     "position":  {
+                                      "top":  "68.1%",
+                                      "left":  "33.2%"
+                                  }
+                 },
+                 {
+                     "tag":  "TH111_R",
+                     "label":  "HUMID",
+                     "unit":  "%",
+                     "position":  {
+                                      "top":  "68.1%",
+                                      "left":  "42.1%"
+                                  }
+                 },
+                 {
+                     "tag":  "PT111_R",
+                     "label":  "PT-111",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "77.3%",
+                                      "left":  "35%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "PT112_R",
+                     "label":  "PT-112",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "74%",
+                                      "left":  "44%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "FIT110_R",
+                     "label":  "FIT-110",
+                     "unit":  "L/s",
+                     "position":  {
+                                      "top":  "67%",
+                                      "left":  "57.9%"
+                                  },
+                     "icon_type":  "flow"
+                 },
+                 {
+                     "tag":  "P110_FREQ",
+                     "label":  "FREQ P-110",
+                     "unit":  "Hz",
+                     "position":  {
+                                      "top":  "83.8%",
+                                      "left":  "48.4%"
+                                  }
+                 }
+             ],
+    "pumps":  [
+                  {
+                      "tag":  "P100_ST",
+                      "label":  "P-100",
+                      "svg_target":  "PUMP-01",
+                      "panel":  "pump-status",
+                      "type":  "pump"
+                  },
+                  {
+                      "tag":  "P110_ST",
+                      "label":  "P-110",
+                      "svg_target":  "PUMP-02",
+                      "panel":  "pump-status",
+                      "type":  "pump"
+                  }
+              ],
+    "plc_status":  {
+                       "position":  {
+                                        "top":  "12%",
+                                        "left":  "14%"
+                                    }
+                   },
+    "labels":  [
+                   {
+                       "id":  "d11-p100-title",
+                       "text":  "P-100",
+                       "source_svg_target":  "PUMP-01",
+                       "source_element_type":  "pump",
+                       "font_size":  12,
+                       "font_weight":  700,
+                       "position":  {
+                                        "left":  "39.5%",
+                                        "top":  "48%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-p110-title",
+                       "text":  "P-110",
+                       "source_svg_target":  "PUMP-02",
+                       "source_element_type":  "pump",
+                       "font_size":  12,
+                       "font_weight":  700,
+                       "position":  {
+                                        "left":  "41.5%",
+                                        "top":  "78.5%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-ac1lo-title",
+                       "text":  "A-C1LO",
+                       "font_size":  14,
+                       "font_weight":  700,
+                       "position":  {
+                                        "left":  "70.3%",
+                                        "top":  "62.2%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-bottom-cleaning-tank-title",
+                       "text":  "BOTTOM\nCLEANING",
+                       "color":  "#ffffff",
+                       "font_size":  17,
+                       "font_weight":  700,
+                       "text_shadow":  "0 1px 2px rgba(0, 0, 0, 0.55)",
+                       "position":  {
+                                        "left":  "92.6%",
+                                        "top":  "52.4%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-lf01-state",
+                       "tag":  "LF01_ST",
+                       "text":  "No data",
+                       "color":  "#ffffff",
+                       "font_size":  14,
+                       "font_weight":  700,
+                       "background_color":  "#111827",
+                       "text_shadow":  "none",
+                       "states":  {
+                                      "0":  {
+                                                "text":  "Stopped",
+                                                "color":  "#ef4444"
+                                            },
+                                      "1":  {
+                                                "text":  "Standby",
+                                                "color":  "#eab308"
+                                            },
+                                      "2":  {
+                                                "text":  "Running",
+                                                "color":  "#22c55e"
+                                            },
+                                      "3":  {
+                                                "text":  "Fault",
+                                                "color":  "#ef4444"
+                                            }
+                                  },
+                       "position":  {
+                                        "left":  "33.5%",
+                                        "top":  "32.0%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-lf02-state",
+                       "tag":  "LF02_ST",
+                       "text":  "No data",
+                       "color":  "#ffffff",
+                       "font_size":  14,
+                       "font_weight":  700,
+                       "background_color":  "#111827",
+                       "text_shadow":  "none",
+                       "states":  {
+                                      "0":  {
+                                                "text":  "Stopped",
+                                                "color":  "#ef4444"
+                                            },
+                                      "1":  {
+                                                "text":  "Standby",
+                                                "color":  "#eab308"
+                                            },
+                                      "2":  {
+                                                "text":  "Running",
+                                                "color":  "#22c55e"
+                                            },
+                                      "3":  {
+                                                "text":  "Fault",
+                                                "color":  "#ef4444"
+                                            }
+                                  },
+                       "position":  {
+                                        "left":  "33.5%",
+                                        "top":  "63.0%"
+                                    }
+                   }
+               ]
+}

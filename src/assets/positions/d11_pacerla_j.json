@@ -1,0 +1,310 @@
+{
+    "lagoon_id":  "d11_pacerla_j",
+    "layout_id":  "layout2",
+    "svg_component":  "layout2",
+    "aspect_ratio":  "1400 / 1150",
+    "map_name":  "Map 1",
+    "map_order":  1,
+    "default_map":  true,
+    "kpis":  [
+                 {
+                     "tag":  "PT203_R",
+                     "label":  "PT-203",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "48%",
+                                      "left":  "29.3%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "FIT002_R",
+                     "label":  "FIT-200",
+                     "unit":  "l/s",
+                     "position":  {
+                                      "top":  "39.6%",
+                                      "left":  "29.3%"
+                                  },
+                     "icon_type":  "flow"
+                 },
+                 {
+                     "tag":  "PT403_R",
+                     "label":  "PT-403",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "63%",
+                                      "left":  "72%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "BACKWASH.DIFF_PRES",
+                     "label":  "DIFF_PRES",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "62.5%",
+                                      "left":  "52.3%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "PT401_R",
+                     "label":  "PT-401",
+                     "unit":  "bar",
+                     "position":  {
+                                      "top":  "29%",
+                                      "left":  "37%"
+                                  },
+                     "icon_type":  "pressure"
+                 },
+                 {
+                     "tag":  "WM01_TOT",
+                     "label":  "WM-001",
+                     "unit":  "m3",
+                     "position":  {
+                                      "top":  "91.5%",
+                                      "left":  "42%"
+                                  },
+                     "icon_type":  "volume"
+                 }
+             ],
+    "pumps":  [
+                  {
+                      "tag":  "P200_ST",
+                      "label":  "FILTRATION/ BACKWASH",
+                      "svg_target":  "PUMP02",
+                      "panel":  "pump-status",
+                      "type":  "pump"
+                  },
+                  {
+                      "tag":  "MP110_ST",
+                      "label":  "CL-FLO12 \n PUMP",
+                      "svg_target":  "PUMP01",
+                      "panel":  "pump-status",
+                      "type":  "pump"
+                  },
+                  {
+                      "tag":  "P500_ST",
+                      "label":  "CLARIFIED RETURN PUMP STATUS",
+                      "svg_target":  "PUMP03",
+                      "panel":  "pump-status",
+                      "type":  "pump"
+                  },
+                  {
+                      "tag":  "MP300_ST",
+                      "label":  "F-H1LO PUMP",
+                      "svg_target":  "FH1LO",
+                      "type":  "pump"
+                  },
+                  {
+                      "tag":  "MP310_ST",
+                      "label":  "A-C1LO PUMP",
+                      "svg_target":  "CLFLO12",
+                      "type":  "pump"
+                  }
+              ],
+    "valves":  [
+                   {
+                       "tag":  "VE204_ST",
+                       "label":  "VX-204",
+                       "svg_target":  "VALVE01",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE203_ST",
+                       "label":  "VX-203",
+                       "svg_target":  "VALVE02",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE400_ST",
+                       "label":  "VX-400",
+                       "svg_target":  "VALVE03",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE402_ST",
+                       "label":  "VX-402",
+                       "svg_target":  "VALVE04",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE401_ST",
+                       "label":  "VX-401",
+                       "svg_target":  "VALVE007",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE403_ST",
+                       "label":  "VX-403",
+                       "svg_target":  "VALVE05",
+                       "type":  "valve"
+                   },
+                   {
+                       "tag":  "VE404_ST",
+                       "label":  "VX-404",
+                       "svg_target":  "VALVE06",
+                       "type":  "valve"
+                   }
+               ],
+    "labels":  [
+                   {
+                       "id":  "d11-pump-mp110",
+                       "text":  "CL-FLO12 PUMP",
+                       "source_svg_target":  "PUMP01",
+                       "source_element_type":  "pump",
+                       "position":  {
+                                        "top":  "28%",
+                                        "left":  "10.5%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-pump-p200",
+                       "text":  "FILTRATION/ \nBACKWASH",
+                       "source_svg_target":  "PUMP02",
+                       "source_element_type":  "pump",
+                       "position":  {
+                                        "top":  "63.7%",
+                                        "left":  "27.8%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-pump-p500",
+                       "text":  "CLARIFIED RETURN \n PUMP STATUS",
+                       "source_svg_target":  "PUMP03",
+                       "source_element_type":  "pump",
+                       "position":  {
+                                        "top":  "68.5%",
+                                        "left":  "88%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx400",
+                       "text":  "VX-400",
+                       "source_svg_target":  "VALVE03",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "29.9%",
+                                        "left":  "43.7%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx401",
+                       "text":  "VX-401",
+                       "source_svg_target":  "VALVE007",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "30.3%",
+                                        "left":  "71.7%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx402",
+                       "text":  "VX-402",
+                       "source_svg_target":  "VALVE04",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "40.8%",
+                                        "left":  "43.5%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx403",
+                       "text":  "VX-403",
+                       "source_svg_target":  "VALVE05",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "40.9%",
+                                        "left":  "75.4%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx404",
+                       "text":  "VX-404",
+                       "source_svg_target":  "VALVE06",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "52.8%",
+                                        "left":  "75.8%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx203",
+                       "text":  "VX-203",
+                       "source_svg_target":  "VALVE02",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "63%",
+                                        "left":  "16.9%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-valve-vx204",
+                       "text":  "VX-204",
+                       "source_svg_target":  "VALVE01",
+                       "source_element_type":  "valve",
+                       "position":  {
+                                        "top":  "86%",
+                                        "left":  "16.5%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-pump-mp310",
+                       "text":  "A-C1LO PUMP",
+                       "source_svg_target":  "CLFLO12",
+                       "source_element_type":  "pump",
+                       "position":  {
+                                        "top":  "34%",
+                                        "left":  "91%"
+                                    },
+                       "font_size":  11
+                   },
+                   {
+                       "id":  "d11-pump-mp300",
+                       "text":  "F-H1LO PUMP",
+                       "source_svg_target":  "FH1LO",
+                       "source_element_type":  "pump",
+                       "position":  {
+                                        "top":  "34%",
+                                        "left":  "97%"
+                                    },
+                       "font_size":  11
+                   },
+                   {
+                       "id":  "d11-area-bottom-cleaning",
+                       "text":  "BOTTOM \n CLEANING",
+                       "source_svg_target":  "TK01",
+                       "source_element_type":  "tank",
+                       "position":  {
+                                        "top":  "52%",
+                                        "left":  "14%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-area-clean-water",
+                       "text":  "CLEAN \n WATER",
+                       "source_svg_target":  "TK02",
+                       "source_element_type":  "tank",
+                       "position":  {
+                                        "top":  "77%",
+                                        "left":  "7.6%"
+                                    }
+                   },
+                   {
+                       "id":  "d11-area-settling-tank",
+                       "text":  "SETTLING TANK",
+                       "source_svg_target":  "TK02",
+                       "source_element_type":  "tank",
+                       "position":  {
+                                        "top":  "60%",
+                                        "left":  "93%"
+                                    }
+                   }
+               ],
+    "plc_status":  {
+                       "position":  {
+                                        "top":  "12%",
+                                        "left":  "14%"
+                                    }
+                   }
+}

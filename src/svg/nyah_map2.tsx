@@ -619,7 +619,7 @@ const SVGComponent = (props) => (
           fillOpacity: 0.612205,
         }}
       >
-        {"SKID CLEANING"}
+        {props["data-scada-lagoon-id"] === "d11_pacerla_j" ? "BOTTOM CLEANING" : "SKID CLEANING"}
       </tspan>
     </text>
     <text
@@ -655,7 +655,7 @@ const SVGComponent = (props) => (
           fillOpacity: 0.612205,
         }}
       >
-        {"FUND N\xB02"}
+        {props["data-scada-lagoon-id"] === "d11_pacerla_j" ? "SKID No. 2" : "FUND N\xB02"}
       </tspan>
     </text>
     <path
@@ -767,7 +767,7 @@ const SVGComponent = (props) => (
           fillOpacity: 0.612205,
         }}
       >
-        {"SKID CLEANING"}
+        {props["data-scada-lagoon-id"] === "d11_pacerla_j" ? "BOTTOM CLEANING" : "SKID CLEANING"}
       </tspan>
     </text>
     <text
@@ -803,7 +803,7 @@ const SVGComponent = (props) => (
           fillOpacity: 0.612205,
         }}
       >
-        {"FUND N\xB01"}
+        {props["data-scada-lagoon-id"] === "d11_pacerla_j" ? "SKID No. 1" : "FUND N\xB01"}
       </tspan>
     </text>
     <path
